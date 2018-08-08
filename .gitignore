@@ -1,0 +1,21 @@
+# general
+build
+*.rej
+*.orig
+*.out
+
+# kate
+*~
+*-swp
+
+# kdevelop
+*.kdev4
+
+# from kdiff3
+*.BACKUP.*
+*.BASE.*
+*.LOCAL.*
+*.REMOTE.*
+
+# from dolphin
+.directory
