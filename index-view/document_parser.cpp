@@ -190,7 +190,7 @@ void DocumentParser::initHistory(int size /*= -1*/)
 
     m_lineTypeHistory.clear();
     m_lineHistory.clear();
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < p_historySize; i++) {
         m_lineTypeHistory.enqueue(EmptyLine);
         m_lineHistory.enqueue(QStringLiteral(""));
     }
