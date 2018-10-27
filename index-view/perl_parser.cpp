@@ -1,142 +1,123 @@
-/***************************************************************************
-                          perl_parser.cpp  -  description
-                             -------------------
-    begin                : Apr 2 2003
-    author               : 2003 Massimo Callegari
-    email                : massimocallegari@yahoo.it
- ***************************************************************************/
- /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-#include "plugin_katesymbolviewer.h"
+/*   This file is part of KatePlugin-IndexView
+ *
+ *   PerlParser Class
+ *   Copyright (C) 2018 loh.tar@googlemail.com
+ *
+ *   Inspired by perl_parser.cpp, part of Kate's SymbolViewer
+ *   Copyright (C) 2003 Massimo Callegari <massimocallegari@yahoo.it>
+ *
+ *   This library is free software; you can redistribute it and/or
+ *   modify it under the terms of the GNU Library General Public
+ *   License as published by the Free Software Foundation; either
+ *   version 2 of the License, or (at your option) any later version.
+ *
+ *   This library is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *   Library General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Library General Public
+ *   License along with this library; if not, write to the Free Software
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 
-void KatePluginSymbolViewerView::parsePerlSymbols(void)
+
+#include <KLocalizedString>
+
+#include "icon_collection.h"
+#include "index_view.h"
+
+#include "perl_parser.h"
+
+
+PerlParser::PerlParser(IndexView *view)
+    : ProgramParser(view)
 {
- if (!m_mainWindow->activeView())
-   return;
+    using namespace IconCollection;
+    registerViewOption(PragmaNode, GreenYellowIcon, QStringLiteral("Pragmas"), i18n("Show Pragmas"));
+    registerViewOption(UsesNode, BlueIcon, QStringLiteral("Uses"), i18n("Show Uses"));
+    registerViewOption(VariableNode, VariableIcon, QStringLiteral("Variables"), i18n("Show Variables"));
+    registerViewOption(SubroutineNode, FunctionIcon, QStringLiteral("Subroutines"), i18n("Show Subroutines"));
 
- m_macro->setText(i18n("Show Uses"));
- m_struct->setText(i18n("Show Pragmas"));
- m_func->setText(i18n("Show Subroutines"));
- QString cl; // Current Line
- QString stripped;
- char comment = 0;
- QPixmap cls( ( const char** ) class_xpm );
- QPixmap sct( ( const char** ) struct_xpm );
- QPixmap mcr( ( const char** ) macro_xpm );
- QPixmap cls_int( ( const char** ) class_int_xpm );
- QTreeWidgetItem *node = nullptr;
- QTreeWidgetItem *mcrNode = nullptr, *sctNode = nullptr, *clsNode = nullptr;
- QTreeWidgetItem *lastMcrNode = nullptr, *lastSctNode = nullptr, *lastClsNode = nullptr;
+    m_nonBlockElements << UsesNode << PragmaNode << VariableNode;
 
- KTextEditor::Document *kv = m_mainWindow->activeView()->document();
+    m_rxUses = QRegExp(QStringLiteral("^use ([A-Z][\\w:]*)+(.*)?;"));
+    m_rxPragma = QRegExp(QStringLiteral("^use ([a-z0-9].*);"));
+    m_rxSubroutine = QRegExp(QStringLiteral("^sub (\\w+)"));
+    m_rxVariable1 = QRegExp(QStringLiteral("\\bmy([\\@\\$\\%]\\w+)"));
+    m_rxVariable2 = QRegExp(QStringLiteral("\\bmy\\((.*)\\)"));
+//     m_rx = QRegExp(QStringLiteral(""));
 
-     //kdDebug(13000)<<"Lines counted :"<<kv->numLines()<<endl;
- if(m_treeOn->isChecked())
-   {
-    mcrNode = new QTreeWidgetItem(m_symbols, QStringList( i18n("Uses") ) );
-    sctNode = new QTreeWidgetItem(m_symbols, QStringList( i18n("Pragmas") ) );
-    clsNode = new QTreeWidgetItem(m_symbols, QStringList( i18n("Subroutines") ) );
-    mcrNode->setIcon(0, QIcon(mcr));
-    sctNode->setIcon(0, QIcon(sct));
-    clsNode->setIcon(0, QIcon(cls));
-
-    if (m_expandOn->isChecked())
-      {
-       m_symbols->expandItem(mcrNode);
-       m_symbols->expandItem(sctNode);
-       m_symbols->expandItem(clsNode);
-      }
-    lastMcrNode = mcrNode;
-    lastSctNode = sctNode;
-    lastClsNode = clsNode;
-    m_symbols->setRootIsDecorated(1);
-   }
- else
-    m_symbols->setRootIsDecorated(0);
-
- for (int i=0; i<kv->lines(); i++)
-   {
-    cl = kv->line(i);
-    //qDebug()<< "Line " << i << " : "<< cl;
-
-    if(cl.isEmpty() || cl.at(0) == QLatin1Char('#')) continue;
-    if(cl.indexOf(QRegExp(QLatin1String("^=[a-zA-Z]"))) >= 0) comment = 1;
-    if(cl.indexOf(QRegExp(QLatin1String("^=cut$"))) >= 0)
-       {
-        comment = 0;
-        continue;
-       }
-    if (comment==1)
-        continue;
-    
-    cl = cl.trimmed();
-    //qDebug()<<"Trimmed line " << i << " : "<< cl;
-
-    if(cl.indexOf(QRegExp(QLatin1String("^use +[A-Z]"))) == 0 && m_macro->isChecked())
-      {
-       QString stripped=cl.remove( QRegExp(QLatin1String("^use +")) );
-       //stripped=stripped.replace( QRegExp(QLatin1String(";$")), "" ); // Doesn't work ??
-       stripped = stripped.left(stripped.indexOf(QLatin1Char(';')));
-       if (m_treeOn->isChecked())
-         {
-          node = new QTreeWidgetItem(mcrNode, lastMcrNode);
-          lastMcrNode = node;
-         }
-       else
-          node = new QTreeWidgetItem(m_symbols);
-
-       node->setText(0, stripped);
-       node->setIcon(0, QIcon(mcr));
-       node->setText(1, QString::number( i, 10));
-      }
-#if 1
-    if(cl.indexOf(QRegExp(QLatin1String("^use +[a-z]"))) == 0 && m_struct->isChecked())
-      {
-       QString stripped=cl.remove( QRegExp(QLatin1String("^use +")) );
-       stripped=stripped.remove( QRegExp(QLatin1String(";$")) );
-       if (m_treeOn->isChecked())
-         {
-          node = new QTreeWidgetItem(sctNode, lastSctNode);
-          lastMcrNode = node;
-         }
-       else
-          node = new QTreeWidgetItem(m_symbols);
-
-       node->setText(0, stripped);
-       node->setIcon(0, QIcon(sct));
-       node->setText(1, QString::number( i, 10));
-      }
-#endif
-#if 1
-    if(cl.indexOf(QRegExp(QLatin1String("^sub +")))==0 && m_func->isChecked())
-      {
-       QString stripped=cl.remove( QRegExp(QLatin1String("^sub +")) );
-       stripped=stripped.remove( QRegExp(QLatin1String("[{;] *$")) );
-       if (m_treeOn->isChecked())
-         {
-          node = new QTreeWidgetItem(clsNode, lastClsNode);
-          lastClsNode = node;
-         }
-       else
-          node = new QTreeWidgetItem(m_symbols);
-        node->setText(0, stripped);
-
-        if (!stripped.isEmpty() && stripped.at(0)==QLatin1Char('_'))
-             node->setIcon(0, QIcon(cls_int));
-        else
-             node->setIcon(0, QIcon(cls));
-
-        node->setText(1, QString::number( i, 10));
-       }
-#endif
-   }
+    initHereDoc(QStringLiteral("<<~?"), QStringLiteral("\"'`"));
 }
 
 
+PerlParser::~PerlParser()
+{
+}
 
+
+void PerlParser::parseDocument()
+{
+    while (nextInstruction()) {
+
+        if (m_line.contains(m_rxUses)) {
+            // http://perldoc.perl.org/functions/use.html
+            addNode(UsesNode, m_rxUses.cap(1), m_lineNumber);
+
+        } else if (m_line.contains(m_rxPragma)) {
+            m_niceLine.contains(m_rxPragma);
+            addNode(PragmaNode, m_rxPragma.cap(1), m_lineNumber);
+
+        } else if (m_line.contains(m_rxSubroutine)) {
+            addNode(SubroutineNode, m_rxSubroutine.cap(1), m_lineNumber);
+
+        } else if (m_line.contains(m_rxVariable1)) {
+            //http://perldoc.perl.org/functions/my.html
+            addNode(VariableNode, m_rxVariable1.cap(1), m_lineNumber);
+
+        } else if (m_line.contains(m_rxVariable2)) {
+            addNode(VariableNode, m_rxVariable2.cap(1), m_lineNumber);
+
+        }
+    }
+}
+
+
+void PerlParser::removeStrings()
+{
+    removeSingleQuotedStrings();
+    removeDoubleQuotedStrings();
+    // Special Perl quoting
+    // FIXME These are too simple, adopt ProgramParser::removeSingle/DoubleQuotedStrings()
+    m_line.remove(QRegExp(QStringLiteral("\\q\\{.*\\}")));
+    m_line.remove(QRegExp(QStringLiteral("\\q\\#.*\\#")));
+    m_line.remove(QRegExp(QStringLiteral("\\q\\^.*\\^")));
+}
+
+
+void PerlParser::removeComment()
+{
+    removeTrailingSharpComment();
+    removePerlPod();
+    removeHereDoc();
+}
+
+
+void PerlParser::removePerlPod()
+{
+    // http://perldoc.perl.org/perlpod.html
+    if (m_funcAtWork.contains(Me_At_Work)) {
+        // Skip Perl's special documentation block
+        if (m_line.contains(QRegExp(QStringLiteral("^=cut$")))) {
+            m_funcAtWork.remove(Me_At_Work);
+        }
+        m_line.clear();
+
+    } else if (m_line.contains(QRegExp(QStringLiteral("^=[a-zA-Z]")))) {
+        m_funcAtWork.insert(Me_At_Work);
+        m_line.clear();
+    }
+}
+
+// kate: space-indent on; indent-width 4; replace-tabs on;

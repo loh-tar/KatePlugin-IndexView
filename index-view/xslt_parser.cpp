@@ -1,158 +1,162 @@
-/***************************************************************************
-                          xslt_parser.cpp  -  description
-                             -------------------
-    begin                : Mar 28 2007
-    author               : 2007 jiri Tyr
-    email                : jiri.tyr@vslib.cz
- ***************************************************************************/
- /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
 
-#include "plugin_katesymbolviewer.h"
+/*   This file is part of KatePlugin-IndexView
+ *
+ *   XsltParser Class
+ *   Copyright (C) 2018 loh.tar@googlemail.com
+ *
+ *   Inspired by xslt_parser.cpp, part of Kate's SymbolViewer
+ *   Copyright (C) 2007 Jiri Tyr <jiri.tyr@vslib.cz>
+ *
+ *   This library is free software; you can redistribute it and/or
+ *   modify it under the terms of the GNU Library General Public
+ *   License as published by the Free Software Foundation; either
+ *   version 2 of the License, or (at your option) any later version.
+ *
+ *   This library is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *   Library General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Library General Public
+ *   License along with this library; if not, write to the Free Software
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 
-void KatePluginSymbolViewerView::parseXsltSymbols(void)
+
+#include <KLocalizedString>
+
+#include "icon_collection.h"
+#include "index_view.h"
+
+#include "xslt_parser.h"
+
+
+XsltParser::XsltParser(IndexView *view)
+    : ProgramParser(view)
 {
-  if (!m_mainWindow->activeView())
-   return;
+    using namespace IconCollection;
+    registerViewOption(ParamNode, SmallGreenIcon, QStringLiteral("Params"), i18n("Show Params"));
+    registerViewOption(VariableNode, VariableIcon, QStringLiteral("Variables"), i18n("Show Variables"));
+    registerViewOption(TemplateNode, RedBlueIcon, QStringLiteral("Templates"), i18n("Show Templates"));
 
- m_macro->setText(i18n("Show Params"));
- m_struct->setText(i18n("Show Variables"));
- m_func->setText(i18n("Show Templates"));
+    m_tagTypes.insert(ParamNode, QStringLiteral("xsl:param"));
+    m_tagTypes.insert(VariableNode, QStringLiteral("xsl:variable"));
+    m_tagTypes.insert(TemplateNode, QStringLiteral("xsl:template"));
 
- QString cl; // Current Line
- QString stripped;
-
- char comment = 0;
- char templ = 0;
- int i;
-
- QPixmap cls( ( const char** ) class_xpm );
- QPixmap sct( ( const char** ) struct_xpm );
- QPixmap mcr( ( const char** ) macro_xpm );
- QPixmap cls_int( ( const char** ) class_int_xpm );
-
- QTreeWidgetItem *node = nullptr;
- QTreeWidgetItem *mcrNode = nullptr, *sctNode = nullptr, *clsNode = nullptr;
- QTreeWidgetItem *lastMcrNode = nullptr, *lastSctNode = nullptr, *lastClsNode = nullptr;
-
- KTextEditor::Document *kv = m_mainWindow->activeView()->document();
- //kdDebug(13000)<<"Lines counted :"<<kv->numLines()<<endl;
+    // Not sure if that's solution is best. Only one kind of TemplateNode uses "match"
+    // and the orig parser choose then a different icon
+    QString regExpMask = QStringLiteral("\\s%1=\"(.+)\"");
+    m_attributes << QRegExp(regExpMask.arg(QStringLiteral("name")));
+    m_attributes << QRegExp(regExpMask.arg(QStringLiteral("match")));
+}
 
 
- if(m_treeOn->isChecked())
-   {
-    mcrNode = new QTreeWidgetItem(m_symbols, QStringList( i18n("Params") ) );
-    sctNode = new QTreeWidgetItem(m_symbols, QStringList( i18n("Variables") ) );
-    clsNode = new QTreeWidgetItem(m_symbols, QStringList( i18n("Templates") ) );
-    mcrNode->setIcon(0, QIcon(mcr));
-    sctNode->setIcon(0, QIcon(sct));
-    clsNode->setIcon(0, QIcon(cls));
+XsltParser::~XsltParser()
+{
+}
 
-    if (m_expandOn->isChecked())
-      {
-       m_symbols->expandItem(mcrNode);
-       m_symbols->expandItem(sctNode);
-       m_symbols->expandItem(clsNode);
-      }
 
-    lastMcrNode = mcrNode;
-    lastSctNode = sctNode;
-    lastClsNode = clsNode;
+void XsltParser::parseDocument()
+{
+    QSet<QString> endTags;
 
-    m_symbols->setRootIsDecorated(1);
-   }
- else
-   {
-    m_symbols->setRootIsDecorated(0);
-   }
+    while (nextTag()) {
+        // Test for known tag types
+//         for (int nodeType = 0; m_tagTypes.contains(nodeType); nodeType++) {
+        for (int nodeType = FirstNodeType; nodeType < LastNodeType; nodeType++) {
+            QString tagType = m_tagTypes.value(nodeType);
+            if (m_tag.startsWith(tagType)) {
+                QString text;
+                for (QRegExp rx : qAsConst(m_attributes)) {
+                    rx.setMinimal(true);
+                    if (m_tag.contains(rx)) {
+                        text = rx.cap(1);
+                        break;
+                    }
+                }
+                addNode(nodeType, text, m_lineNumber);
 
- for (i=0; i<kv->lines(); i++)
-    {
-     cl = kv->line(i);
-     cl = cl.trimmed();
+                // Do the nesting, or not...
+                if (!m_tag.endsWith(QLatin1Char('/'))) {
+                    beginOfBlock();
+                    // ...but remember the needed end tag
+                    tagType.prepend(QLatin1Char('/'));
+                    endTags.insert(tagType);
+                }
+                continue;
+            }
+        }
 
-     if(cl.indexOf(QRegExp(QLatin1String("<!--"))) >= 0) { comment = 1; }
-     if(cl.indexOf(QRegExp(QLatin1String("-->"))) >= 0) { comment = 0; continue; }
-
-     if(cl.indexOf(QRegExp(QLatin1String("^</xsl:template>"))) >= 0) { templ = 0; continue; }
-
-     if (comment==1) { continue; }
-     if (templ==1) { continue; }
-
-     if(cl.indexOf(QRegExp(QLatin1String("^<xsl:param "))) == 0 && m_macro->isChecked())
-       {
-        QString stripped = cl.remove(QRegExp(QLatin1String("^<xsl:param +name=\"")));
-        stripped = stripped.remove(QRegExp(QLatin1String("\".*")));
-
-        if (m_treeOn->isChecked())
-          {
-           node = new QTreeWidgetItem(mcrNode, lastMcrNode);
-           lastMcrNode = node;
-          }
-        else node = new QTreeWidgetItem(m_symbols);
-        node->setText(0, stripped);
-        node->setIcon(0, QIcon(mcr));
-        node->setText(1, QString::number( i, 10));
-       }
-
-     if(cl.indexOf(QRegExp(QLatin1String("^<xsl:variable "))) == 0 && m_struct->isChecked())
-       {
-        QString stripped = cl.remove(QRegExp(QLatin1String("^<xsl:variable +name=\"")));
-        stripped = stripped.remove(QRegExp(QLatin1String("\".*")));
-
-        if (m_treeOn->isChecked())
-          {
-           node = new QTreeWidgetItem(sctNode, lastSctNode);
-           lastSctNode = node;
-          }
-        else node = new QTreeWidgetItem(m_symbols);
-        node->setText(0, stripped);
-        node->setIcon(0, QIcon(sct));
-        node->setText(1, QString::number( i, 10));
-       }
-
-     if(cl.indexOf(QRegExp(QLatin1String("^<xsl:template +match="))) == 0 && m_func->isChecked())
-       {
-        QString stripped = cl.remove(QRegExp(QLatin1String("^<xsl:template +match=\"")));
-        stripped = stripped.remove(QRegExp(QLatin1String("\".*")));
-
-        if (m_treeOn->isChecked())
-          {
-           node = new QTreeWidgetItem(clsNode, lastClsNode);
-           lastClsNode = node;
-          }
-        else node = new QTreeWidgetItem(m_symbols);
-        node->setText(0, stripped);
-        node->setIcon(0, QIcon(cls_int));
-        node->setText(1, QString::number( i, 10));
-       }
-
-     if(cl.indexOf(QRegExp(QLatin1String("^<xsl:template +name="))) == 0 && m_func->isChecked())
-       {
-        QString stripped = cl.remove(QRegExp(QLatin1String("^<xsl:template +name=\"")));
-        stripped = stripped.remove(QRegExp(QLatin1String("\".*")));
-
-        if (m_treeOn->isChecked())
-          {
-           node = new QTreeWidgetItem(clsNode, lastClsNode);
-           lastClsNode = node;
-          }
-        else node = new QTreeWidgetItem(m_symbols);
-        node->setText(0, stripped);
-        node->setIcon(0, QIcon(cls));
-        node->setText(1, QString::number( i, 10));
-
-       }
-
-     if(cl.indexOf(QRegExp(QLatin1String("<xsl:template"))) >= 0)
-       {
-        templ = 1;
-       }
+        // Test for important end tags
+        for (QString tagType : qAsConst(endTags)) {
+            if (m_tag.startsWith(tagType)) {
+                endOfBlock();
+            }
+        }
     }
 }
+
+
+bool XsltParser::lineIsGood()
+{
+    if (m_line.count(QLatin1Char('<')) - m_line.count(QLatin1Char('>')) != 0) {
+        m_line.append(QLatin1Char(' '));
+        return false;
+    }
+
+    return true;
+}
+
+
+bool XsltParser::nextTag()
+{
+    static QStringList tags;
+    static int i = 0;
+
+    if (i >= tags.size()) {
+        nextInstruction();
+        if (m_line.isEmpty()) {
+            return false;
+        }
+        tags = m_line.split(QRegExp(QStringLiteral("[<>]")), QString::SkipEmptyParts);
+        i = 0;
+// qDebug() << "NEW" << tags;
+    }
+
+    m_tag = tags.at(i++);
+
+// qDebug() << ">>" << i << m_line << tags.size() << m_lineNumber;
+
+    return true;
+}
+
+
+void XsltParser::removeStrings()
+{
+    // Well, here will not strings removed but tag content because this time
+    // are not the strings dangerous but the tag content. Furthermore eases this
+    // a lot the problem to extract the tag attributes
+    m_line.replace(QRegExp(QStringLiteral(">.*<")), QStringLiteral("><"));
+}
+
+
+void XsltParser::removeComment()
+{
+    if (m_funcAtWork.contains(Me_At_Work)) {
+        if (m_line.contains(QStringLiteral("-->"))) {
+            m_line = m_line.section(QStringLiteral("-->"), 0, 0);
+            m_funcAtWork.remove(Me_At_Work);
+        } else {
+            m_line.clear();
+        }
+    }
+    if (m_line.contains(QStringLiteral("<!--"))) {
+        m_line = m_line.section(QStringLiteral("<!--"), -1, -1);
+        m_line = m_line.trimmed();
+        m_funcAtWork.insert(Me_At_Work);
+    }
+
+    m_line = m_line.remove(QRegExp(QStringLiteral("<!--.*-->")));
+}
+
+// kate: space-indent on; indent-width 4; replace-tabs on;

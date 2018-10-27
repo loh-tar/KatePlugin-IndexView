@@ -1,255 +1,140 @@
-/***************************************************************************
-                      fortran_parser.cpp  -  description
-                             -------------------
-    begin                : jul 10 2005
-    author               : 2005 Roberto Quitiliani
-    email                : roby(dot)q(AT)tiscali(dot)it
- ***************************************************************************/
- /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/*   This file is part of KatePlugin-IndexView
+ *
+ *   FortranParser Class
+ *   Copyright (C) 2018 loh.tar@googlemail.com
+ *
+ *   Inspired by fortran_parser.cpp, part of Kate's SymbolViewer
+ *   Copyright (C) 2005 Roberto Quitiliani <roby(dot)q(AT)tiscali(dot)it>
+ *
+ *   This library is free software; you can redistribute it and/or
+ *   modify it under the terms of the GNU Library General Public
+ *   License as published by the Free Software Foundation; either
+ *   version 2 of the License, or (at your option) any later version.
+ *
+ *   This library is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *   Library General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Library General Public
+ *   License along with this library; if not, write to the Free Software
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 
-#include "plugin_katesymbolviewer.h"
 
-void KatePluginSymbolViewerView::parseFortranSymbols(void)
+#include <KLocalizedString>
+
+#include "icon_collection.h"
+#include "index_view.h"
+
+#include "fortran_parser.h"
+
+
+FortranParser::FortranParser(IndexView *view)
+    : ProgramParser(view)
 {
- if (!m_mainWindow->activeView())
-   return;
+    using namespace IconCollection;
+    registerViewOption(TypeNode, SmallBlueIcon, QStringLiteral("Types"), i18n("Show Types"));
+    registerViewOption(FunctionNode, FunctionIcon, QStringLiteral("Functions"), i18n("Show Functions"));
+    registerViewOption(SubroutineNode, BlueIcon, QStringLiteral("Subroutines"), i18n("Show Subroutines"));
+    registerViewOption(ModuleNode, GreenYellowIcon, QStringLiteral("Modules"), i18n("Show Modules"));
 
- QString currline;
- QString subrStr(QLatin1String("subroutine "));
- QString funcStr(QLatin1String("function "));
- QString modStr(QLatin1String("module "));
+    // See Ruby
+//  m_blockElements << QStringLiteral("if") << QStringLiteral("do") << QStringLiteral("for") << QStringLiteral("select")
+//     << QStringLiteral("interface")
+//     << QStringLiteral("where")
+//     << QStringLiteral("")
 
- QString stripped;
- int i;
- int fnd,block=0,blockend=0,paro=0,parc=0;
- bool mainprog;
-
- QTreeWidgetItem *node = nullptr;
- QTreeWidgetItem *subrNode = nullptr, *funcNode = nullptr, *modNode = nullptr;
- QTreeWidgetItem *lastSubrNode = nullptr, *lastFuncNode = nullptr, *lastModNode = nullptr;
-
- QPixmap func( ( const char** ) class_xpm );
- QPixmap subr( ( const char** ) macro_xpm );
- QPixmap mod( ( const char** ) struct_xpm );
-
- //It is necessary to change names
- m_macro->setText(i18n("Show Subroutines"));
- m_struct->setText(i18n("Show Modules"));
- m_func->setText(i18n("Show Functions"));
-
- if(m_treeOn->isChecked())
-  {
-   funcNode = new QTreeWidgetItem(m_symbols, QStringList(i18n("Functions") ) );
-   subrNode = new QTreeWidgetItem(m_symbols, QStringList( i18n("Subroutines") ) );
-   modNode = new QTreeWidgetItem(m_symbols, QStringList( i18n("Modules") ) );
-   funcNode->setIcon(0, QIcon(func));
-   modNode->setIcon(0, QIcon(mod));
-   subrNode->setIcon(0, QIcon(subr));
-
-   if (m_expandOn->isChecked())
-      {
-       m_symbols->expandItem(funcNode);
-       m_symbols->expandItem(subrNode);
-       m_symbols->expandItem(modNode);
-      }
-
-   lastSubrNode = subrNode;
-   lastFuncNode = funcNode;
-   lastModNode = modNode;
-   m_symbols->setRootIsDecorated(1);
-  }
- else
-   m_symbols->setRootIsDecorated(0);
-
- KTextEditor::Document *kDoc = m_mainWindow->activeView()->document();
-
- for (i = 0; i < kDoc->lines(); i++)
-   {
-    currline = kDoc->line(i);
-    currline = currline.trimmed();
-    //currline = currline.simplified(); is this really needed ?
-    //Fortran is case insensitive
-    currline = currline.toLower();
-    bool comment = false;
-    //kdDebug(13000)<<currline<<endl;
-    if(currline.isEmpty()) continue;
-    if(currline.at(0) == QLatin1Char('!') || currline.at(0) == QLatin1Char('c')) comment = true;
-    //block=0;
-
-    mainprog=false;
-
-    if(!comment)
-      {
-       //Subroutines
-       if(currline.startsWith(subrStr) || currline.startsWith(QLatin1String("program ")))
-         {
-          block=1;
-          stripped.clear();
-         }
-       //Modules
-        else if(currline.startsWith(modStr))
-         {
-          block=2;
-          stripped.clear();
-         }
-       //Functions
-        else if(((( currline.startsWith(QLatin1String("real")) ||
-                    currline.startsWith(QLatin1String("double")) ||
-                    currline.startsWith(QLatin1String("integer")) ||
-                    currline.startsWith(QLatin1String("character"))) ||
-                    currline.startsWith(QLatin1String("logical")) ||
-                    currline.startsWith(QLatin1String("pure")) ||
-                    currline.startsWith(QLatin1String("elemental")) ||
-                    currline.startsWith(QLatin1String("recursive")) ||
-                    currline.startsWith(QLatin1String("type"))) &&
-                    currline.indexOf(funcStr) > 0) || 
-                    currline.startsWith(funcStr)                    
-                )
-         {
-          block=3;
-          stripped.clear();
-         }
-
-       //Subroutines
-       if(block==1)
-         {
-          if(currline.startsWith(QLatin1String("program ")))
-               mainprog=true;
-          if (m_macro->isChecked()) // not really a macro, but a subroutines
-            {
-             stripped += currline.right(currline.length());
-             stripped = stripped.simplified();
-             stripped.remove(QLatin1Char('*'));
-             stripped.remove(QLatin1Char('+'));
-             stripped.remove(QLatin1Char('$'));
-             if(blockend==0)
-               {
-                fnd = stripped.indexOf(QLatin1Char(' '));
-                stripped = currline.right(currline.length()-fnd-1);
-               }
-             stripped.remove(QLatin1Char(' '));
-             fnd = stripped.indexOf(QLatin1Char('!'));
-             if(fnd>0)
-               {
-                stripped = stripped.left(fnd);
-               }
-             paro+=currline.count(QLatin1Char(')'), Qt::CaseSensitive);
-             parc+=currline.count(QLatin1Char('('), Qt::CaseSensitive);
-
-             if((paro==parc || mainprog) && stripped.endsWith(QLatin1Char('&'), Qt::CaseInsensitive)==false)
-               {
-                stripped.remove(QLatin1Char('&'));
-                if(mainprog && stripped.indexOf(QLatin1Char('('))<0 && stripped.indexOf(QLatin1Char(')'))<0)
-                    stripped.prepend(QLatin1String("Main: "));
-                if(stripped.indexOf(QLatin1Char('='))==-1)
-                  {
-                   if (m_treeOn->isChecked())
-                     {
-                      node = new QTreeWidgetItem(subrNode, lastSubrNode);
-                      lastSubrNode = node;
-                     }
-                   else
-                      node = new QTreeWidgetItem(m_symbols);
-                   node->setText(0, stripped);
-                   node->setIcon(0, QIcon(subr));
-                   node->setText(1, QString::number( i, 10));
-                  }
-                stripped.clear();
-                block=0;
-                blockend=0;
-                paro=0;
-                parc=0;
-               }
-             else
-               {
-                blockend=1;
-               }
-            }
-        }
-
-       //Modules
-       else if(block==2)
-        {
-         if (m_struct->isChecked()) // not really a struct, but a module
-           {
-            stripped = currline.right(currline.length());
-            stripped = stripped.simplified();
-            fnd = stripped.indexOf(QLatin1Char(' '));
-            stripped = currline.right(currline.length()-fnd-1);
-            fnd = stripped.indexOf(QLatin1Char('!'));
-            if(fnd>0)
-              {
-               stripped = stripped.left(fnd);
-              }
-            if(stripped.indexOf(QLatin1Char('='))==-1)
-              {
-               if (m_treeOn->isChecked())
-                 {
-                  node = new QTreeWidgetItem(modNode, lastModNode);
-                  lastModNode = node;
-                 }
-               else
-                  node = new QTreeWidgetItem(m_symbols);
-               node->setText(0, stripped);
-               node->setIcon(0, QIcon(mod));
-               node->setText(1, QString::number( i, 10));
-              }
-            stripped.clear();
-           }
-          block=0;
-          blockend=0;
-        }
-
-      //Functions
-      else if(block==3)
-        {
-         if (m_func->isChecked())
-           {
-            stripped += currline.right(currline.length());
-            stripped = stripped.trimmed();
-            stripped.remove( QLatin1String("function") );
-            stripped.remove(QLatin1Char('*'));
-            stripped.remove(QLatin1Char('+'));
-            stripped.remove(QLatin1Char('$'));
-            stripped = stripped.simplified();
-            fnd = stripped.indexOf(QLatin1Char('!'));
-            if(fnd>0)
-              {
-               stripped = stripped.left(fnd);
-              }
-            stripped = stripped.trimmed();
-            paro+=currline.count(QLatin1Char(')'), Qt::CaseSensitive);
-            parc+=currline.count(QLatin1Char('('), Qt::CaseSensitive);
-
-            if(paro==parc && stripped.endsWith(QLatin1Char('&'))==false)
-              {
-               stripped.remove(QLatin1Char('&'));
-              if (m_treeOn->isChecked())
-                {
-                 node = new QTreeWidgetItem(funcNode, lastFuncNode);
-                 lastFuncNode = node;
-                }
-              else
-                 node = new QTreeWidgetItem(m_symbols);
-              node->setText(0, stripped);
-              node->setIcon(0, QIcon(func));
-              node->setText(1, QString::number( i, 10));
-              stripped.clear();
-              block=0;
-              paro=0;
-              parc=0;
-             }
-           blockend=0;
-          }
-        }
-      }
-    } //for i loop
+    m_rxFunction   = QRegExp(QStringLiteral("\\bfunction (\\w+)\\(([\\w\\s,]*)?\\)"), Qt::CaseInsensitive);
+    m_rxSubroutine = QRegExp(QStringLiteral("\\bsubroutine (\\w+)\\(([\\w\\s,]*)?\\)"), Qt::CaseInsensitive);
+    m_rxModule     = QRegExp(QStringLiteral("^module (\\w+)"), Qt::CaseInsensitive);
+    m_rxType       = QRegExp(QStringLiteral("^type (\\w+)"), Qt::CaseInsensitive);
+    m_rxEnd        = QRegExp(QStringLiteral("^end (\\w+)"), Qt::CaseInsensitive);
+    m_rxProgram    = QRegExp(QStringLiteral("^program (\\w+)"), Qt::CaseInsensitive);
 }
 
+
+FortranParser::~FortranParser()
+{
+}
+
+
+void FortranParser::parseDocument()
+{
+    m_BlockStack.clear();
+
+    while (nextInstruction()) {
+        //Fortran is case insensitive
+        m_line = m_line.toLower();
+
+        if (m_line.contains(m_rxEnd)) {
+            endBlock(m_rxEnd.cap(1));
+
+        } else if (m_line.contains(m_rxSubroutine)) {
+            addNode(SubroutineNode, m_rxSubroutine.cap(1), m_lineNumber);
+            beginBlock(QStringLiteral("subroutine"));
+
+        } else if (m_line.startsWith(QStringLiteral("module procedure "))) {
+            // Ignored
+        } else if (m_line.contains(m_rxModule)) {
+            addNode(ModuleNode, m_rxModule.cap(1), m_lineNumber);
+            beginBlock(QStringLiteral("module"));
+
+        } else if (m_line.contains(m_rxType)) {
+            addNode(TypeNode, m_rxType.cap(1), m_lineNumber);
+            beginBlock(QStringLiteral("type"));
+
+        } else if (m_line.contains(m_rxFunction)) {
+            addNode(FunctionNode, m_rxFunction.cap(1), m_lineNumber);
+            beginBlock(QStringLiteral("function"));
+
+        } else if (m_line.contains(m_rxProgram)) {
+            addNode(SubroutineNode, QStringLiteral("Main: ") + m_rxProgram.cap(1), m_lineNumber);
+            beginBlock(QStringLiteral("program"));
+
+        }
+    }
+}
+
+
+void FortranParser::beginBlock(const QString  &type)
+{
+    m_BlockStack.push(type.toLower());
+    beginOfBlock();
+}
+
+
+void FortranParser::endBlock(const QString  &type)
+{
+    if (m_BlockStack.isEmpty()) {
+        return;
+    }
+
+    if (m_BlockStack.top() == type.toLower()) {
+        m_BlockStack.pop();
+        endOfBlock();
+    }
+}
+
+
+void FortranParser::removeStrings()
+{
+    removeSingleQuotedStrings();
+    removeDoubleQuotedStrings();
+}
+
+
+void FortranParser::removeComment()
+{
+    // Yes, two times RAW-line and once line
+    // https://en.wikipedia.org/wiki/Fortran#Obsolescence_and_deletions
+    // Says: Column 1 contains C or * or ! for comments.
+    if (   rawLine().at(0) == QLatin1Char('c')
+        || rawLine().at(0) == QLatin1Char('*')
+        ||    m_line.at(0) == QLatin1Char('!')) {
+
+        m_line.clear();
+    }
+}
+
+// kate: space-indent on; indent-width 4; replace-tabs on;

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE kpartgui>
-<gui name="katesymbolviewerplugin" library="katesymbolviewerplugin" version="3" translationDomain="katesymbolviewer">
+<gui name="kateindexviewplugin" library="kateindexviewplugin" version="3" translationDomain="kateindexview">
   <MenuBar>
     <Menu name="view">
       <text>&amp;Settings</text>
       <Separator/>
-      <Action name="view_insert_symbolviewer"/>
+      <Action name="view_insert_indexview"/>
     </Menu>
   </MenuBar>
 </gui>

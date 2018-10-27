@@ -1,365 +1,207 @@
-/***************************************************************************
-                          cpp_parser.cpp  -  description
-                             -------------------
-    begin                : Apr 2 2003
-    author               : 2003 Massimo Callegari
-    email                : massimocallegari@yahoo.it
- ***************************************************************************/
- /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-#include "plugin_katesymbolviewer.h"
+/*   This file is part of KatePlugin-IndexView
+ *
+ *   CppParser Class
+ *   Copyright (C) 2018 loh.tar@googlemail.com
+ *
+ *   Inspired by cpp_parser.cpp, part of Kate's SymbolViewer
+ *   Copyright (C) 2003 Massimo Callegari <massimocallegari@yahoo.it>
+ *
+ *   This library is free software; you can redistribute it and/or
+ *   modify it under the terms of the GNU Library General Public
+ *   License as published by the Free Software Foundation; either
+ *   version 2 of the License, or (at your option) any later version.
+ *
+ *   This library is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *   Library General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Library General Public
+ *   License along with this library; if not, write to the Free Software
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 
-void KatePluginSymbolViewerView::parseCppSymbols(void)
+
+#include <KLocalizedString>
+
+#include "icon_collection.h"
+#include "index_view.h"
+
+#include "cpp_parser.h"
+
+
+CppParser::CppParser(IndexView *view)
+    : ProgramParser(view)
 {
-  if (!m_mainWindow->activeView())
-   return;
+    using namespace IconCollection;
+    registerViewOption(NamespaceNode, NamespaceIcon, QStringLiteral("Namespace"), i18n("Show Namespace"));
+    registerViewOption(MacroNode, SmallGreenIcon, QStringLiteral("Macros"), i18n("Show Macros"));
+    registerViewOption(TypedefNode, SmallRedIcon, QStringLiteral("Typedefs"), i18n("Show Typedefs"));
+//     registerViewOption(VariableNode, VariableIcon, QStringLiteral("Variable"), i18n("Show Variables"));
+    registerViewOption(StructNode, ClassIcon, QStringLiteral("Structs"), i18n("Show Structs"));
+    registerViewOption(FunctionDefNode, FunctionIcon, QStringLiteral("Functions"), i18n("Show Functions"));
+//     m_showParameters  = registerViewOptionModifier(FunctionDefNode, QStringLiteral("ParameterF"), i18n("Show FParameter"));
+    registerViewOption(FunctionDecNode, FunctionIcon, QStringLiteral("Functions"), i18n("Show Functions"));
+//     m_showParameters  = registerViewOptionModifier(FunctionDecNode, QStringLiteral("ParameterC"), i18n("Show CParameter"));
 
- QString cl; // Current Line
- QString stripped;
- int i, j, tmpPos = 0;
- int par = 0, graph = 0/*, retry = 0*/;
- char mclass = 0, block = 0, comment = 0; // comment: 0-no comment 1-inline comment 2-multiline comment 3-string
- char macro = 0/*, macro_pos = 0*/, func_close = 0;
- bool structure = false;
- QPixmap cls( ( const char** ) class_xpm );
- QPixmap sct( ( const char** ) struct_xpm );
- QPixmap mcr( ( const char** ) macro_xpm );
- QPixmap mtd( ( const char** ) method_xpm );
+    m_nonBlockElements << MacroNode << FunctionDecNode;
 
- //It is necessary to change names to defaults
- m_macro->setText(i18n("Show Macros"));
- m_struct->setText(i18n("Show Structures"));
- m_func->setText(i18n("Show Functions"));
+    // https://en.cppreference.com/w/cpp/language/attributes
+    QString rxAttribute = QStringLiteral("(\\[\\[.*\\]\\])?");
+    // https://en.cppreference.com/w/cpp/language/function
+    // https://en.cppreference.com/w/cpp/language/declarations
+    QString rxFuncDeclarator = QStringLiteral("(\\W?[\\s\\w<>\\(\\):]*[\\s\\*]+)?");
 
- QTreeWidgetItem *node = nullptr;
- QTreeWidgetItem *mcrNode = nullptr, *sctNode = nullptr, *clsNode = nullptr, *mtdNode = nullptr;
- QTreeWidgetItem *lastMcrNode = nullptr, *lastSctNode = nullptr, *lastClsNode = nullptr, *lastMtdNode = nullptr;
+    // https://en.cppreference.com/w/cpp/language/classes
+    QString rx = QStringLiteral("^(class|struct|union)%1[^:{]*\\b(\\w+)[:{]");
+    m_rxStruct = QRegExp(rx.arg(rxAttribute));
 
- KTextEditor::Document *kv = m_mainWindow->activeView()->document();
+    // https://en.cppreference.com/w/cpp/language/enum
+    rx = QStringLiteral("\\benum\\W?(class|struct)?%1\\W?(\\w+)(:\\w+)?\\{");
+    m_rxEnum = QRegExp(rx.arg(rxFuncDeclarator));
 
- //qDebug(13000)<<"Lines counted :"<<kv->lines();
- if(m_treeOn->isChecked())
-   {
-    mcrNode = new QTreeWidgetItem(m_symbols, QStringList( i18n("Macros") ) );
-    sctNode = new QTreeWidgetItem(m_symbols, QStringList( i18n("Structures") ) );
-    clsNode = new QTreeWidgetItem(m_symbols, QStringList( i18n("Functions") ) );
-    mcrNode->setIcon(0, QIcon(mcr));
-    sctNode->setIcon(0, QIcon(sct));
-    clsNode->setIcon(0, QIcon(cls));
-    if (m_expandOn->isChecked())
-      {
-       m_symbols->expandItem(mcrNode);
-       m_symbols->expandItem(sctNode);
-       m_symbols->expandItem(clsNode);
-      }
-    lastMcrNode = mcrNode;
-    lastSctNode = sctNode;
-    lastClsNode = clsNode;
-    mtdNode = clsNode;
-    lastMtdNode = clsNode;
-    m_symbols->setRootIsDecorated(1);
-   }
- else m_symbols->setRootIsDecorated(0);
+    rx = QStringLiteral("^%1(\\w+::)?(\\~?\\w+)\\(.*\\)(.*)?\\{");
+    m_rxFuncDef = QRegExp(rx.arg(rxFuncDeclarator));
+    m_rxFuncDef.setMinimal(true);
 
- for (i=0; i<kv->lines(); i++)
-   {
-    //qDebug(13000)<<"Current line :"<<i;
-    cl = kv->line(i);
-    cl = cl.trimmed();
-    func_close = 0;
-    if ( (cl.length()>=2) && (cl.at(0) == QLatin1Char('/') && cl.at(1) == QLatin1Char('/'))) continue;
-    if(cl.indexOf(QLatin1String("/*")) == 0 && (cl.indexOf(QLatin1String("*/")) == ((signed)cl.length() - 2)) && graph == 0) continue; // workaround :(
-    if(cl.indexOf(QLatin1String("/*")) >= 0 && graph == 0) comment = 1;
-    if(cl.indexOf(QLatin1String("*/")) >= 0 && graph == 0) comment = 0;
-    if(cl.indexOf(QLatin1Char('#')) >= 0 && graph == 0 ) macro = 1;
-    if (comment != 1)
-      {
-       /* *********************** MACRO PARSING *****************************/
-       if(macro == 1)
-         {
-          //macro_pos = cl.indexOf(QLatin1Char('#'));
-          for (j = 0; j < cl.length(); j++)
-             {
-              if ( ((j+1) <cl.length()) &&  (cl.at(j)==QLatin1Char('/') && cl.at(j+1)==QLatin1Char('/'))) { macro = 4; break; }
-              if (  cl.indexOf(QLatin1String("define")) == j &&
-                 !(cl.indexOf(QLatin1String("defined")) == j))
-                    {
-                     macro = 2;
-                     j += 6; // skip the word "define"
-                    }
-              if(macro == 2 && j<cl.length() && cl.at(j) != QLatin1Char(' ') && cl.at(j) != QLatin1Char('\t')) macro = 3;
-              if(macro == 3)
-                {
-                 if (cl.at(j) >= 0x20) stripped += cl.at(j);
-                 if (cl.at(j) == QLatin1Char(' ') || cl.at(j) == QLatin1Char('\t') || j == cl.length() - 1)
-                         macro = 4;
-                }
-              //qDebug(13000)<<"Macro -- Stripped : "<<stripped<<" macro = "<<macro;
-             }
-           // I didn't find a valid macro e.g. include
-           if(j == cl.length() && macro == 1) macro = 0;
-           if(macro == 4)
-             {
-              //stripped.replace(0x9, QLatin1String(" "));
-              stripped = stripped.trimmed();
-              if (m_macro->isChecked())
-                 {
-                  if (m_treeOn->isChecked())
-                    {
-                     node = new QTreeWidgetItem(mcrNode, lastMcrNode);
-                     lastMcrNode = node;
-                    }
-                  else node = new QTreeWidgetItem(m_symbols);
-                  node->setText(0, stripped);
-                  node->setIcon(0, QIcon(mcr));
-                  node->setText(1, QString::number( i, 10));
-                 }
-              macro = 0;
-              //macro_pos = 0;
-              stripped.clear();
-              //qDebug(13000)<<"Macro -- Inserted : "<<stripped<<" at row : "<<i;
-              if (cl.at(cl.length() - 1) == QLatin1Char('\\')) macro = 5; // continue in rows below
-              continue;
-             }
-          }
-       if (macro == 5)
-          {
-           if (cl.length() == 0 || cl.at(cl.length() - 1) != QLatin1Char('\\'))
-               macro = 0;
-           continue;
-          }
+    rx = QStringLiteral("^%1(\\~?\\w+)\\(.*\\)(.*)?;");
+    m_rxFuncDec = QRegExp(rx.arg(rxFuncDeclarator));
+    m_rxFuncDec.setMinimal(true);
 
-       /* ******************************************************************** */
+    // https://en.cppreference.com/w/c/language/typedef
+    m_rxTypedef = QRegExp(QStringLiteral("\\btypedef\\b(.*)\\b(\\S+);"));
 
-       if ((cl.indexOf(QLatin1String("class")) >= 0 && graph == 0 && block == 0))
-         {
-          mclass = 1;
-          for (j = 0; j < cl.length(); j++)
-             {
-              if(((j+1) < cl.length()) && (cl.at(j)==QLatin1Char('/') && cl.at(j+1)==QLatin1Char('/'))) { mclass = 2; break; }
-              if(cl.at(j)==QLatin1Char('{')) { mclass = 4; break;}
-              stripped += cl.at(j);
-             }
-          if(m_func->isChecked())
-            {
-             if (m_treeOn->isChecked())
-               {
-                node = new QTreeWidgetItem(clsNode, lastClsNode);
-                if (m_expandOn->isChecked()) m_symbols->expandItem(node);
-                lastClsNode = node;
-                mtdNode = lastClsNode;
-                lastMtdNode = lastClsNode;
-               }
-             else node = new QTreeWidgetItem(m_symbols);
-             node->setText(0, stripped);
-             node->setIcon(0, QIcon(cls));
-             node->setText(1, QString::number( i, 10));
-             stripped.clear();
-             if (mclass == 1) mclass = 3;
-            }
-          continue;
-         }
-       if (mclass == 3)
-         {
-          if (cl.indexOf(QLatin1Char('{')) >= 0)
-            {
-             cl = cl.mid(cl.indexOf(QLatin1Char('{')));
-             mclass = 4;
-            }
-         }
+    m_rxMarcro = QRegExp(QStringLiteral("^#define (\\w+)"));
 
-       if(cl.indexOf(QLatin1Char('(')) >= 0 && cl.at(0) != QLatin1Char('#') && block == 0 && comment != 2)
-          { structure = false; block = 1; }
-       if((cl.indexOf(QLatin1String("typedef")) >= 0 || cl.indexOf(QLatin1String("struct")) >= 0) &&
-          graph == 0 && block == 0)
-         { structure = true; block = 2; stripped.clear(); }
-       //if(cl.indexOf(QLatin1Char(';')) >= 0 && graph == 0)
-       //    block = 0;
-       if(block > 0 && mclass != 1 )
-         {
-          for (j = 0; j < cl.length(); j++)
-            {
-             if ( ((j+1) < cl.length()) && (cl.at(j) == QLatin1Char('/') && (cl.at(j + 1) == QLatin1Char('*')) && comment != 3)) comment = 2;
-             if ( ((j+1) < cl.length()) && (cl.at(j) == QLatin1Char('*') && (cl.at(j + 1) == QLatin1Char('/')) && comment != 3) )
-               {  comment = 0; j+=2; if (j>=cl.length()) break;}
-             // Skip escaped double quotes
-             if ( ((j+1) < cl.length()) && (cl.at(j) == QLatin1Char('\\') && (cl.at(j + 1) == QLatin1Char('"')) && comment == 3) )
-               { j+=2; if (j>=cl.length()) break;}
+    m_rxNamespace= QRegExp(QStringLiteral("^namespace (\\w+)"));
 
-             // Skip char declarations that could be interpreted as range start/end
-             if ( ((cl.indexOf(QStringLiteral("'\"'"), j) == j) ||
-                 (cl.indexOf(QStringLiteral("'{'"), j) == j) ||
-                 (cl.indexOf(QStringLiteral("'}'"), j) == j)) && comment != 3 )
-               { j+=3; if (j>=cl.length()) break;}
+    m_keywordsToIgnore // To avaoid false detection, e.g. as function
+        << QStringLiteral("Q_FOREACH")
+        << QStringLiteral("catch")
+        << QStringLiteral("else")
+        << QStringLiteral("for")
+        << QStringLiteral("foreach")
+        << QStringLiteral("if")
+        << QStringLiteral("switch")
+        << QStringLiteral("until")
+    //     << QStringLiteral("")
+        << QStringLiteral("while");
 
-
-             // Handles a string. Those are freaking evilish !
-             if (cl.at(j) == QLatin1Char('"') && comment == 3) { comment = 0; j++; if (j>=cl.length()) break;}
-             else if (cl.at(j) == QLatin1Char('"') && comment == 0) comment = 3;
-             if ( ((j+1) <cl.length()) &&(cl.at(j)==QLatin1Char('/') && cl.at(j+1)==QLatin1Char('/')) && comment == 0 )
-               { if(block == 1 && stripped.isEmpty()) block = 0; break; }
-             if (comment != 2 && comment != 3)
-               {
-                if (block == 1 && graph == 0 )
-                  {
-                   if(cl.at(j) >= 0x20) stripped += cl.at(j);
-                   if(cl.at(j) == QLatin1Char('(')) par++;
-                   if(cl.at(j) == QLatin1Char(')'))
-                     {
-                      par--;
-                      if(par == 0)
-                        {
-                         stripped = stripped.trimmed();
-                         stripped.remove(QLatin1String("static "));
-                         //qDebug(13000)<<"Function -- Inserted : "<<stripped<<" at row : "<<i;
-                         block = 2;
-                         tmpPos = i;
-                        }
-                     }
-                  } // BLOCK 1
-                if(block == 2 && graph == 0)
-                  {
-                   if ( ((j+1)<cl.length()) && (cl.at(j)==QLatin1Char('/') && cl.at(j+1)==QLatin1Char('/')) && comment == 0) break;
-                   //if(cl.at(j)==QLatin1Char(':') || cl.at(j)==QLatin1Char(',')) { block = 1; continue; }
-                   if(cl.at(j)==QLatin1Char(':')) { block = 1; continue; }
-                   if(cl.at(j)==QLatin1Char(';'))
-                     {
-                      stripped.clear();
-                      block = 0;
-                      structure = false;
-                      break;
-                     }
-
-                   if((cl.at(j)==QLatin1Char('{') && structure == false && cl.indexOf(QLatin1Char(';')) < 0) ||
-                      (cl.at(j)==QLatin1Char('{') && structure == false && cl.indexOf(QLatin1Char('}')) > (int)j))
-                     {
-                      stripped.replace(0x9, QLatin1String(" "));
-                      if(m_func->isChecked())
-                        {
-                         QString strippedWithTypes = stripped;
-                         if (!m_typesOn->isChecked())
-                           {
-                            while (stripped.indexOf(QLatin1Char('(')) >= 0)
-                              stripped = stripped.left(stripped.indexOf(QLatin1Char('(')));
-                            while (stripped.indexOf(QLatin1String("::")) >= 0)
-                              stripped = stripped.mid(stripped.indexOf(QLatin1String("::")) + 2);
-                            stripped = stripped.trimmed();
-                            while (stripped.indexOf(0x20) >= 0)
-                              stripped = stripped.mid(stripped.indexOf(0x20, 0) + 1);
-                            while ( 
-                                (stripped.length()>0) &&
-                                  ( 
-                                    (stripped.at(0)==QLatin1Char('*')) ||
-                                    (stripped.at(0)==QLatin1Char('&'))
-                                  )
-                              ) stripped=stripped.right(stripped.length()-1);
-                           }
-                         if (m_treeOn->isChecked())
-                           {
-                            if (mclass == 4)
-                              {
-                               node = new QTreeWidgetItem(mtdNode, lastMtdNode);
-                               lastMtdNode = node;
-                              }
-                            else
-                              {
-                               node = new QTreeWidgetItem(clsNode, lastClsNode);
-                               lastClsNode = node;
-                              }
-                           }
-                         else
-                             node = new QTreeWidgetItem(m_symbols);
-                         node->setText(0, stripped);
-                         if (mclass == 4) node->setIcon(0, QIcon(mtd));
-                         else node->setIcon(0, QIcon(cls));
-                         node->setText(1, QString::number( tmpPos, 10));
-                         node->setToolTip(0, strippedWithTypes);
-                        }
-                      stripped.clear();
-                      //retry = 0;
-                      block = 3;
-                     }
-                   if(cl.at(j)==QLatin1Char('{') && structure == true)
-                     {
-                      block = 3;
-                      tmpPos = i;
-                     }
-                   if(cl.at(j)==QLatin1Char('(') && structure == true)
-                     {
-                      //retry = 1;
-                      block = 0;
-                      j = 0;
-                      //qDebug(13000)<<"Restart from the beginning of line...";
-                      stripped.clear();
-                      break; // Avoid an infinite loop :(
-                     }
-                   if(structure == true && cl.at(j) >= 0x20) stripped += cl.at(j);
-                  } // BLOCK 2
-
-                if (block == 3)
-                  {
-                   // A comment...there can be anything
-                   if( ((j+1)<cl.length()) && (cl.at(j)==QLatin1Char('/') && cl.at(j+1)==QLatin1Char('/')) && comment == 0 ) break;
-                   if(cl.at(j)==QLatin1Char('{')) graph++;
-                   if(cl.at(j)==QLatin1Char('}'))
-                     {
-                      graph--;
-                      if (graph == 0 && structure == false)  { block = 0; func_close = 1; }
-                      if (graph == 0 && structure == true) block = 4;
-                     }
-                  } // BLOCK 3
-
-                if (block == 4)
-                  {
-                   if(cl.at(j) == QLatin1Char(';'))
-                     {
-                      //stripped.replace(0x9, QLatin1String(" "));
-                      stripped.remove(QLatin1Char('{'));
-                      stripped.replace(QLatin1Char('}'), QLatin1String(" "));
-                      if(m_struct->isChecked())
-                        {
-                         if (m_treeOn->isChecked())
-                           {
-                            node = new QTreeWidgetItem(sctNode, lastSctNode);
-                            lastSctNode = node;
-                           }
-                         else node = new QTreeWidgetItem(m_symbols);
-                         node->setText(0, stripped);
-                         node->setIcon(0, QIcon(sct));
-                         node->setText(1, QString::number( tmpPos, 10));
-                        }
-                      //qDebug(13000)<<"Structure -- Inserted : "<<stripped<<" at row : "<<i;
-                      stripped.clear();
-                      block = 0;
-                      structure = false;
-                      //break;
-                      continue;
-                     }
-                   if (cl.at(j) >= 0x20) stripped += cl.at(j);
-                  } // BLOCK 4
-               } // comment != 2
-             //qDebug(13000)<<"Stripped : "<<stripped<<" at row : "<<i;
-            } // End of For cycle
-         } // BLOCK > 0
-       if (mclass == 4 && block == 0 && func_close == 0)
-         {
-          if (cl.indexOf(QLatin1Char('}')) >= 0)
-            {
-             cl = cl.mid(cl.indexOf(QLatin1Char('}')));
-             mclass = 0;
-            }
-         }
-      } // Comment != 1
-   } // for kv->numlines
-
- //for (i= 0; i < (m_symbols->itemIndex(node) + 1); i++)
- //    qDebug(13000)<<"Symbol row :"<<positions.at(i);
 }
 
 
+CppParser::~CppParser()
+{
+}
+
+
+void CppParser::parseDocument()
+{
+    while (nextInstruction()) {
+
+        const QString firstWord = m_line.section(QRegExp(QStringLiteral("\\b")), 1, 1);
+
+        if (m_keywordsToIgnore.contains(firstWord)) {
+            // Do nothing
+
+        } else if (m_line.contains(m_rxNamespace)) {
+            addNode(NamespaceNode, m_rxNamespace.cap(1), m_lineNumber);
+
+        } else if (m_line.contains(m_rxStruct)) {
+            addNode(StructNode, m_rxStruct.cap(3), m_lineNumber);
+
+        } else if (m_line.contains(m_rxEnum)) {
+            addNode(StructNode, m_rxEnum.cap(3), m_lineNumber);
+
+        } else if (m_line.contains(m_rxFuncDef)) {
+            addNode(FunctionDefNode, m_rxFuncDef.cap(3), m_lineNumber);
+
+            // https://en.cppreference.com/w/cpp/language/function
+            // "Function declarations may appear in any scope"...but
+            // FIXME I didn't find a way to distinguish e.g. from creation of a new object
+            // like: SomeClass foo(bar, baz);
+            // so I add these parentNodeType check to have functions in header files but no stupid
+            // stuff elsewhere. Edit: Also below namespace
+        } else if ((parentNodeType() == StructNode || parentNodeType() == NamespaceNode) && m_line.contains(m_rxFuncDec)) {
+    //  } else if ((parentNodeType() == StructNode) && m_line.contains(m_rxFuncDec)) {
+            addNode(FunctionDecNode, m_rxFuncDec.cap(2), m_lineNumber);
+
+        } else if (m_line.contains(QRegExp(QStringLiteral("\\btypedef struct( \\w+)?\\{")))) {
+                // We must fast forward to grep from the end of this instruction
+                int lineNumber = m_lineNumber;
+                while ((checkForBlocks() != 0) || !m_line.endsWith(QLatin1Char(';'))) {
+                    if (!appendNextLine()) {
+                        break;
+                    }
+                    stripLine();
+                }
+                endOfBlock();
+                m_line = m_line.section(QLatin1Char('}'), -1, -1);
+                m_line.chop(1);
+                addNode(TypedefNode, m_line, lineNumber);
+
+        } else if (m_line.contains(m_rxTypedef)) {
+            addNode(TypedefNode, m_rxTypedef.cap(2), m_lineNumber);
+
+        }
+    }
+}
+
+
+bool CppParser::lineIsGood()
+{
+    if (ProgramParser::lineIsGood()) {
+        return true;
+    }
+
+    // Despite the documentation to ProgramParser::lineIsGood(), I add these
+    // quirk to solve some false detection of Q_FooMacro as function which has
+    // occour when edit e.g. our index_view.h due to line concatenating
+    if (m_line.contains(QRegExp(QStringLiteral("^Q_\\w+")))) {
+        return true;
+    }
+
+    return false;
+}
+
+
+bool CppParser::appendNextLine()
+{
+    // C++ has line continuation by backslash in a very early state
+    // https://stackoverflow.com/a/7059563 (didn't find it on cppreference.com)
+    if (!Parser::appendNextLine()) {
+        return false;
+    }
+
+    while (m_line.contains(QRegExp(QStringLiteral("[^\\\\]\\\\$")))) {
+        m_line.chop(1);
+        if(!incrementLineNumber()) {
+            break;
+        }
+        m_line.append(rawLine());
+    }
+
+    return true;
+}
+
+
+void CppParser::removeStrings()
+{
+    removeSingleQuotedStrings();
+    removeDoubleQuotedStrings();
+}
+
+
+void CppParser::removeComment()
+{
+    removeMultiLineSlashStarComment();
+
+    if (m_line.contains(m_rxMarcro)) {
+        addNode(MacroNode, m_rxMarcro.cap(1), m_lineNumber);
+    }
+
+    removeTrailingSharpComment();
+    removeTrailingDoubleSlashComment();
+}
+
+// kate: space-indent on; indent-width 4; replace-tabs on;

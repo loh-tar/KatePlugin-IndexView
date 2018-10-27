@@ -1,165 +1,141 @@
-/***************************************************************************
-                           python_parser.cpp  -  description
-                             -------------------
-    begin                : Apr 2 2003
-    author               : 2003 Massimo Callegari
-    email                : massimocallegari@yahoo.it
- ***************************************************************************/
- /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-#include "plugin_katesymbolviewer.h"
+/*   This file is part of KatePlugin-IndexView
+ *
+ *   PythonParser Class
+ *   Copyright (C) 2018 loh.tar@googlemail.com
+ *
+ *   Inspired by python_parser.cpp, part of Kate's SymbolViewer
+ *   Copyright (C) 2003 Massimo Callegari <massimocallegari@yahoo.it>
+ *
+ *   This library is free software; you can redistribute it and/or
+ *   modify it under the terms of the GNU Library General Public
+ *   License as published by the Free Software Foundation; either
+ *   version 2 of the License, or (at your option) any later version.
+ *
+ *   This library is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *   Library General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Library General Public
+ *   License along with this library; if not, write to the Free Software
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 
-void KatePluginSymbolViewerView::parsePythonSymbols(void)
+#include <KLocalizedString>
+
+#include "icon_collection.h"
+#include "index_view.h"
+
+#include "python_parser.h"
+
+
+PythonParser::PythonParser(IndexView *view)
+    : ProgramParser(view)
 {
-  if (!m_mainWindow->activeView())
-   return;
+    using namespace IconCollection;
+    registerViewOption(ClassNode, ClassIcon, QStringLiteral("Classes"), i18n("Show Classes"));
+    registerViewOption(MethodNode, MethodIcon, QStringLiteral("Methods"), i18n("Show Methods"));
+    registerViewOption(FunctionNode, FunctionIcon, QStringLiteral("Functions"), i18n("Show Functions"));
 
-  m_macro->setText(i18n("Show Globals"));
-  m_struct->setText(i18n("Show Methods"));
-  m_func->setText(i18n("Show Classes"));
-
-  QString cl; // Current Line
-  QPixmap cls( ( const char** ) class_xpm );
-  QPixmap mtd( ( const char** ) method_xpm );
-  QPixmap mcr( ( const char** ) macro_xpm );
-  
-  int in_class = 0, state = 0, j;
-  QString name;
-  
-  QTreeWidgetItem *node = nullptr;
-  QTreeWidgetItem *mcrNode = nullptr, *mtdNode = nullptr, *clsNode = nullptr;
-  QTreeWidgetItem *lastMcrNode = nullptr, *lastMtdNode = nullptr, *lastClsNode = nullptr;
-  
-  KTextEditor::Document *kv = m_mainWindow->activeView()->document();
-
- //kdDebug(13000)<<"Lines counted :"<<kv->numLines()<<endl;
-  if(m_treeOn->isChecked())
-    {
-      clsNode = new QTreeWidgetItem(m_symbols, QStringList( i18n("Classes") ) );
-      mcrNode = new QTreeWidgetItem(m_symbols, QStringList( i18n("Globals") ) );
-      mcrNode->setIcon(0, QIcon(mcr));
-      clsNode->setIcon(0, QIcon(cls));
-  
-      if (m_expandOn->isChecked())
-        {
-        m_symbols->expandItem(mcrNode);
-        m_symbols->expandItem(clsNode);
-        }
-      lastClsNode = clsNode;
-      lastMcrNode = mcrNode;
-      mtdNode = clsNode;
-      lastMtdNode = clsNode;
-      m_symbols->setRootIsDecorated(1);
-    }
-  else
-      m_symbols->setRootIsDecorated(0);
-
-for (int i=0; i<kv->lines(); i++)
- {
-    int line=i;
-    cl = kv->line(i);
-    // concatenate continued lines and remove continuation marker
-    if (cl.length()==0) continue;
-    while (cl[cl.length()-1]==QLatin1Char('\\'))
-    {
-      cl=cl.left(cl.length()-1);
-      i++;
-      if (i<kv->lines())
-        cl+=kv->line(i);
-      else
-        break;
-    }
-
-    if(cl.indexOf( QRegExp(QLatin1String("^class [a-zA-Z0-9_,\\s\\(\\).]+:")) ) >= 0) in_class = 1;
-
-     //if(cl.find( QRegExp(QLatin1String("[\\s]+def [a-zA-Z_]+[^#]*:")) ) >= 0) in_class = 2;
-     if(cl.indexOf( QRegExp(QLatin1String("^def\\s+[a-zA-Z_]+[^#]*:")) ) >= 0 ) in_class = 0;
-
-     if (cl.indexOf(QLatin1String("def ")) >= 0 || (cl.indexOf(QLatin1String("class ")) >= 0 && in_class == 1))
-       {
-        if (cl.indexOf(QLatin1String("def ")) >= 0 && in_class == 1) in_class = 2;
-        state = 1;
-        if (cl.indexOf(QLatin1Char(':')) >= 0) state = 3; // found in the same line. Done
-        else if (cl.indexOf(QLatin1Char('(')) >= 0) state = 2;
-
-        if (state == 2 || state == 3) name = cl.left (cl.indexOf (QLatin1Char('(')));
-       }
-
-     if (state > 0 && state < 3)
-       {
-        for (j = 0; j < cl.length(); j++)
-           {
-            if (cl.at(j) == QLatin1Char('(')) state = 2;
-            else if (cl.at(j) == QLatin1Char(':')) { state = 3; break; }
-
-            if (state == 1) name += cl.at(j);
-           }
-       }
-     if (state == 3)
-       {
-        //qDebug(13000)<<"Function -- Inserted : "<<name<<" at row : "<<i;
-        if (in_class == 1) //strip off the word "class "
-            name = name.trimmed ().mid (6);
-        else //strip off the word "def "
-            name = name.trimmed ().mid (4);
-
-          if (m_func->isChecked() && in_class == 1)
-            {
-             if (m_treeOn->isChecked())
-               {
-                node = new QTreeWidgetItem(clsNode, lastClsNode);
-                if (m_expandOn->isChecked()) m_symbols->expandItem(node);
-                lastClsNode = node;
-                mtdNode = lastClsNode;
-                lastMtdNode = lastClsNode;
-               }
-             else node = new QTreeWidgetItem(m_symbols);
-
-             node->setText(0, name);
-             node->setIcon(0, QIcon(cls));
-             node->setText(1, QString::number( line, 10));
-            }
-
-         if (m_struct->isChecked() && in_class == 2)
-           {
-            if (m_treeOn->isChecked())
-              {
-               node = new QTreeWidgetItem(mtdNode, lastMtdNode);
-               lastMtdNode = node;
-              }
-            else node = new QTreeWidgetItem(m_symbols);
-
-            node->setText(0, name);
-            node->setIcon(0, QIcon(mtd));
-            node->setText(1, QString::number( line, 10));
-           }
-
-          if (m_macro->isChecked() && in_class == 0)
-            {
-             if (m_treeOn->isChecked())
-               {
-                node = new QTreeWidgetItem(mcrNode, lastMcrNode);
-                lastMcrNode = node;
-               }
-             else node = new QTreeWidgetItem(m_symbols);
-
-             node->setText(0, name);
-             node->setIcon(0, QIcon(mcr));
-             node->setText(1, QString::number( line, 10));
-            }
-
-         state = 0;
-         name.clear();
-        }
-    }
-
+    addViewOptionDependency(MethodNode, ClassNode);
 }
 
 
-// kate: space-indent on; indent-width 2; replace-tabs on;
+PythonParser::~PythonParser()
+{
+}
+
+
+void PythonParser::parseDocument()
+{
+    int lastIndent = 0;
+    int currIndent = 0;
+
+    while (nextInstruction()) {
+        currIndent = rawLine().indexOf(QRegExp(QStringLiteral("\\S")));
+        if (currIndent < 1) {
+            clearNesting();
+        } else if (lastIndent < currIndent) {
+            beginOfBlock();
+        } else if (lastIndent > currIndent) {
+            endOfBlock();
+        }
+        lastIndent = currIndent;
+
+        if (m_line.startsWith(QStringLiteral("class "))) {
+            m_line = m_line.mid(6);
+            m_line = m_line.section(QLatin1Char('('), 0, 0);
+            addNode(ClassNode, m_line, m_lineNumber);
+
+        } else if (m_line.startsWith(QStringLiteral("def "))) {
+            m_line = m_line.mid(4);
+            m_line = m_line.section(QLatin1Char('('), 0, 0);
+            if (currIndent > 0) {
+                addNode(MethodNode, m_line, m_lineNumber);
+            } else {
+                addNode(FunctionNode, m_line, m_lineNumber);
+            }
+        }
+    }
+}
+
+
+void PythonParser::removeStrings()
+{
+    // Because removing strings would smash triple quotes we replace these by a placeholder
+    // FIXME Better token idea? K-ate P-lugin I-ndex V-iew T-ripple D-ouble Q-uote
+    m_line.replace(QRegExp(QStringLiteral("\"\"\"")), QStringLiteral("!KPIVTDQ!"));
+    //                          K-ate P-lugin I-ndex V-iew T-ripple S-ingle Q-uote
+    m_line.replace(QRegExp(QStringLiteral("\'\'\'")), QStringLiteral("!KPIVTSQ!"));
+
+    removeSingleQuotedStrings();
+    removeDoubleQuotedStrings();
+}
+
+
+void PythonParser::removeComment()
+{
+    // FIXME Is it possible to split this and use a part in/as lineIsGood()?
+    static QString quoteToken;
+
+    if (m_funcAtWork.contains(Me_At_Work)) {
+        // Remove block with triple quotes,
+        // doing it dumb and eager because of to much unknown special cases
+        if (m_line.contains(quoteToken)) {
+            m_funcAtWork.remove(Me_At_Work);
+        }
+        m_line.clear();
+        return;
+    }
+
+    removeTrailingSharpComment();
+
+    // Remove single line with both ends of triple quotes
+    if (m_line.contains(QRegExp(QStringLiteral("^!KPIVTDQ!.+!KPIVTDQ!$")))) {
+        m_line.clear();
+        return;
+    }
+    if (m_line.contains(QRegExp(QStringLiteral("^!KPIVTSQ!.+!KPIVTSQ!$")))) {
+        m_line.clear();
+        return;
+    }
+
+    // Check for triple quotes, first come, first serve
+    int posDoubleQuotes = m_line.indexOf(QStringLiteral("!KPIVTDQ!")) + 1;
+    int posSingleQuotes = m_line.indexOf(QStringLiteral("!KPIVTSQ!")) + 1;
+    // We are only interested which one comes first, so we had add 1 for ease this test
+    if (!posDoubleQuotes && !posSingleQuotes) {
+        return;
+    }
+
+    if (!posDoubleQuotes) {
+        quoteToken = QStringLiteral("!KPIVTSQ!");
+    } else {
+        quoteToken = QStringLiteral("!KPIVTDQ!");
+    }
+
+    m_funcAtWork.insert(Me_At_Work);
+    m_line.clear();
+}
+
+// kate: space-indent on; indent-width 4; replace-tabs on;

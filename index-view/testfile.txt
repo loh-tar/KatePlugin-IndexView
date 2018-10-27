@@ -1,0 +1,182 @@
+Test And Demo File For The PlainText-Parser
+=============================================
+With this plugin you have something like a table of contents when reading/edit a
+plain text file like a README.
+
+
+Section
+=========
+Recognized right now is only === as section and --- as header starting at a
+length of 3 characters, all other text is treated as paragraph.
+
+
+
+There can be any space before or after some recognized section/header/paragraph
+which must not affect the desired result.
+
+
+
+
+Header
+--------
+
+
+
+So this is a paragraph consist only of one line.
+
+ - This paragraph has
+ - two lines
+
+This is a new paragraph
+with a lengh
+of three lines.
+
+There is no lengh compare done to test if the underlining fit the title lengh.
+I had though about to add these check in a way that it is somehow fuzzy, because
+my style is to add to more underlining characters, others prefer to fill a
+complete line or 70%, 80% of a full line.
+
+The decision to use a min lengh of three fit to all these but of cause no
+shorter headers, because that looks to me rather unlikely.
+(Don't wonder, see also "Special Treatments" below)
+
+1
+-
+
+2)
+--
+
+For my taste works this all pretty charming when you have a well formatted file.
+It works so nicely that also a bad styled formatting is treated correctly.
+
+Bad Formatting Example
+========================
+Missed Empty Line
+-------------------
+Foo bar text
+
+^-- Well done as Section/Header/Paragraph
+
+
+But there could be things improved. As hint what I talk about I have
+inserted below some example lines.
+
+
+Special Treatments
+====================
+
+Avoided Paragraphs
+--------------------
+To keep the symbol list free from useless entries, will some lines treated as an
+empty line. So none of the following must treated as start of a new paragraph.
+
+A single line of section/header characters...
+
+---
+===
+
+...any line consists of only one charater...
+
+x
+y
+#
+?
+!
+
+...and any line with only two characters if there are as follows:
+
+--
+##
+**
+..
+//
+
+The sharp is obviously useful in some config file, the others I have added
+without an concrete example, just only by a gut feeling.
+
+
+ISO-Date Forced Sections
+--------------------------
+I have the habit to write down some notes like a diary, starting with a ISO
+date, sometimes underlined the date, sometimes not. So I added a special check
+that these ISO dates are treated as if written like so...
+
+2018-07-19 Made first commit of my Kate patches
+=================================================
+
+...but my entries looks this way:
+
+2018-07-19
+============
+Made first commit of my Kate patches to the symbol view plugin
+
+ - Fix broken toggle actions
+ - Avoid unneeded update of current item
+ - Add a plain-text-parser
+ - Fix: Find new current item when symbol is in first line
+
+2018-07-22
+    Contacted the "Kate-Devils" at there list
+    Nice people, but a bit taciturn
+
+2018-07-25
+============
+Very cool, my first patch is upstream
+That was lastly faster than thought
+
+
+Without this trick would only be the date appears in the symbol list, which is
+not a sufficient information for my taste, and in one case not a section
+created. What sadly not work is when an empty line is between the date and the
+next paragraph.
+
+2018-07-22
+
+    Contacted the "Kate-Devils" at there list
+
+
+2018-07-25
+============
+
+Very cool, my first patch is upstream
+
+
+The former could be added but I'm not sure if that may cause unexpected results,
+because there are only three consecutive lines compared. So, no check can by
+made if above the date is the line empty. To catch the ladder there would be make
+a check of five lines or some other special quirk.
+
+
+Other Seen Structuring Styles
+-------------------------------
+I can remeber that I have seen plain text files where was other characters used
+as underlining to indicate a section or header, e.g.
+
+Using Sharp
+###########
+
+Using Tilde
+~~~~~~~~~~~
+
+Using Asterisk
+**************
+
+Using Caret
+^^^^^^^^^^^
+
+I have quickly added these as you can see, but in a (too?) very lazy way:
+
+Feel Free
+#*=#*=#*=
+
+To Fix Me
+-^-~-^-~-
+
+Perhaps not a problem but a funny feature.
+
+
+Room For Improvements
+=======================
+There could be a list with items indented to the paragraph. But that's not only
+an issue of parsing, There are not enough menu options to control these. But,
+perhaps may this not a real problem.

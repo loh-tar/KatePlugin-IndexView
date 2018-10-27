@@ -1,106 +1,91 @@
-/***************************************************************************
-                          ruby_parser.cpp  -  description
-                             -------------------
-    begin                : May 9th 2007
-    author               : 2007 Massimo Callegari
-    email                : massimocallegari@yahoo.it
- ***************************************************************************/
- /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-#include "plugin_katesymbolviewer.h"
+/*   This file is part of KatePlugin-IndexView
+ *
+ *   RubyParser Class
+ *   Copyright (C) 2018 loh.tar@googlemail.com
+ *
+ *   Inspired by ruby_parser.cpp, part of Kate's SymbolViewer
+ *   Copyright (C) 2007 Massimo Callegari <massimocallegari@yahoo.it>
+ *
+ *   This library is free software; you can redistribute it and/or
+ *   modify it under the terms of the GNU Library General Public
+ *   License as published by the Free Software Foundation; either
+ *   version 2 of the License, or (at your option) any later version.
+ *
+ *   This library is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *   Library General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Library General Public
+ *   License along with this library; if not, write to the Free Software
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 
-void KatePluginSymbolViewerView::parseRubySymbols(void)
+
+#include <KLocalizedString>
+
+#include "icon_collection.h"
+#include "index_view.h"
+
+#include "ruby_parser.h"
+
+
+RubyParser::RubyParser(IndexView *view)
+    : ProgramParser(view)
 {
-  if (!m_mainWindow->activeView())
-   return;
+    using namespace IconCollection;
+    registerViewOption(ClassNode, ClassIcon, QStringLiteral("Classes"), i18n("Show Classes"));
+    registerViewOption(MixinNode, SmallGreenIcon, QStringLiteral("Mixin"), i18n("Show Mixin"));
+    registerViewOption(ModuleNode, GreenYellowIcon, QStringLiteral("Modules"), i18n("Show Modules"));
+    registerViewOption(MethodNode, MethodIcon, QStringLiteral("Methods"), i18n("Show Methods"));
+    m_showParameters = registerViewOptionModifier(MethodNode, QStringLiteral("Parameters"), i18n("Show Parameter"));
 
- m_macro->setText(i18n("Show Globals"));
- m_struct->setText(i18n("Show Methods"));
- m_func->setText(i18n("Show Classes"));
-
- QString cl; // Current Line
- QPixmap cls( ( const char** ) class_xpm );
- QPixmap mtd( ( const char** ) method_xpm );
- QPixmap mcr( ( const char** ) macro_xpm );
-
- int i;
- QString name;
-
- QTreeWidgetItem *node = nullptr;
- QTreeWidgetItem *mtdNode = nullptr, *clsNode = nullptr;
- QTreeWidgetItem *lastMtdNode = nullptr, *lastClsNode = nullptr;
-
- KTextEditor::Document *kv = m_mainWindow->activeView()->document();
- //kdDebug(13000)<<"Lines counted :"<<kv->numLines()<<endl;
-
- if(m_treeOn->isChecked())
-   {
-    clsNode = new QTreeWidgetItem(m_symbols);
-    clsNode->setText(0, i18n("Classes"));
-    clsNode->setIcon(0, QIcon(cls));
-    if (m_expandOn->isChecked()) m_symbols->expandItem(clsNode);
-    lastClsNode = clsNode;
-    mtdNode = clsNode;
-    lastMtdNode = clsNode;
-    m_symbols->setRootIsDecorated(1);
-   }
- else
-     m_symbols->setRootIsDecorated(0);
-
- for (i=0; i<kv->lines(); i++)
-   {
-    cl = kv->line(i);
-    cl = cl.trimmed();
-
-     if (cl.indexOf( QRegExp(QLatin1String("^class [a-zA-Z0-9]+[^#]")) ) >= 0)
-       {
-          if (m_func->isChecked())
-            {
-             if (m_treeOn->isChecked())
-               {
-                node = new QTreeWidgetItem(clsNode, lastClsNode);
-                if (m_expandOn->isChecked()) m_symbols->expandItem(node);
-                lastClsNode = node;
-                mtdNode = lastClsNode;
-                lastMtdNode = lastClsNode;
-               }
-             else node = new QTreeWidgetItem(m_symbols);
-             node->setText(0, cl.mid(6));
-             node->setIcon(0, QIcon(cls));
-             node->setText(1, QString::number( i, 10));
-            }
-       }
-     if (cl.indexOf( QRegExp(QLatin1String("^def [a-zA-Z_]+[^#]")) ) >= 0 )
-       {
-        if (m_struct->isChecked())
-          {
-           if (m_treeOn->isChecked())
-             {
-              node = new QTreeWidgetItem(mtdNode, lastMtdNode);
-              lastMtdNode = node;
-             }
-           else node = new QTreeWidgetItem(m_symbols);
-           
-           name = cl.mid(4);
-           node->setToolTip(0, name);
-           if (!m_typesOn->isChecked())
-            {
-            name = name.left(name.indexOf(QLatin1Char('(')));
-            }
-           node->setText(0, name);
-           node->setIcon(0, QIcon(mtd));
-           node->setText(1, QString::number( i, 10));
-          }
-       }
-    }
-
+    addViewOptionDependency(MixinNode, ClassNode);
+    m_nonBlockElements << MixinNode;
+    m_blockElements << QStringLiteral("if") << QStringLiteral("case") << QStringLiteral("for");// << QStringLiteral("") << QStringLiteral("");
 }
 
 
+RubyParser::~RubyParser()
+{
+}
 
+
+void RubyParser::parseDocument()
+{
+    while (nextInstruction()) {
+        if (m_line.startsWith(QStringLiteral("class "))) {
+            addNode(ClassNode, m_line.mid(6), m_lineNumber);
+            beginOfBlock();
+
+        } else if (m_line.startsWith(QStringLiteral("module "))) {
+            addNode(ModuleNode, m_line.mid(7), m_lineNumber);
+            beginOfBlock();
+
+        } else if (m_line.startsWith(QStringLiteral("def "))) {
+            m_line = m_line.mid(4);
+            if (!m_showParameters->isChecked()) {
+                m_line = m_line.section(QLatin1Char('('), 0, 0);
+            }
+            addNode(MethodNode, m_line, m_lineNumber);
+            beginOfBlock();
+
+        } else if (m_line.startsWith(QStringLiteral("include "))) {
+            addNode(MixinNode, m_line.mid(8), m_lineNumber);
+
+        } else if (m_line.startsWith(QStringLiteral("prepend "))) {
+            addNode(MixinNode, m_line.mid(8), m_lineNumber);
+
+        } else if (m_line.contains(QRegExp(QStringLiteral("^end(\\s)*$")))) {
+            endOfBlock();
+
+        } else {
+            m_line = m_line.section(QLatin1Char(' '), 0, 0);
+            if (m_blockElements.contains(m_line)) {
+                beginOfBlock();
+            }
+        }
+    }
+}
+
+// kate: space-indent on; indent-width 4; replace-tabs on;

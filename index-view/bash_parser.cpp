@@ -1,106 +1,82 @@
-/***************************************************************************
-                      bash_parser.cpp  -  description
-                             -------------------
-    begin                : dec 12 2008
-    author               : Daniel Dumitrache
-    email                : daniel.dumitrache@gmail.com
- ***************************************************************************/
- /***************************************************************************
-    This program is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License as
-    published by the Free Software Foundation; either version 2 of
-    the License, or (at your option) any later version.
+/*   This file is part of KatePlugin-IndexView
+ *
+ *   BashParser Class
+ *   Copyright (C) 2018 loh.tar@googlemail.com
+ *
+ *   Inspired by bash_parser.cpp, part of Kate's SymbolViewer
+ *   Copyright (C) 2008 Daniel Dumitrache <daniel.dumitrache@gmail.com>
+ *
+ *   This library is free software; you can redistribute it and/or
+ *   modify it under the terms of the GNU Library General Public
+ *   License as published by the Free Software Foundation; either
+ *   version 2 of the License, or (at your option) any later version.
+ *
+ *   This library is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *   Library General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Library General Public
+ *   License along with this library; if not, write to the Free Software
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ */
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
- ***************************************************************************/
+#include <KLocalizedString>
 
-#include "plugin_katesymbolviewer.h"
+#include "icon_collection.h"
+#include "index_view.h"
 
-void KatePluginSymbolViewerView::parseBashSymbols(void)
+#include "bash_parser.h"
+
+BashParser::BashParser(IndexView *view)
+    : ProgramParser(view)
 {
-       if (!m_mainWindow->activeView())
-               return;
+    using namespace IconCollection;
+    registerViewOption(FunctionNode, FunctionIcon, QStringLiteral("Functions"), i18n("Show Functions"));
+//     registerViewOption(QStringLiteral("Parameters"), i18n("Show Parameter"));
 
-       QString currline;
-       QString funcStr(QLatin1String("function "));
+    m_nestableElements << FunctionNode;
 
-       int i;
-       //bool mainprog;
-
-       QTreeWidgetItem *node = nullptr;
-       QTreeWidgetItem *funcNode = nullptr;
-       QTreeWidgetItem *lastFuncNode = nullptr;
-
-       QPixmap func( ( const char** ) class_xpm );
-
-       //It is necessary to change names
-       m_func->setText(i18n("Show Functions"));
-
-       if(m_treeOn->isChecked())
-       {
-               funcNode = new QTreeWidgetItem(m_symbols, QStringList(i18n("Functions") ) );
-               funcNode->setIcon(0, QIcon(func));
-
-               if (m_expandOn->isChecked())
-               {
-                       m_symbols->expandItem(funcNode);
-               }
-
-               lastFuncNode = funcNode;
-
-               m_symbols->setRootIsDecorated(1);
-       }
-       else
-               m_symbols->setRootIsDecorated(0);
-
-       KTextEditor::Document *kDoc = m_mainWindow->activeView()->document();
-
-       for (i = 0; i < kDoc->lines(); i++)
-       {
-               currline = kDoc->line(i);
-               currline = currline.trimmed();
-               currline = currline.simplified();
-
-               bool comment = false;
-               //qDebug(13000)<<currline<<endl;
-               if(currline.isEmpty()) continue;
-               if(currline.at(0) == QLatin1Char('#')) comment = true;
-
-               //mainprog=false;
-               if(!comment && m_func->isChecked())
-               {
-                       QString funcName;
-
-                       // skip line if no function defined
-                       // note: function name must match regex: [a-zA-Z0-9-_]+
-                       if(!currline.contains(QRegExp(QLatin1String("^(function )*[a-zA-Z0-9-_]+ *\\( *\\)")))
-                               && !currline.contains(QRegExp(QLatin1String("^function [a-zA-Z0-9-_]+"))))
-                               continue;
-
-                       // strip everything unneeded and get the function's name
-                       currline.remove(QRegExp(QLatin1String("^(function )*")));
-                       funcName = currline.split(QRegExp(QLatin1String("((\\( *\\))|[^a-zA-Z0-9-_])")))[0].simplified();
-                       if(!funcName.size())
-                               continue;
-                       funcName.append(QLatin1String("()"));
-
-                       if (m_treeOn->isChecked())
-                       {
-                               node = new QTreeWidgetItem(funcNode, lastFuncNode);
-                               lastFuncNode = node;
-                       }
-                       else
-                               node = new QTreeWidgetItem(m_symbols);
-
-                       node->setText(0, funcName);
-                       node->setIcon(0, QIcon(func));
-                       node->setText(1, QString::number( i, 10));
-               }
-       } //for i loop
+    initHereDoc(QStringLiteral("<<-?"), QStringLiteral("\"'"));
 }
+
+
+BashParser::~BashParser()
+{
+}
+
+
+void BashParser::parseDocument()
+{
+    while (nextInstruction()) {
+        if (m_line.startsWith(QStringLiteral("function "))) {
+            m_line = m_line.mid(9);
+            m_line = m_line.section(QRegExp(QStringLiteral("\\W")), 0, 0);
+            addNode(FunctionNode, m_line, m_lineNumber);
+
+        } else if (m_line.contains(QRegExp(QStringLiteral("^\\w+ *\\( *\\)")))) {
+            m_line = m_line.section(QRegExp(QStringLiteral("\\W")), 0, 0);
+            addNode(FunctionNode, m_line, m_lineNumber);
+        }
+    }
+}
+
+
+void BashParser::removeComment()
+{
+    // Remove parameter expansion with braces or they will broken up by
+    // removeTrailingSharpComment when there is a sharp included
+    m_line.remove(QRegExp(QStringLiteral("\\$\\{.*\\}")));
+
+    removeTrailingSharpComment();
+
+    // Remove math expressions in double parentheses because there could be
+    // the shift operator which would cause false detection of heredoc oprerator
+    m_line.remove(QRegExp(QStringLiteral("\\(\\(.*\\)\\)")));
+    // Remove here string operator which would cause false detection of heredoc oprerator
+    m_line.remove(QStringLiteral("<<<"));
+    removeHereDoc();
+}
+
+// kate: space-indent on; indent-width 4; replace-tabs on;

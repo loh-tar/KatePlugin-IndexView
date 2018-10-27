@@ -1,157 +1,158 @@
-/***************************************************************************
-                          tcl_parser.cpp  -  description
-                             -------------------
-    begin                : Apr 2 2003
-    author               : 2003 Massimo Callegari
-    email                : massimocallegari@yahoo.it
- ***************************************************************************/
- /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/*   This file is part of KatePlugin-IndexView
+ *
+ *   TclParser Class
+ *   Copyright (C) 2018 loh.tar@googlemail.com
+ *
+ *   Inspired by tcl_parser.cpp, part of Kate's SymbolViewer
+ *   Copyright (C) 2003 Massimo Callegari <massimocallegari@yahoo.it>
+ *
+ *   This library is free software; you can redistribute it and/or
+ *   modify it under the terms of the GNU Library General Public
+ *   License as published by the Free Software Foundation; either
+ *   version 2 of the License, or (at your option) any later version.
+ *
+ *   This library is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *   Library General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Library General Public
+ *   License along with this library; if not, write to the Free Software
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 
-#include "plugin_katesymbolviewer.h"
-#include <QPixmap>
 
-void KatePluginSymbolViewerView::parseTclSymbols(void)
+#include <KLocalizedString>
+
+#include "icon_collection.h"
+#include "index_view.h"
+
+#include "tcl_parser.h"
+
+
+TclParser::TclParser(IndexView *view)
+    : ProgramParser(view)
 {
-  if (!m_mainWindow->activeView())
-   return;
+    using namespace IconCollection;
+    registerViewOption(VariableNode, VariableIcon, QStringLiteral("Variables"), i18n("Show Variables"));
+    m_showAssignments = registerViewOptionModifier(VariableNode, QStringLiteral("Assignments"), i18n("Show Assignments"));
+    registerViewOption(FunctionNode, FunctionIcon, QStringLiteral("Functions"), i18n("Show Functions"));
+    m_showParameters  = registerViewOptionModifier(FunctionNode, QStringLiteral("Parameters"), i18n("Show Parameter"));
 
- QString currline, prevline;
- bool    prevComment = false;
- QString varStr(QLatin1String("set "));
- QString procStr(QLatin1String("proc"));
- QString stripped;
- int i, j, args_par = 0, graph = 0;
- char block = 0, parse_func = 0;
+    m_nonBlockElements << VariableNode;
 
- QTreeWidgetItem *node = nullptr;
- QTreeWidgetItem *mcrNode = nullptr, *clsNode = nullptr;
- QTreeWidgetItem *lastMcrNode = nullptr, *lastClsNode = nullptr;
-
- QPixmap mcr( ( const char** ) macro_xpm );
- QPixmap cls( ( const char** ) class_xpm );
-
- if(m_treeOn->isChecked())
-  {
-   clsNode = new QTreeWidgetItem(m_symbols, QStringList( i18n("Functions") ) );
-   mcrNode = new QTreeWidgetItem(m_symbols, QStringList( i18n("Globals") ) );
-   clsNode->setIcon(0, QIcon(cls));
-   mcrNode->setIcon(0, QIcon(mcr));
-
-   lastMcrNode = mcrNode;
-   lastClsNode = clsNode;
-
-   if (m_expandOn->isChecked())
-      {
-       m_symbols->expandItem(clsNode);
-       m_symbols->expandItem(mcrNode);
-      }
-   m_symbols->setRootIsDecorated(1);
-  }
- else
-   m_symbols->setRootIsDecorated(0);
-
- KTextEditor::Document *kDoc = m_mainWindow->activeView()->document();
-
- //positions.resize(kDoc->numLines() + 3); // Maximum m_symbols number o.O
- //positions.fill(0);
-
- for (i = 0; i<kDoc->lines(); i++)
-   {
-    currline = kDoc->line(i);
-    currline = currline.trimmed();
-    bool comment = false;
-    //qDebug(13000)<<currline;
-    if(currline.isEmpty()) continue;
-    if(currline.at(0) == QLatin1Char('#')) comment = true;
-
-    if(i > 0)
-      {
-       prevline = kDoc->line(i-1);
-       if(prevline.endsWith(QLatin1String("\\")) && prevComment) comment = true;
-      }
-    prevComment = comment;
-
-    if(!comment)
-      {
-       if(currline.startsWith(varStr) && block == 0)
-         {
-          if (m_macro->isChecked()) // not really a macro, but a variable
-            {
-             stripped = currline.right(currline.length() - 3);
-             stripped = stripped.simplified();
-             int fnd = stripped.indexOf(QLatin1Char(' '));
-             //fnd = stripped.indexOf(QLatin1Char(';'));
-             if(fnd > 0) stripped = stripped.left(fnd);
-
-             if (m_treeOn->isChecked())
-               {
-                node = new QTreeWidgetItem(mcrNode, lastMcrNode);
-                lastMcrNode = node;
-               }
-             else
-                node = new QTreeWidgetItem(m_symbols);
-             node->setText(0, stripped);
-             node->setIcon(0, QIcon(mcr));
-             node->setText(1, QString::number( i, 10));
-             stripped.clear();
-            }//macro
-          } // starts with "set"
-
-       else if(currline.startsWith(procStr)) { parse_func = 1; }
-
-       if (parse_func == 1)
-             {
-              for (j = 0; j < currline.length(); j++)
-                 {
-                  if (block == 1)
-                    {
-                     if(currline.at(j)==QLatin1Char('{')) graph++;
-                     if(currline.at(j)==QLatin1Char('}'))
-                       {
-                        graph--;
-                        if (graph == 0) { block = 0; parse_func = 0; continue; }
-                       }
-                    }
-                  if (block == 0)
-                    {
-                     stripped += currline.at(j);
-                     if(currline.at(j) == QLatin1Char('{')) args_par++;
-                     if(currline.at(j) == QLatin1Char('}'))
-                         {
-                          args_par--;
-                          if (args_par == 0)
-                            {
-                             //stripped = stripped.simplified();
-                             if(m_func->isChecked())
-                               {
-                                if (m_treeOn->isChecked())
-                                  {
-                                   node = new QTreeWidgetItem(clsNode, lastClsNode);
-                                   lastClsNode = node;
-                                  }
-                                else
-                                   node = new QTreeWidgetItem(m_symbols);
-                                node->setText(0, stripped);
-                                node->setIcon(0, QIcon(cls));
-                                node->setText(1, QString::number( i, 10));
-                               }
-                             stripped.clear();
-                             block = 1;
-                            }
-                         }
-                    } // block = 0
-                  } // for j loop
-               }//m_func->isChecked()
-      } // not a comment
-    } //for i loop
-
- //positions.resize(m_symbols->itemIndex(node) + 1);
+    m_rxVariable = QRegExp(QStringLiteral("^set (\\w+)\\{?([^;]*)?\\}?"));
+    m_rxFunction = QRegExp(QStringLiteral("^proc (\\w+)\\{?([\\w\\s]*)?\\}?"));
 }
 
+
+TclParser::~TclParser()
+{
+}
+
+
+void TclParser::parseDocument()
+{
+    while (nextInstruction()) {
+        // Let's start the investigation
+        if (m_line.contains(m_rxVariable)) {
+            m_line = m_rxVariable.cap(1);
+            if (m_showAssignments->isChecked()) {
+                // Assignment could be improved, e.g. catch strings from m_niceLine
+                // but I'm not sure if variables are so important. I have kept
+                // them only for "historic reasons"
+                m_line.append(QLatin1Char(' ') + m_rxVariable.cap(2));
+            }
+            addNode(VariableNode, m_line, m_lineNumber);
+
+        } else if (m_line.contains(m_rxFunction)) {
+            m_line = m_rxFunction.cap(1);
+            if (m_showParameters->isChecked()) {
+                m_line.append(QLatin1Char(' ') + m_rxFunction.cap(2));
+            }
+            addNode(FunctionNode, m_line, m_lineNumber);
+        }
+    }
+}
+
+
+bool TclParser::lineIsGood()
+{
+    // contiuation by backslash
+    if (m_line.contains(QRegExp(QStringLiteral("[^\\\\]\\\\$")))) {
+        m_line.chop(1);
+        return false;
+    }
+
+    // heredoc like continuation
+    bool oddQuoteNumbers = (m_line.count(QRegExp(QStringLiteral("[^\\\\]\""))) % 2) == 1;
+    bool heredoc = m_funcAtWork.contains(Me_At_Work); // Just for readability
+    if (!oddQuoteNumbers && heredoc) {
+        // heredoc = false;
+        m_funcAtWork.remove(Me_At_Work);
+    } else if (oddQuoteNumbers && !heredoc) {
+        // heredoc = true;
+        m_funcAtWork.insert(Me_At_Work);
+        return false;
+    } else if (heredoc) {
+        return false;
+    }
+
+    return true;
+}
+
+
+void TclParser::removeStrings()
+{
+    // Remove "Bracket Commands", see testfile.tcl
+    // Modification of ProgramParser::removeSingle/DoubleQuotedStrings()
+    m_line.remove(QRegExp(QStringLiteral("\\[[^\\[\\\\]*(?:\\\\.[^\\]\\\\]*)*\\]")));
+
+    removeDoubleQuotedStrings();
+}
+
+
+void TclParser::removeComment()
+{
+    if (m_funcAtWork.contains(Me_At_Work)) {
+        if (!m_line.contains(QRegExp(QStringLiteral("[^\\\\]\\\\$")))) {
+            m_funcAtWork.remove(Me_At_Work);
+        }
+        m_line.clear();
+    }
+    // Comment contiuation by backslash
+    if (m_line.contains(QRegExp(QStringLiteral("^#.*[^\\\\]\\\\$")))) {
+        m_funcAtWork.insert(Me_At_Work);
+        m_line.clear();
+    }
+
+    removeTclIf0Comment();
+    // Remove "somehow" inline comment
+    // NOTE Braces are treated as comment terminator, see testfile.tcl
+    m_line.remove(QRegExp(QStringLiteral("#[^{}]*")));
+}
+
+
+void TclParser::removeTclIf0Comment()
+{
+    static int myNestingLevel;
+
+    if (m_funcAtWork.contains(Me_At_Work)) {
+        checkForBlocks();
+        checkNesting();
+        if (nestingLevel() == myNestingLevel) {
+            m_funcAtWork.remove(Me_At_Work);
+        }
+        m_line.clear();
+    }
+
+    if (m_line.contains(QRegExp(QStringLiteral("^if\\s+0\\s*\\{")))) {
+        myNestingLevel = nestingLevel();
+        checkForBlocks();
+        checkNesting();
+        m_funcAtWork.insert(Me_At_Work);
+        m_line.clear();
+    }
+}
+
+// kate: space-indent on; indent-width 4; replace-tabs on;
