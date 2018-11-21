@@ -342,7 +342,7 @@ void ProgramParser::endOfBlock()
         return;
     }
 
-    if (p_nestingStack.top() == p_parentNode) {
+    if (!p_nestingStack.isEmpty() && p_nestingStack.top() == p_parentNode) {
         return;
     } else {
         p_parentNode->setText(2, QString::number(lineNumber(), 10));
