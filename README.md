@@ -1,5 +1,4 @@
-KatePlugin-IndexView
-======================
+## KatePlugin-IndexView
 
 This is a fork from Kate's plugin *SymbolViewer* with a couple of improvements.
 
@@ -16,46 +15,18 @@ Now, I offer it as an independent plugin. We will see if it find a way into the
 official Kate version.
 
 
-Last (and very first) version is 0.8, Okt 2018
-------------------------------------------------
+### Last version is 0.8.2, Nov 2018
 
-  - Support Markdown files
-  - Support plain text files
-  - Display *FIXME/TODO* notes as detached own top level tree node. There is no
-    context menu option to disable these. Furthermore will the *Tree View*
-    option ignored. The purpose is to have always a quick point to issues
-  - Add a *filter field* with a history saved on session basis. It's independent
-    from the current document and limited to 9 entries. The filter is a simple,
-    case insensitive pattern without space
-  - Add *smart filtering* due to currently selected text. Filters only when
-    there are at least three char selected and there is a match found. This kind
-    of filtering has precedence over the pattern in the *filter field*
-  - Add a global option to expand the nodes by a *cozy click*. It's like a smart
-    single click. Most top level items are toggled on first click all other on
-    second click. But after this second click they toggle on each click
-  - Improve/Fix existing parser due to complete rewrite. But mostly is now the
-    *view parameters* option gone because I'm lazy and not full convinced how
-    important these are. Some parser may still need more love than others to be
-    considered *finished*. For example the ecma (JavaScript) one where I was too
-    confused how to name which kind of function
-  - Add parser classes which allow to write new parser more easily. Well, there
-    is also the idea to base such functionality on Kate's syntax highlighter
-    which should reduce (or avoid) the need to write special parser for each
-    kind of file
-  - Add an about tab to the config page with version info not only for the plugin
-    but also for each parser. The version numbers are chosen by a gut feeling
-  - Avoid annoying flicker of the tree while editing
-  - Remove annoying tool tips
-  - Allow individual options in the context menu for each parser
-  - Remove dynamically useless options from the context menu
-  - Save settings individual for each parser
+  - CppParser: Fix function recognition with Multiple::Name::Space
+  - CppParser: Fix function recognition with a return type like Foo<Bar>
+  - ProgramParser: Fix crash in nesting logic
+
+Older release notes can you find below.
 
 
-Installation
-==============
+## Installation
 
-From Source
--------------
+### From Source
 
 In any doubt or error message while you try to compile this plugin, it may help
 to look at Kate's home and there [build instructions](https://kate-editor.org/build-it/).
@@ -89,22 +60,19 @@ If it's not shown in Kate's Plugin Manager look where it is gone...
 Non Unices user has do something similar.
 
 
-Packages
-----------
+### Packages
 
 Arch Linux has an AUR, search for *kate-indexview-plugin*.
 
 
-Post Install Task
-===================
+## Post Install Task
 
 Restart Kate and activate in the Plugin Manager *Index View*.
 
 Hint: In German it's named *Stichwortansicht*.
 
 
-License
-=========
+## License
 
 KatePlugin-IndexView is licensed under LGPL2. See COPYING for the full license.
 
@@ -123,3 +91,45 @@ Copyright (C) 2003 Massimo Callegari <massimocallegari@yahoo.it>
 
 There are others who contribute special parsers, see source files for details,
 and probably many more I didn't have knowledge from. Thanks to all!
+
+
+## Release History
+
+### 0.8.1, Okt 2018
+
+  - DocumentParser: Fix crash in some cases
+
+
+### Very first version was 0.8, Okt 2018
+
+  - Support Markdown files
+  - Support plain text files
+  - Display *FIXME/TODO* notes as detached own top level tree node. There is no
+    context menu option to disable these. Furthermore will the *Tree View*
+    option ignored. The purpose is to have always a quick point to issues
+  - Add a *filter field* with a history saved on session basis. It's independent
+    from the current document and limited to 9 entries. The filter is a simple,
+    case insensitive pattern without space
+  - Add *smart filtering* due to currently selected text. Filters only when
+    there are at least three char selected and there is a match found. This kind
+    of filtering has precedence over the pattern in the *filter field*
+  - Add a global option to expand the nodes by a *cozy click*. It's like a smart
+    single click. Most top level items are toggled on first click all other on
+    second click. But after this second click they toggle on each click
+  - Improve/Fix existing parser due to complete rewrite. But mostly is now the
+    *view parameters* option gone because I'm lazy and not full convinced how
+    important these are. Some parser may still need more love than others to be
+    considered *finished*. For example the ecma (JavaScript) one where I was too
+    confused how to name which kind of function
+  - Add parser classes which allow to write new parser more easily. Well, there
+    is also the idea to base such functionality on Kate's syntax highlighter
+    which should reduce (or avoid) the need to write special parser for each
+    kind of file
+  - Add an about tab to the config page with version info not only for the plugin
+    but also for each parser. The version numbers are chosen by a gut feeling
+  - Avoid annoying flicker of the tree while editing
+  - Remove annoying tool tips
+  - Allow individual options in the context menu for each parser
+  - Remove dynamically useless options from the context menu
+  - Save settings individual for each parser
+
