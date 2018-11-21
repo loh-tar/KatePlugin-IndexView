@@ -51,7 +51,7 @@ protected:
         FunctionDecNode,// Function declaration
     };
 
-    QString version() override { return QStringLiteral("0.8, Okt 2018"); } ;
+    QString version() override { return QStringLiteral("0.8.1, Nov 2018"); } ;
     QString author() override { return QStringLiteral("2018 loh.tar \n\nInspired by \n2003 Massimo Callegari"); } ;
 
     void parseDocument() override;
