@@ -60,7 +60,7 @@ CppParser::CppParser(IndexView *view)
     rx = QStringLiteral("\\benum\\W?(class|struct)?%1\\W?(\\w+)(:\\w+)?\\{");
     m_rxEnum = QRegExp(rx.arg(rxFuncDeclarator));
 
-    rx = QStringLiteral("^%1(\\w+::)?(\\~?\\w+)\\(.*\\)(.*)?\\{");
+    rx = QStringLiteral("^%1(\\w+::)*(\\~?\\w+)\\(.*\\)(.*)?\\{");
     m_rxFuncDef = QRegExp(rx.arg(rxFuncDeclarator));
     m_rxFuncDef.setMinimal(true);
 

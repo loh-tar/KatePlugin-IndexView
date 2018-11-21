@@ -168,9 +168,9 @@ namespace IconCollection {
 }
 
 // Must shown...
-class KATE_TESTS_EXPORT KateSessionsAction : public KActionMenu
-{
-}
+class KATE_TESTS_EXPORT KateSessionsAction : public KActionMenu {}
+void KTextEditor::ViewPrivate::home() {}
+QMap<QString, QString> Speller::preferredDictionaries() const {}
 // ...not sure if it must shown as function as it does currently, may be to FIXME
 std::transform(sessionList.constBegin(), sessionList.constEnd(), std::back_inserter(sessionActions), [](const QString &session) {
 	return QStringLiteral("Session %1").arg(QString::fromLatin1(QCryptographicHash::hash(session.toUtf8(), QCryptographicHash::Md5).toHex()));
