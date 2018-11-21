@@ -70,7 +70,7 @@ protected:
     QRegExp     m_rxMarcro;
     QRegExp     m_rxNamespace;
 
-    QSet<QString>   m_keywordsToIgnore; // To avaoid false detection, e.g. as function
+    QSet<QString>   m_keywordsToIgnore; // To avoid false detection, e.g. as function
 };
 
 #endif
