@@ -108,14 +108,17 @@ License
 
 KatePlugin-IndexView is licensed under LGPL2. See COPYING for the full license.
 
-KatePlugin-IndexView
+
+<!-- CAUTION! Trailing two spaces are there to have a line break without new paragraph -->
+KatePlugin-IndexView  
 Copyright (C) 2018 loh.tar@googlemail.com
 
 Because KatePlugin-IndexView is a fork there are rights from pervious main
 developers:
 
-plugin_katesymbolviewer
-Copyright (C) 2014 Kåre Särs <kare.sars@iki.fi>
+<!-- CAUTION! Trailing two spaces are there to have a line break without new paragraph -->
+plugin_katesymbolviewer  
+Copyright (C) 2014 Kåre Särs <kare.sars@iki.fi>  
 Copyright (C) 2003 Massimo Callegari <massimocallegari@yahoo.it>
 
 There are others who contribute special parsers, see source files for details,
