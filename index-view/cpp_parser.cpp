@@ -50,7 +50,7 @@ CppParser::CppParser(IndexView *view)
     QString rxAttribute = QStringLiteral("(\\[\\[.*\\]\\])?");
     // https://en.cppreference.com/w/cpp/language/function
     // https://en.cppreference.com/w/cpp/language/declarations
-    QString rxFuncDeclarator = QStringLiteral("(\\W?[\\s\\w<>\\(\\):]*[\\s\\*]+)?");
+    QString rxFuncDeclarator = QStringLiteral("(\\W?[\\s\\w<\\(\\),:]*[>\\s\\*]+)?");
 
     // https://en.cppreference.com/w/cpp/language/classes
     QString rx = QStringLiteral("^(class|struct|union)%1[^:{]*\\b(\\w+)[:{]");
