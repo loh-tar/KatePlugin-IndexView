@@ -126,6 +126,10 @@ void FortranParser::removeStrings()
 
 void FortranParser::removeComment()
 {
+    if (m_line.isEmpty()) {
+        return;
+    }
+
     // Yes, two times RAW-line and once line
     // https://en.wikipedia.org/wiki/Fortran#Obsolescence_and_deletions
     // Says: Column 1 contains C or * or ! for comments.
