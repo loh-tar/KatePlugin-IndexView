@@ -48,7 +48,7 @@ protected:
         TypeNode,
     };
 
-    QString version() override { return QStringLiteral("0.6, Okt 2018"); } ;
+    QString version() override { return QStringLiteral("0.6.1, Dez 2018"); } ;
     QString author() override { return QStringLiteral("2018 loh.tar \n\nInspired by \n2005 Roberto Quitiliani"); } ;
 
     void parseDocument() override;
