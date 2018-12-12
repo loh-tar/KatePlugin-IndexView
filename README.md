@@ -1,6 +1,8 @@
 ## KatePlugin-IndexView
 
 This is a fork from Kate's plugin *SymbolViewer* with a couple of improvements.
+See release notes of the very first version at the bottom of this file for a
+list of fixed and new features.
 
 In July 2018 I started to hack on these plugin and got some of may changes
 upstream which was a very cool experience, but not without some hassle.
@@ -15,11 +17,9 @@ Now, I offer it as an independent plugin. We will see if it find a way into the
 official Kate version.
 
 
-### Last version is 0.8.2, Nov 2018
+### Last version is 0.8.3, Dez 2018
 
-  - CppParser: Fix function recognition with Multiple::Name::Space
-  - CppParser: Fix function recognition with a return type like Foo<Bar>
-  - ProgramParser: Fix crash in nesting logic
+  - FortranParser: Fix crash when line is empty
 
 Older release notes can you find below.
 
@@ -94,6 +94,13 @@ and probably many more I didn't have knowledge from. Thanks to all!
 
 
 ## Release History
+
+### 0.8.2, Nov 2018
+
+  - CppParser: Fix function recognition with Multiple::Name::Space
+  - CppParser: Fix function recognition with a return type like Foo<Bar>
+  - ProgramParser: Fix crash in nesting logic
+
 
 ### 0.8.1, Okt 2018
 
