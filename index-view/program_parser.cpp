@@ -37,7 +37,8 @@ ProgramParser::ProgramParser(IndexView *view)
 
     using namespace IconCollection;
     registerViewOption(FixmeTodoNode, SmallYellowIcon, QStringLiteral("FIXME/TODO"), i18n("Show FIXME/TODO"));
-    m_detachedNodeTypes << FixmeTodoNode;
+    registerViewOption(BeginNode, BlueIcon, QStringLiteral("BEGIN"), i18n("Show BEGIN"));
+    m_detachedNodeTypes << FixmeTodoNode << BeginNode;
 }
 
 
@@ -132,20 +133,36 @@ void ProgramParser::stripLine()
     removeComment();
     // Add fixme/todo nodes to the index
     if (sizeWithComment > m_line.size()) {
-        QRegExp regEx = QRegExp(QStringLiteral("(.*)\\b(FIXME|TODO)\\b(.*)?"));
-        if (rawLine().contains(regEx)) {
-            // Support also notes where the token is at the end
-            QString txt = regEx.cap(3).isEmpty() ? regEx.cap(1) : regEx.cap(3);
-            // Remove possible comment char from both ends in a lazy way. So,
-            // something too much could be gone but guess it's OK
-            txt.remove(QRegExp(QStringLiteral("^\\W*")));
-            txt.remove(QRegExp(QStringLiteral("\\W*$")));
-            addNode(FixmeTodoNode, regEx.cap(2).at(0) + QStringLiteral(": ") + txt, m_lineNumber);
+        static const QStringList tags = { QStringLiteral("FIXME|TODO"), QStringLiteral("BEGIN") };
+        static const QList<int> nodes = { FixmeTodoNode, BeginNode };
+        for (int i = 0; i < tags.size(); ++i) {
+            if (addCommentTagNode(tags.at(i), nodes.at(i))) {
+                break;
+            }
         }
     }
 
     // Squash the line, remove all unneeded space
     m_line.replace(QRegExp(QStringLiteral("(\\s)?(\\W)(\\s)?")), QStringLiteral("\\2"));
+}
+
+
+bool ProgramParser::addCommentTagNode(const QString &tag, const int nodeType)
+{
+    QRegExp regEx = QRegExp(QStringLiteral("(.*)\\b(%1)\\b(.*)?").arg(tag));
+    if (!rawLine().contains(regEx)) {
+        return false;
+    }
+
+    // Support also notes where the token is at the end
+    QString txt = regEx.cap(3).isEmpty() ? regEx.cap(1) : regEx.cap(3);
+    // Remove possible comment char from both ends in a lazy way. So,
+    // something too much could be gone but guess it's OK
+    txt.remove(QRegExp(QStringLiteral("^\\W*")));
+    txt.remove(QRegExp(QStringLiteral("\\W*$")));
+    addNode(nodeType, regEx.cap(2).at(0) + QStringLiteral(": ") + txt, m_lineNumber);
+
+    return true;
 }
 
 

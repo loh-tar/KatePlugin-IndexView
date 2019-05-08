@@ -57,7 +57,8 @@ protected:
     */
     enum NodeType {
         FixmeTodoNode,
-        FirstNodeType // Ensure to keep it here at the last place
+        BeginNode,      // Nope, nothing "begin" in our context, it's for //BEGIN tag
+        FirstNodeType   // Ensure to keep it here at the last place
     };
 
     /**
@@ -88,6 +89,13 @@ protected:
      * To achive this will first removeStrings() and then removeComment() called.
      */
     virtual void stripLine();
+
+    /**
+     * Helper function only used by stripLine() to add FIXME/TODO/BEGIN tags and
+     * maybe some more.
+     * @returns true when some tag was added
+     */
+    bool addCommentTagNode(const QString &tag, const int nodeType);
 
     /**
      * This function will called in stripLine() and remove by default all double
