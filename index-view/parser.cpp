@@ -51,6 +51,7 @@ DummyParser::DummyParser(const QString &type, IndexView *view)
 
     // Hide all possible general options to deactivate the menu
     p_viewTree->setVisible(false);
+    p_addIcons->setVisible(false);
     p_viewExpanded->setVisible(false);
 }
 
@@ -94,6 +95,7 @@ Parser::Parser(IndexView *view)
     view->m_viewSort = addViewOption(QStringLiteral("SortIndex"), i18n("Show Sorted"));
 
     p_viewTree     = addViewOption(QStringLiteral("TreeView"), i18n("Tree View"));
+    p_addIcons     = addViewOption(QStringLiteral("AddIcons"), i18n("Adorn View"));
     p_viewExpanded = addViewOption(QStringLiteral("ExpandView"), i18n("Expand View"));
 
     view->m_viewTree = p_viewTree;
@@ -159,7 +161,8 @@ void Parser::prepareForParse()
         for (int i : qAsConst(m_detachedNodeTypes)) {
             QTreeWidgetItem *node = new QTreeWidgetItem(p_indexTree, i);
             node->setText(0, p_viewOptions.value(i)->objectName());
-            node->setIcon(0, p_icons.value(i));
+            if (p_addIcons->isChecked()) {
+            node->setIcon(0, p_icons.value(i)); }
             node->setText(1, QString::number(-1, 10));
 
             p_rootNodes.insert(i, node);
@@ -176,7 +179,8 @@ void Parser::prepareForParse()
         }
         QTreeWidgetItem *node = new QTreeWidgetItem(p_indexTree, i);
         node->setText(0, viewOption->objectName());
-        node->setIcon(0, p_icons.value(i));
+        if (p_addIcons->isChecked()) {
+        node->setIcon(0, p_icons.value(i)); }
         node->setText(1, QString::number(-1, 10));
 
         p_rootNodes.insert(i, node);
@@ -323,7 +327,8 @@ void Parser::setNodeProperties(QTreeWidgetItem *const node, const int nodeType, 
     }
 
     node->setText(0, text);
-    node->setIcon(0, p_icons.value(nodeType));
+    if (p_addIcons->isChecked()) {
+    node->setIcon(0, p_icons.value(nodeType)); }
     node->setText(1, QString::number(lineNumber, 10));
     node->setText(2, QString::number(-1, 10));
 

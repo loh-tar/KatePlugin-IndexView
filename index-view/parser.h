@@ -282,6 +282,7 @@ private:
     IndexView                      *p_view = nullptr;
     QMenu                           p_menu;
     QAction                        *p_viewTree = nullptr;
+    QAction                        *p_addIcons = nullptr;
     QAction                        *p_viewExpanded = nullptr;
     QHash<int, QIcon>               p_icons;
     QHash<int, QAction*>            p_viewOptions;
