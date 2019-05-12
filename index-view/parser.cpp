@@ -382,8 +382,21 @@ void Parser::setNodeProperties(QTreeWidgetItem *const node, const int nodeType, 
 QAction *Parser::addViewOption(const QString &name, const QString &caption)
 {
     QAction *viewOption = p_menu.addAction(caption, p_view, &IndexView::parseDocument);
-    viewOption->setObjectName(name);
     viewOption->setCheckable(true);
+
+    // The object name must be unique due to use as config key
+    if (p_menu.findChild<QAction*>(name)) {
+        QString uniqueName;
+        int i = 1;
+        do {
+            uniqueName = name + QString::number(++i, 10);
+        } while (p_menu.findChild<QAction*>(uniqueName));
+        viewOption->setObjectName(uniqueName);
+
+    } else {
+        viewOption->setObjectName(name);
+    }
+
 
     return viewOption;
 }
