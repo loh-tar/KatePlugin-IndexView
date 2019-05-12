@@ -60,6 +60,7 @@ CppParser::CppParser(IndexView *view)
     rx = QStringLiteral("\\benum\\W?(class|struct)?%1\\W?(\\w+)(:\\w+)?\\{");
     m_rxEnum = QRegExp(rx.arg(rxFuncDeclarator));
 
+    // FIXME Namespace part does not match Mul::ti::ple case
     rx = QStringLiteral("^%1(\\w+::)*(\\~?\\w+)\\(.*\\)(.*)?\\{");
     m_rxFuncDef = QRegExp(rx.arg(rxFuncDeclarator));
     m_rxFuncDef.setMinimal(true);
@@ -114,7 +115,7 @@ void CppParser::parseDocument()
             addNode(StructNode, m_rxEnum.cap(3), m_lineNumber);
 
         } else if (m_line.contains(m_rxFuncDef)) {
-            addNode(FunctionDefNode, m_rxFuncDef.cap(3), m_lineNumber);
+            addFuncDefNode(m_rxFuncDef.cap(1), m_rxFuncDef.cap(2), m_rxFuncDef.cap(3));
 
             // https://en.cppreference.com/w/cpp/language/function
             // "Function declarations may appear in any scope"...but
@@ -145,6 +146,19 @@ void CppParser::parseDocument()
 
         }
     }
+}
+
+
+void CppParser::addFuncDefNode(const QString &returnType, const QString &_nameSpace, const QString &funcName)
+{
+    QString nameSpace = _nameSpace.section(QStringLiteral("::"), -9, -2); // Remove trailing ::
+
+    // Don't add lambda functions but ctor and dtor
+    if (returnType.isEmpty() && nameSpace.isEmpty()) {
+        return;
+    }
+
+    addNodeToScope(nameSpace, NamespaceNode, FunctionDefNode, funcName, m_lineNumber);
 }
 
 

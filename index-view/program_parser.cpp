@@ -50,6 +50,7 @@ ProgramParser::~ProgramParser()
 void ProgramParser::parse()
 {
     p_parentNode = nullptr;
+    p_scopeRoots.clear();
     clearNesting();
 
     p_bracesDelta = 0;
@@ -412,5 +413,30 @@ void ProgramParser::addNode(const int nodeType, const QString &text, const int l
         node->setText(2, QString::number(lineNumber, 10));
     }
 }
+
+
+void ProgramParser::addNodeToScope(const QString &scope, const int scopeType, const int nodeType, const QString &text, const int lineNumber)
+{
+    if (!nodeTypeIsWanted(nodeType)) {
+        return;
+    }
+
+    if (scope.isEmpty()) {
+        addNode(nodeType, text, lineNumber);
+        return;
+    }
+
+    QTreeWidgetItem *scopeRoot = p_scopeRoots.value(scope, nullptr);
+
+    if (!scopeRoot) {
+        scopeRoot = new QTreeWidgetItem(p_indexTree, nodeType);
+        setNodeProperties(scopeRoot, scopeType, scope, -1);
+        p_scopeRoots.insert(scope, scopeRoot);
+    }
+
+    QTreeWidgetItem *node = new QTreeWidgetItem(scopeRoot, nodeType);
+    setNodeProperties(node, nodeType, text, lineNumber);
+}
+
 
 // kate: space-indent on; indent-width 4; replace-tabs on;

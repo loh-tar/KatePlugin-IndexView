@@ -188,6 +188,19 @@ protected:
      */
     virtual void addNode(const int nodeType, const QString &text, const int lineNumber) override;
 
+    /**
+     * This function can be used instead of @c addNode to slightly bypass the normal
+     * structured ordering of the tree. There will a new root node created, when not
+     * already there, with the caption of @p scope and the type of @scopeType and
+     * there the new node added.
+     * @param scope the name of the scope, visible in the view as root node caption
+     * @param scopeType type of the scope, in C++ is it NamespaceNode
+     * @param nodeType the type of the new node, like header or function
+     * @param text the caption of the new node, visible in the view
+     * @param lineNumber the line where the pattern is located in the file
+     */
+    void addNodeToScope(const QString &scope, const int scopeType, const int nodeType, const QString &text, const int lineNumber);
+
     int parentNodeType() { return p_parentNode ? p_parentNode->type() : -1; }; // Introduced for C++ function declarations
     int nestingLevel() { return p_nestingStack.size(); }; // Introduced for Tcl
 
@@ -212,7 +225,7 @@ private:
     int                         p_nestingFoo; // FIXME Need better name. It's used to ignore nested content when parent is not wanted
     QRegExp                     p_rxHereDocOperator;
     QList<QRegExp>              p_hereDocRxList;
-
+    QHash<QString, QTreeWidgetItem*> p_scopeRoots; // Introduced for C++ function definitions
 };
 
 #endif

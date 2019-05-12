@@ -51,7 +51,7 @@ protected:
         FunctionDecNode,// Function declaration
     };
 
-    QString version() override { return QStringLiteral("0.8.2, Jan 2019"); } ;
+    QString version() override { return QStringLiteral("0.8.3, May 2019"); } ;
     QString author() override { return QStringLiteral("2018 loh.tar \n\nInspired by \n2003 Massimo Callegari"); } ;
 
     void parseDocument() override;
@@ -59,6 +59,8 @@ protected:
     bool appendNextLine() override;
     void removeStrings() override;
     void removeComment() override;
+
+    void addFuncDefNode(const QString &retType, const QString &nameSpace, const QString &funcName);
 
 //     QAction     *m_showParameters; // FIXME if you really need need it
 
