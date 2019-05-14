@@ -17,9 +17,14 @@ Now, I offer it as an independent plugin. We will see if it find a way into the
 official Kate version.
 
 
-### Last version is 0.8.3, Dez 2018
+### Last version is 0.8.4, May 2019
 
-  - FortranParser: Fix crash when line is empty
+  - CppParser: Group function definitions by class name
+  - CppParser: Fix recognition of functions with a reference as return type
+  - MarkdownParser: Fix false detection of e.g. headings in indented blocks
+  - Parser: Add view option to remove the cute icons
+  - Parser: Fix rare cases with a broken save&restore of settings
+  - ProgramParser: Add BEGIN tag recognition like FIXME/TODO
 
 Older release notes can you find below.
 
@@ -79,7 +84,7 @@ KatePlugin-IndexView is licensed under LGPL2. See COPYING for the full license.
 
 <!-- CAUTION! Trailing two spaces are there to have a line break without new paragraph -->
 KatePlugin-IndexView  
-Copyright (C) 2018 loh.tar@googlemail.com
+Copyright (C) 2018, 2019 loh.tar@googlemail.com
 
 Because KatePlugin-IndexView is a fork there are rights from pervious main
 developers:
@@ -94,6 +99,10 @@ and probably many more I didn't have knowledge from. Thanks to all!
 
 
 ## Release History
+
+### 0.8.3, Dez 2018
+
+  - FortranParser: Fix crash when line is empty
 
 ### 0.8.2, Nov 2018
 
