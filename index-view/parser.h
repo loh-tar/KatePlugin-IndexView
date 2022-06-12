@@ -100,8 +100,8 @@ public:
     * This is the main access function to parse the document. These will call
     * prepareForParse() and parseDocument(). Before and after that will done
     * some janitor task like clear the tree and update the context menu to hide
-    * unneded options. Only some master classes may need to implemented an own
-    * versionto init some special variables or to do other special treatment.
+    * unneeded options. Only some master classes may need to implemented an own
+    * version to init some special variables or to do other special treatment.
     * Ensure in that case to call Parser::parse() at some point.
     */
     virtual void parse();
@@ -210,7 +210,7 @@ protected:
 
     /**
     * Add a dependency to a view option. When the dependency is not checked will
-    * the dependent option out grayed. This is achived by add an entry to
+    * the dependent option out grayed. This is achieved by adding an entry to
     * @c p_modifierOptions.
     * @note This will automatically done by registerViewOptionModifier(), so using
     * this function is only needed in rare cases, like in RubyParser::RubyParser().
