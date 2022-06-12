@@ -17,14 +17,11 @@ Now, I offer it as an independent plugin. We will see if it find a way into the
 official Kate version.
 
 
-### Last version is 0.8.4, May 2019
+### Last version is 0.8.5, Jun 2022
 
-  - CppParser: Group function definitions by class name
-  - CppParser: Fix recognition of functions with a reference as return type
-  - MarkdownParser: Fix false detection of e.g. headings in indented blocks
-  - Parser: Add view option to remove the cute icons
-  - Parser: Fix rare cases with a broken save&restore of settings
-  - ProgramParser: Add BEGIN tag recognition like FIXME/TODO
+  - Prepare for Qt6, Required Qt version is now 5.15
+  - Add "Outline" to the plugin description to accommodate the apparently
+    established terms
 
 Older release notes can you find below.
 
@@ -100,9 +97,20 @@ and probably many more I didn't have knowledge from. Thanks to all!
 
 ## Release History
 
+### 0.8.4, May 2019
+
+  - CppParser: Group function definitions by class name
+  - CppParser: Fix recognition of functions with a reference as return type
+  - MarkdownParser: Fix false detection of e.g. headings in indented blocks
+  - Parser: Add view option to remove the cute icons
+  - Parser: Fix rare cases with a broken save&restore of settings
+  - ProgramParser: Add BEGIN tag recognition like FIXME/TODO
+
+
 ### 0.8.3, Dez 2018
 
   - FortranParser: Fix crash when line is empty
+
 
 ### 0.8.2, Nov 2018
 
