@@ -61,9 +61,9 @@ void MarkdownParser::parseDocument()
 
     while (nextLine()) {
         // Let's start the investigation
-        bool currIsEqualLine = rawLine().contains(QRegExp(QStringLiteral("^[=]{3,}$")));
-        bool currIsDashLine  = rawLine().contains(QRegExp(QStringLiteral("^[-]{3,}$")));
-        bool currIsHeader    = rawLine().contains(QRegExp(QStringLiteral("^#{1,6}\\s.*$")));
+        bool currIsEqualLine = rawLine().contains(QRegularExpression(QStringLiteral("^[=]{3,}$")));
+        bool currIsDashLine  = rawLine().contains(QRegularExpression(QStringLiteral("^[-]{3,}$")));
+        bool currIsHeader    = rawLine().contains(QRegularExpression(QStringLiteral("^#{1,6}\\s.*$")));
 
         // Keep a record of the history
         if (m_line.isEmpty()) {

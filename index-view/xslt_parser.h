@@ -74,9 +74,9 @@ protected:
     void removeComment() override;
     int  checkForBlocks() override { return 0; } // Not needed
 
-    QHash<int, QString>     m_tagTypes;
-    QList<QRegExp>          m_attributes;
-    QString                 m_tag;
+    QHash<int, QString>         m_tagTypes;
+    QList<QRegularExpression>   m_attributes;
+    QString                     m_tag;
 
 };
 

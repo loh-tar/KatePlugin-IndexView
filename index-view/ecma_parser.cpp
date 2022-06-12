@@ -39,11 +39,11 @@ EcmaParser::EcmaParser(IndexView *view)
     registerViewOption(Func2Node, GreenYellowIcon, QStringLiteral("Func2"), i18n("Show Func2"));
     registerViewOption(Func3Node, BlueIcon, QStringLiteral("Func3"), i18n("Show Func3"));
 
-    m_rxFunction = QRegExp(QStringLiteral("\\bfunction (\\w+)\\("));
-    m_rxFunc2 = QRegExp(QStringLiteral("\\b(\\w+)=function\\((.*)\\)"));
-    m_rxFunc3 = QRegExp(QStringLiteral("\\b(\\w+):function\\((.*)\\)"));
+    m_rxFunction = QRegularExpression(QStringLiteral("\\bfunction (\\w+)\\("));
+    m_rxFunc2 = QRegularExpression(QStringLiteral("\\b(\\w+)=function\\((.*)\\)"));
+    m_rxFunc3 = QRegularExpression(QStringLiteral("\\b(\\w+):function\\((.*)\\)"));
     // Must match against m_niceLine, so consider spaces
-    m_rxFunc4 = QRegExp(QStringLiteral("\\[\'(\\w+)\'\\]\\s?=\\s?function\\((.*)\\)"));
+    m_rxFunc4 = QRegularExpression(QStringLiteral("\\[\'(\\w+)\'\\]\\s?=\\s?function\\((.*)\\)"));
 }
 
 
@@ -57,16 +57,16 @@ void EcmaParser::parseDocument()
     while (nextInstruction()) {
 
         if (m_line.contains(m_rxFunction)) {
-            addNode(FunctionNode, m_rxFunction.cap(1), m_lineNumber);
+            addNode(FunctionNode, m_rxFunction.match(m_line).captured(1), m_lineNumber);
 
         } else if (m_line.contains(m_rxFunc2)) {
-            addNode(Func2Node, m_rxFunc2.cap(1), m_lineNumber);
+            addNode(Func2Node, m_rxFunc2.match(m_line).captured(1), m_lineNumber);
 
         } else if (m_line.contains(m_rxFunc3)) {
-            addNode(Func3Node, m_rxFunc3.cap(1), m_lineNumber);
+            addNode(Func3Node, m_rxFunc3.match(m_line).captured(1), m_lineNumber);
 
         } else if (m_niceLine.contains(m_rxFunc4)) {
-            addNode(Func2Node, m_rxFunc4.cap(1), m_lineNumber);
+            addNode(Func2Node, m_rxFunc4.match(m_line).captured(1), m_lineNumber);
 
         }
     }
@@ -85,9 +85,9 @@ bool EcmaParser::lineIsGood()
         return true;
 
     // >The five restricted productions are return, throw, break, continue, and post-increment/decrement.
-    } else if (m_line.contains(QRegExp(QStringLiteral("\\b(return|throw|break|continue)\\b(.*)?$")))) {
+    } else if (m_line.contains(QRegularExpression(QStringLiteral("\\b(return|throw|break|continue)\\b(.*)?$")))) {
         return true;
-    } else if (m_line.contains(QRegExp(QStringLiteral("(++|--)$")))) {
+    } else if (m_line.contains(QRegularExpression(QStringLiteral("(++|--)$")))) {
         return true;
 
     // Due to our test file, from https://en.wikipedia.org/wiki/JavaScript

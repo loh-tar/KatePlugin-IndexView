@@ -49,8 +49,8 @@ void PlainTextParser::parseDocument()
 
     while (nextLine()) {
         // Let's start the investigation
-        bool currIsEqualLine = m_line.contains(QRegExp(QStringLiteral("^[=#*]{3,}$")));
-        bool currIsDashLine  = m_line.contains(QRegExp(QStringLiteral("^[-~^]{3,}$")));
+        bool currIsEqualLine = m_line.contains(QRegularExpression(QStringLiteral("^[=#*]{3,}$")));
+        bool currIsDashLine  = m_line.contains(QRegularExpression(QStringLiteral("^[-~^]{3,}$")));
 
         // Keep a record of the history
         if (m_line.isEmpty()) {
@@ -84,7 +84,7 @@ void PlainTextParser::parseDocument()
         // Special checks for ISO date header. They to add in a sane way and give them
         // an own LineType proved to be surprisingly complicated, so it's done quirky.
         // Thanks to https://stackoverflow.com/a/46362201
-        QRegExp isoDate(QStringLiteral("^\\d{4}-([0]\\d|1[0-2])-([0-2]\\d|3[01])$"));
+        QRegularExpression isoDate(QStringLiteral("^\\d{4}-([0]\\d|1[0-2])-([0-2]\\d|3[01])$"));
         bool line0IsDate = m_lineHistory.at(0).contains(isoDate);
         bool line1IsDate = m_lineHistory.at(1).contains(isoDate);
 

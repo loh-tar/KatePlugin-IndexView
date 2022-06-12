@@ -55,11 +55,11 @@ protected:
     void removeComment() override;
     void removeTclIf0Comment();
 
-    QAction     *m_showAssignments;
-    QAction     *m_showParameters;
+    QAction            *m_showAssignments;
+    QAction            *m_showParameters;
 
-    QRegExp      m_rxVariable;
-    QRegExp      m_rxFunction;
+    QRegularExpression  m_rxVariable;
+    QRegularExpression  m_rxFunction;
 };
 
 #endif

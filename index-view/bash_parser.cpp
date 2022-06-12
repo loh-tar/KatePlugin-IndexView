@@ -52,11 +52,11 @@ void BashParser::parseDocument()
     while (nextInstruction()) {
         if (m_line.startsWith(QStringLiteral("function "))) {
             m_line = m_line.mid(9);
-            m_line = m_line.section(QRegExp(QStringLiteral("\\W")), 0, 0);
+            m_line = m_line.section(QRegularExpression(QStringLiteral("\\W")), 0, 0);
             addNode(FunctionNode, m_line, m_lineNumber);
 
-        } else if (m_line.contains(QRegExp(QStringLiteral("^\\w+ *\\( *\\)")))) {
-            m_line = m_line.section(QRegExp(QStringLiteral("\\W")), 0, 0);
+        } else if (m_line.contains(QRegularExpression(QStringLiteral("^\\w+ *\\( *\\)")))) {
+            m_line = m_line.section(QRegularExpression(QStringLiteral("\\W")), 0, 0);
             addNode(FunctionNode, m_line, m_lineNumber);
         }
     }
@@ -67,13 +67,13 @@ void BashParser::removeComment()
 {
     // Remove parameter expansion with braces or they will broken up by
     // removeTrailingSharpComment when there is a sharp included
-    m_line.remove(QRegExp(QStringLiteral("\\$\\{.*\\}")));
+    m_line.remove(QRegularExpression(QStringLiteral("\\$\\{.*\\}")));
 
     removeTrailingSharpComment();
 
     // Remove math expressions in double parentheses because there could be
     // the shift operator which would cause false detection of heredoc oprerator
-    m_line.remove(QRegExp(QStringLiteral("\\(\\(.*\\)\\)")));
+    m_line.remove(QRegularExpression(QStringLiteral("\\(\\(.*\\)\\)")));
     // Remove here string operator which would cause false detection of heredoc oprerator
     m_line.remove(QStringLiteral("<<<"));
     removeHereDoc();

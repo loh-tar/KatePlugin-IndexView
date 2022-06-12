@@ -96,12 +96,12 @@ bool ProgramParser::lineIsGood()
         return true;
     }
 
-    if (m_line.contains(QRegExp(QStringLiteral("[{};]$")))) {
+    if (m_line.contains(QRegularExpression(QStringLiteral("[{};]$")))) {
         return true;
     }
 
     // Match lables like, "protected:" or "public Q_SLOTS:"
-    if (m_line.contains(QRegExp(QStringLiteral("^[\\w\\s]+:$")))) {
+    if (m_line.contains(QRegularExpression(QStringLiteral("^[\\w\\s]+:$")))) {
         return true;
     }
 
@@ -144,24 +144,25 @@ void ProgramParser::stripLine()
     }
 
     // Squash the line, remove all unneeded space
-    m_line.replace(QRegExp(QStringLiteral("(\\s)?(\\W)(\\s)?")), QStringLiteral("\\2"));
+    m_line.replace(QRegularExpression(QStringLiteral("(\\s)?(\\W)(\\s)?")), QStringLiteral("\\2"));
 }
 
 
 bool ProgramParser::addCommentTagNode(const QString &tag, const int nodeType)
 {
-    QRegExp regEx = QRegExp(QStringLiteral("(.*)\\b(%1)\\b(.*)?").arg(tag));
-    if (!rawLine().contains(regEx)) {
+    const QRegularExpression regEx = QRegularExpression(QStringLiteral("(.*)\\b(%1)\\b(.*)?").arg(tag));
+    const QRegularExpressionMatch rxMatch = regEx.match(rawLine());
+    if (!rxMatch.hasMatch()) {
         return false;
     }
 
     // Support also notes where the token is at the end
-    QString txt = regEx.cap(3).isEmpty() ? regEx.cap(1) : regEx.cap(3);
+    QString txt = rxMatch.captured(3).isEmpty() ? rxMatch.captured(1) : rxMatch.captured(3);
     // Remove possible comment char from both ends in a lazy way. So,
     // something too much could be gone but guess it's OK
-    txt.remove(QRegExp(QStringLiteral("^\\W*")));
-    txt.remove(QRegExp(QStringLiteral("\\W*$")));
-    addNode(nodeType, regEx.cap(2).at(0) + QStringLiteral(": ") + txt, m_lineNumber);
+    txt.remove(QRegularExpression(QStringLiteral("^\\W*")));
+    txt.remove(QRegularExpression(QStringLiteral("\\W*$")));
+    addNode(nodeType, rxMatch.captured(2).at(0) + QStringLiteral(": ") + txt, m_lineNumber);
 
     return true;
 }
@@ -176,16 +177,16 @@ void ProgramParser::removeStrings()
 void ProgramParser::removeDoubleQuotedStrings()
 {
     // Thanks to https://stackoverflow.com/a/5696141
-    m_line.remove(QRegExp(QStringLiteral("\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\"")));
+    m_line.remove(QRegularExpression(QStringLiteral("\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\"")));
     // Not sure if complete deletion is best or keeping a dummy
-//     m_line.replace(QRegExp(QStringLiteral("\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\"")), QStringLiteral("X"));
+//     m_line.replace(QRegularExpression(QStringLiteral("\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\"")), QStringLiteral("X"));
 }
 
 
 void ProgramParser::removeSingleQuotedStrings()
 {
     // Thanks to https://stackoverflow.com/a/5696141
-    m_line.remove(QRegExp(QStringLiteral("\'[^\'\\\\]*(?:\\\\.[^\'\\\\]*)*\'")));
+    m_line.remove(QRegularExpression(QStringLiteral("\'[^\'\\\\]*(?:\\\\.[^\'\\\\]*)*\'")));
 }
 
 
@@ -211,8 +212,8 @@ void ProgramParser::removeMultiLineSlashStarComment()
 
 void ProgramParser::removeInLineSlashStarComment()
 {
-    static QRegExp rx(QStringLiteral("/\\*.*\\*/"));
-    rx.setMinimal(true);
+    static QRegularExpression rx(QStringLiteral("/\\*.*\\*/"), QRegularExpression::InvertedGreedinessOption);
+//     rx.setMinimal(true);
 
     m_line.remove(rx);
 }
@@ -238,20 +239,20 @@ void ProgramParser::removeTrailingDoubleSlashComment()
 
 void ProgramParser::initHereDoc(const QString &hereDocOperator, const QString &quoteChars)
 {
-    p_rxHereDocOperator = QRegExp(hereDocOperator);
+    p_rxHereDocOperator = QRegularExpression(hereDocOperator);
 
     // Build for each quote char an own RegExp
-    QRegExp rx;
+    QRegularExpression rx;
     for (int i = 0; i < quoteChars.size(); ++i) {
 // qDebug() << "HereDocQuote:" << quoteChars.at(i);
-        rx = QRegExp(QString(QStringLiteral("%1\\s?%2(.+)%2")).arg(hereDocOperator).arg(quoteChars.at(i)));
-        rx.setMinimal(true);
+        rx = QRegularExpression(QString(QStringLiteral("%1\\s?%2(.+)%2")).arg(hereDocOperator).arg(quoteChars.at(i)), QRegularExpression::InvertedGreedinessOption);
+//         rx.setMinimal(true);
         p_hereDocRxList << rx;
     }
     // Add at last a special RegEx for unquoted tokens
     // FIXME To avoid a couple of false catch, this regex may be more limited as useful
     // Problem was ";" in Perl and left shift a number "<< 20"
-    rx = QRegExp(QString(QStringLiteral("%1\\s?([A-Za-z][^\\s;]*)")).arg(hereDocOperator));
+    rx = QRegularExpression(QString(QStringLiteral("%1\\s?([A-Za-z][^\\s;]*)")).arg(hereDocOperator));
     p_hereDocRxList << rx;
 }
 
@@ -277,15 +278,16 @@ void ProgramParser::removeHereDoc()
     // in p_hereDocRxList and choose the right most hit.
         int lastIndexIn = -1;
         int indexIn = -1;
-        for (QRegExp rx : qAsConst(p_hereDocRxList)) {
-            indexIn = rx.lastIndexIn(m_niceLine);
+        for (QRegularExpression rx : qAsConst(p_hereDocRxList)) {
+            indexIn = m_niceLine.indexOf(rx);
             if (indexIn < 0) {
                 continue;
             }
             if (indexIn > lastIndexIn) {
                 lastIndexIn = indexIn;
-                token = rx.cap(1).trimmed();
-// qDebug() << "TOKEN:" << token << rx.captureCount();
+                QRegularExpressionMatch rxMatch = rx.match(m_niceLine);
+                token = rxMatch.captured(1).trimmed();
+// qDebug() << "TOKEN:" << token << rxMatch.lastCapturedIndex();
             }
         }
         if (lastIndexIn != -1) {

@@ -54,27 +54,27 @@ CppParser::CppParser(IndexView *view)
 
     // https://en.cppreference.com/w/cpp/language/classes
     QString rx = QStringLiteral("^(class|struct|union)%1[^:{]*\\b(\\w+)[:{]");
-    m_rxStruct = QRegExp(rx.arg(rxAttribute));
+    m_rxStruct = QRegularExpression(rx.arg(rxAttribute));
 
     // https://en.cppreference.com/w/cpp/language/enum
     rx = QStringLiteral("\\benum\\W?(class|struct)?%1\\W?(\\w+)(:\\w+)?\\{");
-    m_rxEnum = QRegExp(rx.arg(rxFuncDeclarator));
+    m_rxEnum = QRegularExpression(rx.arg(rxFuncDeclarator));
 
     // FIXME Namespace part does not match Mul::ti::ple case
     rx = QStringLiteral("^%1(\\w+::)*(\\~?\\w+)\\(.*\\)(.*)?\\{");
-    m_rxFuncDef = QRegExp(rx.arg(rxFuncDeclarator));
-    m_rxFuncDef.setMinimal(true);
+    m_rxFuncDef = QRegularExpression(rx.arg(rxFuncDeclarator), QRegularExpression::InvertedGreedinessOption);
+//     m_rxFuncDef.setMinimal(true);
 
     rx = QStringLiteral("^%1(\\~?\\w+)\\(.*\\)(.*)?;");
-    m_rxFuncDec = QRegExp(rx.arg(rxFuncDeclarator));
-    m_rxFuncDec.setMinimal(true);
+    m_rxFuncDec = QRegularExpression(rx.arg(rxFuncDeclarator), QRegularExpression::InvertedGreedinessOption);
+//     m_rxFuncDec.setMinimal(true);
 
     // https://en.cppreference.com/w/c/language/typedef
-    m_rxTypedef = QRegExp(QStringLiteral("\\btypedef\\b(.*)\\b(\\S+);"));
+    m_rxTypedef = QRegularExpression(QStringLiteral("\\btypedef\\b(.*)\\b(\\S+);"));
 
-    m_rxMarcro = QRegExp(QStringLiteral("^#define (\\w+)"));
+    m_rxMarcro = QRegularExpression(QStringLiteral("^#define (\\w+)"));
 
-    m_rxNamespace= QRegExp(QStringLiteral("^namespace (\\w+)"));
+    m_rxNamespace= QRegularExpression(QStringLiteral("^namespace (\\w+)"));
 
     m_keywordsToIgnore // To avaoid false detection, e.g. as function
         << QStringLiteral("Q_FOREACH")
@@ -100,22 +100,23 @@ void CppParser::parseDocument()
 {
     while (nextInstruction()) {
 
-        const QString firstWord = m_line.section(QRegExp(QStringLiteral("\\b")), 1, 1);
+        const QString firstWord = m_line.section(QRegularExpression(QStringLiteral("\\b")), 1, 1);
 
         if (m_keywordsToIgnore.contains(firstWord)) {
             // Do nothing
 
         } else if (m_line.contains(m_rxNamespace)) {
-            addNode(NamespaceNode, m_rxNamespace.cap(1), m_lineNumber);
+            addNode(NamespaceNode, m_rxNamespace.match(m_line).captured(1), m_lineNumber);
 
         } else if (m_line.contains(m_rxStruct)) {
-            addNode(StructNode, m_rxStruct.cap(3), m_lineNumber);
+            addNode(StructNode, m_rxStruct.match(m_line).captured(3), m_lineNumber);
 
         } else if (m_line.contains(m_rxEnum)) {
-            addNode(StructNode, m_rxEnum.cap(3), m_lineNumber);
+            addNode(StructNode, m_rxEnum.match(m_line).captured(3), m_lineNumber);
 
         } else if (m_line.contains(m_rxFuncDef)) {
-            addFuncDefNode(m_rxFuncDef.cap(1), m_rxFuncDef.cap(2), m_rxFuncDef.cap(3));
+            const QRegularExpressionMatch rxMatch = m_rxFuncDef.match(m_line);
+            addFuncDefNode(rxMatch.captured(1), rxMatch.captured(2), rxMatch.captured(3));
 
             // https://en.cppreference.com/w/cpp/language/function
             // "Function declarations may appear in any scope"...but
@@ -125,9 +126,9 @@ void CppParser::parseDocument()
             // stuff elsewhere. Edit: Also below namespace
         } else if ((parentNodeType() == StructNode || parentNodeType() == NamespaceNode) && m_line.contains(m_rxFuncDec)) {
     //  } else if ((parentNodeType() == StructNode) && m_line.contains(m_rxFuncDec)) {
-            addNode(FunctionDecNode, m_rxFuncDec.cap(2), m_lineNumber);
+            addNode(FunctionDecNode, m_rxFuncDec.match(m_line).captured(2), m_lineNumber);
 
-        } else if (m_line.contains(QRegExp(QStringLiteral("\\btypedef struct( \\w+)?\\{")))) {
+        } else if (m_line.contains(QRegularExpression(QStringLiteral("\\btypedef struct( \\w+)?\\{")))) {
                 // We must fast forward to grep from the end of this instruction
                 int lineNumber = m_lineNumber;
                 while ((checkForBlocks() != 0) || !m_line.endsWith(QLatin1Char(';'))) {
@@ -142,7 +143,7 @@ void CppParser::parseDocument()
                 addNode(TypedefNode, m_line, lineNumber);
 
         } else if (m_line.contains(m_rxTypedef)) {
-            addNode(TypedefNode, m_rxTypedef.cap(2), m_lineNumber);
+            addNode(TypedefNode, m_rxTypedef.match(m_line).captured(2), m_lineNumber);
 
         }
     }
@@ -171,7 +172,7 @@ bool CppParser::lineIsGood()
     // Despite the documentation to ProgramParser::lineIsGood(), I add these
     // quirk to solve some false detection of Q_FooMacro as function which has
     // occour when edit e.g. our index_view.h due to line concatenating
-    if (m_line.contains(QRegExp(QStringLiteral("^Q_\\w+")))) {
+    if (m_line.contains(QRegularExpression(QStringLiteral("^Q_\\w+")))) {
         return true;
     }
 
@@ -187,7 +188,7 @@ bool CppParser::appendNextLine()
         return false;
     }
 
-    while (m_line.contains(QRegExp(QStringLiteral("[^\\\\]\\\\$")))) {
+    while (m_line.contains(QRegularExpression(QStringLiteral("[^\\\\]\\\\$")))) {
         m_line.chop(1);
         if(!incrementLineNumber()) {
             break;
@@ -211,7 +212,7 @@ void CppParser::removeComment()
     removeMultiLineSlashStarComment();
 
     if (m_line.contains(m_rxMarcro)) {
-        addNode(MacroNode, m_rxMarcro.cap(1), m_lineNumber);
+        addNode(MacroNode, m_rxMarcro.match(m_line).captured(1), m_lineNumber);
     }
 
     removeTrailingSharpComment();

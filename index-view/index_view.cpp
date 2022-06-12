@@ -298,7 +298,7 @@ void IndexView::filterTree()
     if (view->selection()) {
         pattern = view->selectionText();
         // Only pattern without space and at least three char long
-        if (!pattern.contains(QRegExp(QStringLiteral("^\\S{3,}$")))) {
+        if (!pattern.contains(QRegularExpression(QStringLiteral("^\\S{3,}$")))) {
             // Without a reasonable pattern ensure the tree is shown unfiltered
             restoreTree();
             return;

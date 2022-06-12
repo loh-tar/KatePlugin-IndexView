@@ -45,12 +45,12 @@ FortranParser::FortranParser(IndexView *view)
 //     << QStringLiteral("where")
 //     << QStringLiteral("")
 
-    m_rxFunction   = QRegExp(QStringLiteral("\\bfunction (\\w+)\\(([\\w\\s,]*)?\\)"), Qt::CaseInsensitive);
-    m_rxSubroutine = QRegExp(QStringLiteral("\\bsubroutine (\\w+)\\(([\\w\\s,]*)?\\)"), Qt::CaseInsensitive);
-    m_rxModule     = QRegExp(QStringLiteral("^module (\\w+)"), Qt::CaseInsensitive);
-    m_rxType       = QRegExp(QStringLiteral("^type (\\w+)"), Qt::CaseInsensitive);
-    m_rxEnd        = QRegExp(QStringLiteral("^end (\\w+)"), Qt::CaseInsensitive);
-    m_rxProgram    = QRegExp(QStringLiteral("^program (\\w+)"), Qt::CaseInsensitive);
+    m_rxFunction   = QRegularExpression(QStringLiteral("\\bfunction (\\w+)\\(([\\w\\s,]*)?\\)"), QRegularExpression::CaseInsensitiveOption);
+    m_rxSubroutine = QRegularExpression(QStringLiteral("\\bsubroutine (\\w+)\\(([\\w\\s,]*)?\\)"), QRegularExpression::CaseInsensitiveOption);
+    m_rxModule     = QRegularExpression(QStringLiteral("^module (\\w+)"), QRegularExpression::CaseInsensitiveOption);
+    m_rxType       = QRegularExpression(QStringLiteral("^type (\\w+)"), QRegularExpression::CaseInsensitiveOption);
+    m_rxEnd        = QRegularExpression(QStringLiteral("^end (\\w+)"), QRegularExpression::CaseInsensitiveOption);
+    m_rxProgram    = QRegularExpression(QStringLiteral("^program (\\w+)"), QRegularExpression::CaseInsensitiveOption);
 }
 
 
@@ -68,28 +68,28 @@ void FortranParser::parseDocument()
         m_line = m_line.toLower();
 
         if (m_line.contains(m_rxEnd)) {
-            endBlock(m_rxEnd.cap(1));
+            endBlock(m_rxEnd.match(m_line).captured(1));
 
         } else if (m_line.contains(m_rxSubroutine)) {
-            addNode(SubroutineNode, m_rxSubroutine.cap(1), m_lineNumber);
+            addNode(SubroutineNode, m_rxSubroutine.match(m_line).captured(1), m_lineNumber);
             beginBlock(QStringLiteral("subroutine"));
 
         } else if (m_line.startsWith(QStringLiteral("module procedure "))) {
             // Ignored
         } else if (m_line.contains(m_rxModule)) {
-            addNode(ModuleNode, m_rxModule.cap(1), m_lineNumber);
+            addNode(ModuleNode, m_rxModule.match(m_line).captured(1), m_lineNumber);
             beginBlock(QStringLiteral("module"));
 
         } else if (m_line.contains(m_rxType)) {
-            addNode(TypeNode, m_rxType.cap(1), m_lineNumber);
+            addNode(TypeNode, m_rxType.match(m_line).captured(1), m_lineNumber);
             beginBlock(QStringLiteral("type"));
 
         } else if (m_line.contains(m_rxFunction)) {
-            addNode(FunctionNode, m_rxFunction.cap(1), m_lineNumber);
+            addNode(FunctionNode, m_rxFunction.match(m_line).captured(1), m_lineNumber);
             beginBlock(QStringLiteral("function"));
 
         } else if (m_line.contains(m_rxProgram)) {
-            addNode(SubroutineNode, QStringLiteral("Main: ") + m_rxProgram.cap(1), m_lineNumber);
+            addNode(SubroutineNode, QStringLiteral("Main: ") + m_rxProgram.match(m_line).captured(1), m_lineNumber);
             beginBlock(QStringLiteral("program"));
 
         }

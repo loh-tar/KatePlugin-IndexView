@@ -59,14 +59,14 @@ protected:
     void beginBlock(const QString  &type);
     void endBlock(const QString  &type);
 
-    QStack<QString> m_BlockStack;
+    QStack<QString>     m_BlockStack;
 
-    QRegExp      m_rxModule;
-    QRegExp      m_rxSubroutine;
-    QRegExp      m_rxType;
-    QRegExp      m_rxFunction;
-    QRegExp      m_rxEnd;
-    QRegExp      m_rxProgram;
+    QRegularExpression  m_rxModule;
+    QRegularExpression  m_rxSubroutine;
+    QRegularExpression  m_rxType;
+    QRegularExpression  m_rxFunction;
+    QRegularExpression  m_rxEnd;
+    QRegularExpression  m_rxProgram;
 
 };
 

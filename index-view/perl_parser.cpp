@@ -41,12 +41,12 @@ PerlParser::PerlParser(IndexView *view)
 
     m_nonBlockElements << UsesNode << PragmaNode << VariableNode;
 
-    m_rxUses = QRegExp(QStringLiteral("^use ([A-Z][\\w:]*)+(.*)?;"));
-    m_rxPragma = QRegExp(QStringLiteral("^use ([a-z0-9].*);"));
-    m_rxSubroutine = QRegExp(QStringLiteral("^sub (\\w+)"));
-    m_rxVariable1 = QRegExp(QStringLiteral("\\bmy([\\@\\$\\%]\\w+)"));
-    m_rxVariable2 = QRegExp(QStringLiteral("\\bmy\\((.*)\\)"));
-//     m_rx = QRegExp(QStringLiteral(""));
+    m_rxUses = QRegularExpression(QStringLiteral("^use ([A-Z][\\w:]*)+(.*)?;"));
+    m_rxPragma = QRegularExpression(QStringLiteral("^use ([a-z0-9].*);"));
+    m_rxSubroutine = QRegularExpression(QStringLiteral("^sub (\\w+)"));
+    m_rxVariable1 = QRegularExpression(QStringLiteral("\\bmy([\\@\\$\\%]\\w+)"));
+    m_rxVariable2 = QRegularExpression(QStringLiteral("\\bmy\\((.*)\\)"));
+//     m_rx = QRegularExpression(QStringLiteral(""));
 
     initHereDoc(QStringLiteral("<<~?"), QStringLiteral("\"'`"));
 }
@@ -63,21 +63,21 @@ void PerlParser::parseDocument()
 
         if (m_line.contains(m_rxUses)) {
             // http://perldoc.perl.org/functions/use.html
-            addNode(UsesNode, m_rxUses.cap(1), m_lineNumber);
+            addNode(UsesNode, m_rxUses.match(m_line).captured(1), m_lineNumber);
 
         } else if (m_line.contains(m_rxPragma)) {
             m_niceLine.contains(m_rxPragma);
-            addNode(PragmaNode, m_rxPragma.cap(1), m_lineNumber);
+            addNode(PragmaNode, m_rxPragma.match(m_line).captured(1), m_lineNumber);
 
         } else if (m_line.contains(m_rxSubroutine)) {
-            addNode(SubroutineNode, m_rxSubroutine.cap(1), m_lineNumber);
+            addNode(SubroutineNode, m_rxSubroutine.match(m_line).captured(1), m_lineNumber);
 
         } else if (m_line.contains(m_rxVariable1)) {
             //http://perldoc.perl.org/functions/my.html
-            addNode(VariableNode, m_rxVariable1.cap(1), m_lineNumber);
+            addNode(VariableNode, m_rxVariable1.match(m_line).captured(1), m_lineNumber);
 
         } else if (m_line.contains(m_rxVariable2)) {
-            addNode(VariableNode, m_rxVariable2.cap(1), m_lineNumber);
+            addNode(VariableNode, m_rxVariable2.match(m_line).captured(1), m_lineNumber);
 
         }
     }
@@ -90,9 +90,9 @@ void PerlParser::removeStrings()
     removeDoubleQuotedStrings();
     // Special Perl quoting
     // FIXME These are too simple, adopt ProgramParser::removeSingle/DoubleQuotedStrings()
-    m_line.remove(QRegExp(QStringLiteral("\\q\\{.*\\}")));
-    m_line.remove(QRegExp(QStringLiteral("\\q\\#.*\\#")));
-    m_line.remove(QRegExp(QStringLiteral("\\q\\^.*\\^")));
+    m_line.remove(QRegularExpression(QStringLiteral("\\q\\{.*\\}")));
+    m_line.remove(QRegularExpression(QStringLiteral("\\q\\#.*\\#")));
+    m_line.remove(QRegularExpression(QStringLiteral("\\q\\^.*\\^")));
 }
 
 
@@ -109,12 +109,12 @@ void PerlParser::removePerlPod()
     // http://perldoc.perl.org/perlpod.html
     if (m_funcAtWork.contains(Me_At_Work)) {
         // Skip Perl's special documentation block
-        if (m_line.contains(QRegExp(QStringLiteral("^=cut$")))) {
+        if (m_line.contains(QRegularExpression(QStringLiteral("^=cut$")))) {
             m_funcAtWork.remove(Me_At_Work);
         }
         m_line.clear();
 
-    } else if (m_line.contains(QRegExp(QStringLiteral("^=[a-zA-Z]")))) {
+    } else if (m_line.contains(QRegularExpression(QStringLiteral("^=[a-zA-Z]")))) {
         m_funcAtWork.insert(Me_At_Work);
         m_line.clear();
     }

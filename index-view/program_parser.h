@@ -219,13 +219,13 @@ protected:
     int             m_lineNumber;
 
 private:
-    QTreeWidgetItem*            p_parentNode;
-    QStack<QTreeWidgetItem*>    p_nestingStack;
-    int                         p_bracesDelta;
-    int                         p_nestingFoo; // FIXME Need better name. It's used to ignore nested content when parent is not wanted
-    QRegExp                     p_rxHereDocOperator;
-    QList<QRegExp>              p_hereDocRxList;
-    QHash<QString, QTreeWidgetItem*> p_scopeRoots; // Introduced for C++ function definitions
+    QTreeWidgetItem*                  p_parentNode;
+    QStack<QTreeWidgetItem*>          p_nestingStack;
+    int                               p_bracesDelta;
+    int                               p_nestingFoo; // FIXME Need better name. It's used to ignore nested content when parent is not wanted
+    QRegularExpression                p_rxHereDocOperator;
+    QList<QRegularExpression>         p_hereDocRxList;
+    QHash<QString, QTreeWidgetItem*>  p_scopeRoots; // Introduced for C++ function definitions
 };
 
 #endif

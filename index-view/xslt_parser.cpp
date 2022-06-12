@@ -46,8 +46,8 @@ XsltParser::XsltParser(IndexView *view)
     // Not sure if that's solution is best. Only one kind of TemplateNode uses "match"
     // and the orig parser choose then a different icon
     QString regExpMask = QStringLiteral("\\s%1=\"(.+)\"");
-    m_attributes << QRegExp(regExpMask.arg(QStringLiteral("name")));
-    m_attributes << QRegExp(regExpMask.arg(QStringLiteral("match")));
+    m_attributes << QRegularExpression(regExpMask.arg(QStringLiteral("name")), QRegularExpression::InvertedGreedinessOption);
+    m_attributes << QRegularExpression(regExpMask.arg(QStringLiteral("match")), QRegularExpression::InvertedGreedinessOption);
 }
 
 
@@ -66,15 +66,12 @@ void XsltParser::parseDocument()
         for (int nodeType = FirstNodeType; nodeType < LastNodeType; nodeType++) {
             QString tagType = m_tagTypes.value(nodeType);
             if (m_tag.startsWith(tagType)) {
-                QString text;
-                for (QRegExp rx : qAsConst(m_attributes)) {
-                    rx.setMinimal(true);
+                for (QRegularExpression rx : qAsConst(m_attributes)) {
                     if (m_tag.contains(rx)) {
-                        text = rx.cap(1);
+                        addNode(nodeType, rx.match(m_tag).captured(1), m_lineNumber);
                         break;
                     }
                 }
-                addNode(nodeType, text, m_lineNumber);
 
                 // Do the nesting, or not...
                 if (!m_tag.endsWith(QLatin1Char('/'))) {
@@ -118,7 +115,7 @@ bool XsltParser::nextTag()
         if (m_line.isEmpty()) {
             return false;
         }
-        tags = m_line.split(QRegExp(QStringLiteral("[<>]")), QString::SkipEmptyParts);
+        tags = m_line.split(QRegularExpression(QStringLiteral("[<>]")), Qt::SkipEmptyParts);
         i = 0;
 // qDebug() << "NEW" << tags;
     }
@@ -136,7 +133,7 @@ void XsltParser::removeStrings()
     // Well, here will not strings removed but tag content because this time
     // are not the strings dangerous but the tag content. Furthermore eases this
     // a lot the problem to extract the tag attributes
-    m_line.replace(QRegExp(QStringLiteral(">.*<")), QStringLiteral("><"));
+    m_line.replace(QRegularExpression(QStringLiteral(">.*<")), QStringLiteral("><"));
 }
 
 
@@ -156,7 +153,7 @@ void XsltParser::removeComment()
         m_funcAtWork.insert(Me_At_Work);
     }
 
-    m_line = m_line.remove(QRegExp(QStringLiteral("<!--.*-->")));
+    m_line = m_line.remove(QRegularExpression(QStringLiteral("<!--.*-->")));
 }
 
 // kate: space-indent on; indent-width 4; replace-tabs on;

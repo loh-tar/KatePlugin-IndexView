@@ -52,7 +52,7 @@ void PythonParser::parseDocument()
     int currIndent = 0;
 
     while (nextInstruction()) {
-        currIndent = rawLine().indexOf(QRegExp(QStringLiteral("\\S")));
+        currIndent = rawLine().indexOf(QRegularExpression(QStringLiteral("\\S")));
         if (currIndent < 1) {
             clearNesting();
         } else if (lastIndent < currIndent) {
@@ -84,9 +84,9 @@ void PythonParser::removeStrings()
 {
     // Because removing strings would smash triple quotes we replace these by a placeholder
     // FIXME Better token idea? K-ate P-lugin I-ndex V-iew T-ripple D-ouble Q-uote
-    m_line.replace(QRegExp(QStringLiteral("\"\"\"")), QStringLiteral("!KPIVTDQ!"));
+    m_line.replace(QRegularExpression(QStringLiteral("\"\"\"")), QStringLiteral("!KPIVTDQ!"));
     //                          K-ate P-lugin I-ndex V-iew T-ripple S-ingle Q-uote
-    m_line.replace(QRegExp(QStringLiteral("\'\'\'")), QStringLiteral("!KPIVTSQ!"));
+    m_line.replace(QRegularExpression(QStringLiteral("\'\'\'")), QStringLiteral("!KPIVTSQ!"));
 
     removeSingleQuotedStrings();
     removeDoubleQuotedStrings();
@@ -111,11 +111,11 @@ void PythonParser::removeComment()
     removeTrailingSharpComment();
 
     // Remove single line with both ends of triple quotes
-    if (m_line.contains(QRegExp(QStringLiteral("^!KPIVTDQ!.+!KPIVTDQ!$")))) {
+    if (m_line.contains(QRegularExpression(QStringLiteral("^!KPIVTDQ!.+!KPIVTDQ!$")))) {
         m_line.clear();
         return;
     }
-    if (m_line.contains(QRegExp(QStringLiteral("^!KPIVTSQ!.+!KPIVTSQ!$")))) {
+    if (m_line.contains(QRegularExpression(QStringLiteral("^!KPIVTSQ!.+!KPIVTSQ!$")))) {
         m_line.clear();
         return;
     }

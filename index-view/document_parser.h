@@ -106,7 +106,7 @@ protected:
     int                      m_paraLineNumber;    // Where the current paragraph begins
     QQueue<int>              m_lineTypeHistory;
     QQueue<QString>          m_lineHistory;
-    QRegExp                  m_rxIgnoreLine = QRegExp(QStringLiteral("^[-#*./]{1,2}$"));
+    QRegularExpression       m_rxIgnoreLine = QRegularExpression(QStringLiteral("^[-#*./]{1,2}$"));
 
 private:
     int                      p_historySize;

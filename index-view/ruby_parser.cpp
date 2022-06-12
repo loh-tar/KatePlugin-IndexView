@@ -76,7 +76,7 @@ void RubyParser::parseDocument()
         } else if (m_line.startsWith(QStringLiteral("prepend "))) {
             addNode(MixinNode, m_line.mid(8), m_lineNumber);
 
-        } else if (m_line.contains(QRegExp(QStringLiteral("^end(\\s)*$")))) {
+        } else if (m_line.contains(QRegularExpression(QStringLiteral("^end(\\s)*$")))) {
             endOfBlock();
 
         } else {

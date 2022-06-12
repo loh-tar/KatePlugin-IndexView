@@ -64,15 +64,15 @@ protected:
 
 //     QAction     *m_showParameters; // FIXME if you really need need it
 
-    QRegExp     m_rxStruct;
-    QRegExp     m_rxEnum;
-    QRegExp     m_rxFuncDef;
-    QRegExp     m_rxFuncDec;
-    QRegExp     m_rxTypedef;
-    QRegExp     m_rxMarcro;
-    QRegExp     m_rxNamespace;
+    QRegularExpression  m_rxStruct;
+    QRegularExpression  m_rxEnum;
+    QRegularExpression  m_rxFuncDef;
+    QRegularExpression  m_rxFuncDec;
+    QRegularExpression  m_rxTypedef;
+    QRegularExpression  m_rxMarcro;
+    QRegularExpression  m_rxNamespace;
 
-    QSet<QString>   m_keywordsToIgnore; // To avoid false detection, e.g. as function
+    QSet<QString>       m_keywordsToIgnore; // To avoid false detection, e.g. as function
 };
 
 #endif

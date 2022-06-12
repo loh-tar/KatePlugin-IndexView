@@ -56,11 +56,11 @@ protected:
     void removeComment() override;
     void removePerlPod();
 
-    QRegExp m_rxUses;
-    QRegExp m_rxPragma;
-    QRegExp m_rxVariable1;
-    QRegExp m_rxVariable2;
-    QRegExp m_rxSubroutine;
+    QRegularExpression m_rxUses;
+    QRegularExpression m_rxPragma;
+    QRegularExpression m_rxVariable1;
+    QRegularExpression m_rxVariable2;
+    QRegularExpression m_rxSubroutine;
 
 };
 

@@ -44,18 +44,18 @@ PhpParser::PhpParser(IndexView *view)
 
     m_nonBlockElements << ConstantNode << VariableNode;//<< NamespaceNode;
 
-    m_rxDefine = QRegExp(QStringLiteral("(?:^|\\W)define\\s*\\(\\s*['\"]([^'\"]+)['\"]"), Qt::CaseInsensitive);
-    m_rxConst = QRegExp(QStringLiteral("^(?:\\w+ )?const ([\\w_][\\w\\d_]*)"), Qt::CaseInsensitive);
-    m_rxNamespace = QRegExp(QStringLiteral("^namespace ([\\w/]+)"), Qt::CaseInsensitive);
-    m_rxClass = QRegExp(QStringLiteral("\\bclass (\\w+)\\b.*\\{"), Qt::CaseInsensitive);
-    m_rxInterface = QRegExp(QStringLiteral("^interface (\\w+)\\b.*\\{"), Qt::CaseInsensitive);
-    m_rxFunction = QRegExp(QStringLiteral("\\bfunction (\\w+)\\("), Qt::CaseInsensitive);
+    m_rxDefine = QRegularExpression(QStringLiteral("(?:^|\\W)define\\s*\\(\\s*['\"]([^'\"]+)['\"]"), QRegularExpression::CaseInsensitiveOption);
+    m_rxConst = QRegularExpression(QStringLiteral("^(?:\\w+ )?const ([\\w_][\\w\\d_]*)"), QRegularExpression::CaseInsensitiveOption);
+    m_rxNamespace = QRegularExpression(QStringLiteral("^namespace ([\\w/]+)"), QRegularExpression::CaseInsensitiveOption);
+    m_rxClass = QRegularExpression(QStringLiteral("\\bclass (\\w+)\\b.*\\{"), QRegularExpression::CaseInsensitiveOption);
+    m_rxInterface = QRegularExpression(QStringLiteral("^interface (\\w+)\\b.*\\{"), QRegularExpression::CaseInsensitiveOption);
+    m_rxFunction = QRegularExpression(QStringLiteral("\\bfunction (\\w+)\\("), QRegularExpression::CaseInsensitiveOption);
 
     // After reading these quoted post, I added variables in a very eager way
     //  > I highly recommend to use an editor that can list all variable names in a separate window.
     //  > The reason are typing errors in variable names.
     //  > https://php.net/manual/en/language.variables.basics.php#120617
-    m_rxVariable = QRegExp(QStringLiteral("\\$(\\w+)"), Qt::CaseInsensitive);
+    m_rxVariable = QRegularExpression(QStringLiteral("\\$(\\w+)"), QRegularExpression::CaseInsensitiveOption);
 
     initHereDoc(QStringLiteral("<<<"), QStringLiteral("'"));
 }
@@ -71,26 +71,26 @@ void PhpParser::parseDocument()
     while (nextInstruction()) {
 
         if (m_line.contains(m_rxNamespace)) {
-            addNode(NamespaceNode, m_rxNamespace.cap(1), m_lineNumber);
+            addNode(NamespaceNode, m_rxNamespace.match(m_line).captured(1), m_lineNumber);
 
         } else if (m_line.contains(QStringLiteral("define(,);"))) {
             m_niceLine.contains(m_rxDefine);
-            addNode(ConstantNode, m_rxDefine.cap(1), m_lineNumber);
+            addNode(ConstantNode, m_rxDefine.match(m_line).captured(1), m_lineNumber);
 
         } else if (m_line.contains(m_rxConst)) {
-            addNode(ConstantNode, m_rxConst.cap(1), m_lineNumber);
+            addNode(ConstantNode, m_rxConst.match(m_line).captured(1), m_lineNumber);
 
         } else if (m_line.contains(m_rxClass)) {
-            addNode(ClassNode, m_rxClass.cap(1), m_lineNumber);
+            addNode(ClassNode, m_rxClass.match(m_line).captured(1), m_lineNumber);
 
         } else if (m_line.contains(m_rxInterface)) {
-            addNode(InterfaceNode, m_rxInterface.cap(1), m_lineNumber);
+            addNode(InterfaceNode, m_rxInterface.match(m_line).captured(1), m_lineNumber);
 
         } else if (m_line.contains(m_rxVariable)) {
-            addNode(VariableNode, m_rxVariable.cap(1), m_lineNumber);
+            addNode(VariableNode, m_rxVariable.match(m_line).captured(1), m_lineNumber);
 
         } else if (m_line.contains(m_rxFunction)) {
-            addNode(FunctionNode, m_rxFunction.cap(1), m_lineNumber);
+            addNode(FunctionNode, m_rxFunction.match(m_line).captured(1), m_lineNumber);
 
         }
     }

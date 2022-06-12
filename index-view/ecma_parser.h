@@ -56,10 +56,10 @@ protected:
     void removeStrings() override;
     void removeComment() override;
 
-    QRegExp m_rxFunction;
-    QRegExp m_rxFunc2;
-    QRegExp m_rxFunc3;
-    QRegExp m_rxFunc4;
+    QRegularExpression m_rxFunction;
+    QRegularExpression m_rxFunc2;
+    QRegularExpression m_rxFunc3;
+    QRegularExpression m_rxFunc4;
 
 };
 

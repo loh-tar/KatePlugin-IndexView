@@ -60,13 +60,13 @@ protected:
     void removeStrings() override;
     void removeComment() override;
 
-    QRegExp m_rxDefine;
-    QRegExp m_rxConst;
-    QRegExp m_rxNamespace;
-    QRegExp m_rxClass;
-    QRegExp m_rxInterface;
-    QRegExp m_rxFunction;
-    QRegExp m_rxVariable;
+    QRegularExpression m_rxDefine;
+    QRegularExpression m_rxConst;
+    QRegularExpression m_rxNamespace;
+    QRegularExpression m_rxClass;
+    QRegularExpression m_rxInterface;
+    QRegularExpression m_rxFunction;
+    QRegularExpression m_rxVariable;
 
 };
 
