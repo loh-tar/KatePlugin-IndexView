@@ -33,6 +33,7 @@
 
 #include "ui_kate_plugin_index_view_config_page.h"
 
+class KatePluginIndexView;
 
 /**
  * Plugin's config page
