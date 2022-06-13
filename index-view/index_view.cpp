@@ -67,13 +67,7 @@ IndexView::IndexView(KatePluginIndexView *plugin, KTextEditor::MainWindow *mw)
     m_indexTree = new QTreeWidget();
     m_indexTree->setFocusPolicy(Qt::NoFocus);
     m_indexTree->setLayoutDirection(Qt::LeftToRight);
-    QStringList titles;
-    // Only column 0 "Index" will be visible, no need to translate line number titles
-    titles << i18nc("@title:column", "Index") << QStringLiteral("Begin") << QStringLiteral("End");
-    m_indexTree->setColumnCount(3);
-    m_indexTree->setHeaderLabels(titles);
-    m_indexTree->setColumnHidden(1, true);
-    m_indexTree->setColumnHidden(2, true);
+    m_indexTree->setHeaderLabels({i18nc("@title:column", "Index")});
     m_indexTree->setContextMenuPolicy(Qt::CustomContextMenu);
     m_indexTree->setIndentation(10);
     connect(m_indexTree, &QTreeWidget::currentItemChanged, this, &IndexView::currentItemChanged);
@@ -399,8 +393,8 @@ void IndexView::updateCurrTreeItem()
     int i = 0;
     while (i < m_indexList.size()) {
         newItem = m_indexList.at(i);
-        const int beginLine = newItem->data(1, Qt::DisplayRole).toInt();
-        const int endLine   = newItem->data(2, Qt::DisplayRole).toInt();
+        const int beginLine = newItem->data(0, NodeData::Line).toInt();
+        const int endLine   = newItem->data(0, NodeData::EndLine).toInt();
         if (beginLine == currLine) {
             break;
         }
@@ -417,8 +411,8 @@ void IndexView::updateCurrTreeItem()
     if (!newItem) {
         while (--i >= 0) {
             newItem = m_indexList.at(i);
-            const int beginLine = newItem->data(1, Qt::DisplayRole).toInt();
-            const int endLine   = newItem->data(2, Qt::DisplayRole).toInt();
+            const int beginLine = newItem->data(0, NodeData::Line).toInt();
+            const int endLine   = newItem->data(0, NodeData::EndLine).toInt();
 //             if (endLine >= currLine) {
             if (beginLine != endLine) {
                 break;
@@ -507,8 +501,9 @@ void IndexView::itemClicked(QTreeWidgetItem *it)
     if (!kv)
         return;
 
-    int line = it->text(1).toInt(nullptr, 10);
-    kv->setCursorPosition(KTextEditor::Cursor(line, 0));
+    int line   = it->data(0, NodeData::Line).toInt();
+    int column = it->data(0, NodeData::Column).toInt();
+    kv->setCursorPosition(KTextEditor::Cursor(line, column));
 
     if (m_currentItemChanged) {
         m_currentItemChanged = false;

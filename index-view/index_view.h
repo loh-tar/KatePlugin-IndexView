@@ -40,6 +40,12 @@ class KatePluginIndexView;
 class FilterBox;
 class Parser;
 
+enum NodeData {
+    Line = Qt::UserRole, // Where the pattern is located
+    Column,              // Where the pattern is located
+    EndLine              // Line number for which the item is still relevant/responsible
+};
+
 class IndexView : public QObject
                 , public KXMLGUIClient
                 , public KTextEditor::SessionConfigInterface

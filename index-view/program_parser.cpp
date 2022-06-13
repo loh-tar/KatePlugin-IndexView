@@ -332,12 +332,10 @@ void ProgramParser::beginOfBlock()
         }
     }
 
-    if (node) {
-        if (!node->text(2).contains(QStringLiteral("-1"))) {
-            // Ignore this block
-            if (p_nestingFoo < 0) {
-                p_nestingFoo = p_nestingStack.size() + 1;
-            }
+    if (node && node->data(0, NodeData::EndLine).toInt() != -1) {
+        // Ignore this block
+        if (p_nestingFoo < 0) {
+            p_nestingFoo = p_nestingStack.size() + 1;
         }
     }
 
@@ -365,7 +363,7 @@ void ProgramParser::endOfBlock()
     if (!p_nestingStack.isEmpty() && p_nestingStack.top() == p_parentNode) {
         return;
     } else {
-        p_parentNode->setText(2, QString::number(lineNumber(), 10));
+        p_parentNode->setData(0, NodeData::EndLine, lineNumber());
     }
 
     p_parentNode = p_parentNode->parent();
@@ -412,7 +410,7 @@ void ProgramParser::addNode(const int nodeType, const QString &text, const int l
     setNodeProperties(node, nodeType, text, lineNumber);
 
     if (m_nonBlockElements.contains(nodeType)) {
-        node->setText(2, QString::number(lineNumber, 10));
+        node->setData(0, NodeData::EndLine, lineNumber);
     }
 }
 

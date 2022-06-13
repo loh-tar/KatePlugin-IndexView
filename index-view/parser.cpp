@@ -73,7 +73,7 @@ void DummyParser::addNode(const int nodeType, const QString &text, const int lin
         node->setText(0, text);
         // Don't set icon, looks odd
         // node->setIcon(0, p_icons.value(nodeType));
-        node->setText(1, QString::number(lineNumber, 10));
+        node->setData(0, NodeData::Line, lineNumber);
     }
 }
 
@@ -163,7 +163,7 @@ void Parser::prepareForParse()
             node->setText(0, p_viewOptions.value(i)->objectName());
             if (p_addIcons->isChecked()) {
             node->setIcon(0, p_icons.value(i)); }
-            node->setText(1, QString::number(-1, 10));
+            node->setData(0, NodeData::Line, -1);
 
             p_rootNodes.insert(i, node);
         }
@@ -181,7 +181,7 @@ void Parser::prepareForParse()
         node->setText(0, viewOption->objectName());
         if (p_addIcons->isChecked()) {
         node->setIcon(0, p_icons.value(i)); }
-        node->setText(1, QString::number(-1, 10));
+        node->setData(0, NodeData::Line, -1);
 
         p_rootNodes.insert(i, node);
     }
@@ -329,8 +329,8 @@ void Parser::setNodeProperties(QTreeWidgetItem *const node, const int nodeType, 
     node->setText(0, text);
     if (p_addIcons->isChecked()) {
     node->setIcon(0, p_icons.value(nodeType)); }
-    node->setText(1, QString::number(lineNumber, 10));
-    node->setText(2, QString::number(-1, 10));
+    node->setData(0, NodeData::Line, lineNumber);
+    node->setData(0, NodeData::EndLine, -1); // ATM, we don't know the end line
 
     if (p_viewExpanded->isChecked()) {
         p_indexTree->expandItem(node->parent());
@@ -368,7 +368,7 @@ void Parser::setNodeProperties(QTreeWidgetItem *const node, const int nodeType, 
     }
 
     if (m_detachedNodeTypes.contains(nodeType)) {
-        node->setText(2, QString::number(lineNumber, 10));
+        node->setData(0, NodeData::EndLine, lineNumber);
         lastNodeWasDetached = node;
     } else {
         p_lastNode = node;
