@@ -23,6 +23,7 @@
 #define INDEXVIEW_PARSER_CLASS_H
 
 #include <QAction>
+#include <QElapsedTimer>
 #include <QMenu>
 #include <QObject>
 #include <QQueue>
@@ -147,6 +148,8 @@ protected:
     /**
     * This function iterate with each call over the document and append the line
     * which is indexed by @c p_lineNumber to @c m_line.
+    * This function also checks @c m_runTime and calls qApp->processEvents() if too
+    * much time is gone to keep the editing responsive.
     * @return false when no line was left
     */
     virtual bool appendNextLine();
@@ -275,6 +278,12 @@ protected:
      * Hint: It's currently only used for FIXME/TODO nodes
      */
     QSet<int>                       m_detachedNodeTypes;
+
+    /**
+     * Measure the gone parse time. Started in parse() and checked in appendNextLine()
+     * to call qApp->processEvents() to keep the editing responsive.
+     */
+    QElapsedTimer                   m_runTime;
 
 private:
     KTextEditor::Document          *p_document = nullptr;

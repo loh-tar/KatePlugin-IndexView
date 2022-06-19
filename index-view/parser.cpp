@@ -19,6 +19,7 @@
  */
 
 
+#include <QApplication>
 #include <QDebug>
 
 #include <KLocalizedString>
@@ -223,6 +224,12 @@ bool Parser::appendNextLine()
         return false;
     }
 
+    // Keep the editing responsive when the file is large
+    if (m_runTime.hasExpired(100)) {
+        qApp->processEvents();
+        m_runTime.start();
+    }
+
     if (!m_line.isEmpty()) {
         m_line.append(QLatin1Char(' '));
     }
@@ -240,9 +247,12 @@ bool Parser::appendNextLine()
 
 void Parser::parse()
 {
+    // Looks odd, but we need to do this here because some parser parse in some situations
+    // twice, e.g. DocumentParser, and then we end up with a doubled result tree
     p_view->m_indexTree->clear();
     p_view->m_indexList.clear();
     p_view->m_filtered = false;
+
     p_currentLineNumber = p_view->m_currentLineNumber;
 
     p_lastNode = nullptr;
@@ -263,6 +273,7 @@ void Parser::parse()
     }
 
     prepareForParse();
+    m_runTime.start();
     parseDocument();
 
     if ((!p_viewExpanded->isChecked()) && (p_currentLineNumber != -1)) {

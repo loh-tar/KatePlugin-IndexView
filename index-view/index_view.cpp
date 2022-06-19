@@ -26,6 +26,7 @@
 #include <QEvent>
 #include <QHeaderView>
 #include <QKeyEvent>
+#include <QScrollBar>
 #include <QVBoxLayout>
 
 #include <KConfigGroup>
@@ -82,7 +83,6 @@ IndexView::IndexView(KatePluginIndexView *plugin, KTextEditor::MainWindow *mw)
                                             , plugin->icon(), plugin->name());
 
     m_toolview->installEventFilter(this);
-    connect(m_mainWindow, &KTextEditor::MainWindow::viewChanged, this, &IndexView::docChanged);
 
     QWidget *container = new QWidget(m_toolview);
     QVBoxLayout *layout = new QVBoxLayout(container);
@@ -91,7 +91,12 @@ IndexView::IndexView(KatePluginIndexView *plugin, KTextEditor::MainWindow *mw)
     layout->addWidget(m_filterBox);
     layout->addWidget(m_indexTree, 1);
 
-    docChanged();
+    // When the current file is BIG and our time-slice parsing take effect, will on very first show
+    // will with this delayed connect&update an ugly black QTreeWidget avoided
+    QTimer::singleShot(0, this, [this]() {
+        connect(m_mainWindow, &KTextEditor::MainWindow::viewChanged, this, &IndexView::docChanged);
+        docChanged();
+    });
 }
 
 
@@ -228,6 +233,7 @@ void IndexView::docChanged()
 
     if (!docModeChanged()) {
         m_parser->docChanged();
+        m_indexTree->clear(); // Hint parseDocument() not to restore scroll position
         // Don't call parseDocument() direct, must wait until new cursor position is updated
         QTimer::singleShot(/*UpdateCurrItemDelay + 10*/0, this, &IndexView::parseDocument);
     }
@@ -251,6 +257,7 @@ bool IndexView::docModeChanged()
     m_docType = newDocType;
     m_parser = Parser::create(m_docType, this);
     loadViewSettings();
+    m_indexTree->clear(); // Hint parseDocument() not to restore scroll position
     // Don't call parseDocument() direct, must wait until new cursor position is updated
     QTimer::singleShot(/*UpdateCurrItemDelay + 10*/0, this, &IndexView::parseDocument);
 
@@ -459,6 +466,12 @@ void IndexView::parseDocument()
         return;
     }
 
+    if (!m_indexTree->updatesEnabled()) {
+        // Parse is already running, do it later
+        docEdited();
+        return;
+    }
+
     // Qt docu recommends to populate view with disabled sorting
     // https://doc.qt.io/qt-5/qtreeview.html#sortingEnabled-prop
     Qt::SortOrder sortOrder = m_indexTree->header()->sortIndicatorOrder();
@@ -472,6 +485,15 @@ void IndexView::parseDocument()
     // Ensure to expand in advance the right node
     m_currentLineNumber = m_mainWindow->activeView()->cursorPositionVirtual().line();
 
+    // To avoid unpleasant fidgeting in the tree remember current scroll position
+    int scrollPosition = -1;
+    if (m_indexTree->topLevelItemCount() > 0) {
+        scrollPosition = m_indexTree->verticalScrollBar()->sliderPosition();
+    }
+
+    // Since we parse in time slices, we don't want intermediate updates of the tree
+    m_indexTree->setUpdatesEnabled(false);
+
     if (m_parser) {
         m_parser->parse();
     }
@@ -483,6 +505,17 @@ void IndexView::parseDocument()
 
     m_currentLineNumber = -1; // Ensure to bypass check in updateCurrTreeItem()
     updateCurrTreeItem();
+
+    if (scrollPosition > -1) {
+        // Now, that all updates are done, scroll back to old position...
+        m_indexTree->verticalScrollBar()->setSliderPosition(scrollPosition);
+        // ...but ensure it is visible e.g. in case of some rename
+        m_indexTree->scrollToItem(m_indexTree->currentItem());
+    }
+
+    // We are done, don't forget to enable again
+    m_indexTree->setUpdatesEnabled(true);
+
     filterTree();
 }
 

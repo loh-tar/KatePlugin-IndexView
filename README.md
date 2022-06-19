@@ -20,6 +20,7 @@ official Kate version.
 ### Last version is 0.8.5, Jun 2022
 
   - Prepare for Qt6, Required Qt version is now 5.15
+  - Parser: Keep the editing responsive when the file is large
   - Add "Outline" to the plugin description to accommodate the apparently
     established terms
 
