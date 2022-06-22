@@ -382,7 +382,7 @@ void ProgramParser::addNode(const int nodeType, const QString &text, const int l
     QTreeWidgetItem *node = nullptr;
 
     if (m_detachedNodeTypes.contains(nodeType)) {
-        node = new QTreeWidgetItem(p_rootNodes.value(nodeType), nodeType);
+        node = new QTreeWidgetItem(rootNode(nodeType), nodeType);
         setNodeProperties(node, nodeType, text, lineNumber);
         return;
     }
@@ -396,7 +396,7 @@ void ProgramParser::addNode(const int nodeType, const QString &text, const int l
 
     if (p_viewTree->isChecked()) {
         if (!p_parentNode || p_nestingStack.isEmpty()) {
-            p_parentNode = p_rootNodes.value(nodeType);
+            p_parentNode = rootNode(nodeType);
         }
         if (m_nonBlockElements.contains(p_parentNode->type()) && p_parentNode->type() != nodeType) {
             p_parentNode = p_rootNodes.value(nodeType);

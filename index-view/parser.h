@@ -168,9 +168,17 @@ protected:
     * This function is called by parse() just before parseDocument() and offer
     * the possibilities to do some initialization in a master class after the
     * janitor initialization task is done, like clear the tree. By default there
-    * will be the root nodes added when @c p_viewTree is checked.
+    * will be only the root decoration set according to checked @c p_viewTree.
     */
     virtual void prepareForParse();
+
+    /**
+     * This function return the root node of the given @p nodeType holded in @c p_rootNodes.
+     * If such node not exist, is a new node created, added to @c p_rootNodes and returned.
+     * @param nodeType of type NodeType
+     * @return root node of asked type
+     */
+    QTreeWidgetItem *rootNode(int nodeType);
 
     /**
     * Add a new view option to the context menu to toggle the visibility of the

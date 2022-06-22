@@ -157,35 +157,24 @@ Parser *Parser::create(const QString &type, IndexView *view)
 
 void Parser::prepareForParse()
 {
-    if (!p_viewTree->isChecked()) {
-        p_indexTree->setRootIsDecorated(0);
-        for (int i : qAsConst(m_detachedNodeTypes)) {
-            QTreeWidgetItem *node = new QTreeWidgetItem(p_indexTree, i);
-            node->setText(0, p_viewOptions.value(i)->objectName());
-            if (p_addIcons->isChecked()) {
-            node->setIcon(0, p_icons.value(i)); }
-            node->setData(0, NodeData::Line, -1);
+    p_indexTree->setRootIsDecorated(p_viewTree->isChecked());
+}
 
-            p_rootNodes.insert(i, node);
-        }
-        return;
+QTreeWidgetItem *Parser::rootNode(int nodeType)
+{
+    QTreeWidgetItem *node = p_rootNodes.value(nodeType, nullptr);
+    if (node) {
+        return node;
     }
 
-    p_indexTree->setRootIsDecorated(1);
+    node = new QTreeWidgetItem(p_indexTree, nodeType);
+    node->setText(0, p_viewOptions.value(nodeType)->objectName());
+    if (p_addIcons->isChecked()) {
+    node->setIcon(0, p_icons.value(nodeType));}
+    node->setData(0, NodeData::Line, -1);
+    p_rootNodes.insert(nodeType, node);
 
-    for(int i = 0; true; i++) {
-        QAction *viewOption = p_viewOptions.value(i);
-        if (!viewOption) {
-            break;
-        }
-        QTreeWidgetItem *node = new QTreeWidgetItem(p_indexTree, i);
-        node->setText(0, viewOption->objectName());
-        if (p_addIcons->isChecked()) {
-        node->setIcon(0, p_icons.value(i)); }
-        node->setData(0, NodeData::Line, -1);
-
-        p_rootNodes.insert(i, node);
-    }
+    return node;
 }
 
 
