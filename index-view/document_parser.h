@@ -72,8 +72,12 @@ protected:
     * @param nodeType the type of the new node, like header or paragraph
     * @param text the caption of the new node, visible in the view
     * @param lineNumber the line where the pattern is located in the file
+    * @param columnNumber the column where the pattern is located in the file
+    * NOTE @p columnNumber is set but not reported (used) by any known sub class atm.
+    * Not sure if that will at any time change. It's only present here to fit the
+    * needs of other parser types.
     */
-    virtual void addNode(const int nodeType, const QString &text, const int lineNumber) override;
+    virtual void addNode(const int nodeType, const QString &text, const int lineNumber, const int columnNumber = 0);
 
     /**
     * This function is called twice by parse() to ensure that not only all useful

@@ -377,13 +377,13 @@ void ProgramParser::clearNesting()
 }
 
 
-void ProgramParser::addNode(const int nodeType, const QString &text, const int lineNumber)
+void ProgramParser::addNode(const int nodeType, const QString &text, const int lineNumber, const int columnNumber/* = 0*/)
 {
     QTreeWidgetItem *node = nullptr;
 
     if (m_detachedNodeTypes.contains(nodeType)) {
         node = new QTreeWidgetItem(rootNode(nodeType), nodeType);
-        setNodeProperties(node, nodeType, text, lineNumber);
+        setNodeProperties(node, nodeType, text, lineNumber, columnNumber);
         return;
     }
 
@@ -407,7 +407,7 @@ void ProgramParser::addNode(const int nodeType, const QString &text, const int l
         node = new QTreeWidgetItem(p_indexTree, nodeType);
     }
 
-    setNodeProperties(node, nodeType, text, lineNumber);
+    setNodeProperties(node, nodeType, text, lineNumber, columnNumber);
 
     if (m_nonBlockElements.contains(nodeType)) {
         node->setData(0, NodeData::EndLine, lineNumber);
@@ -415,14 +415,14 @@ void ProgramParser::addNode(const int nodeType, const QString &text, const int l
 }
 
 
-void ProgramParser::addNodeToScope(const QString &scope, const int scopeType, const int nodeType, const QString &text, const int lineNumber)
+void ProgramParser::addNodeToScope(const QString &scope, const int scopeType, const int nodeType, const QString &text, const int lineNumber, const int columnNumber/* = 0*/)
 {
     if (!nodeTypeIsWanted(nodeType)) {
         return;
     }
 
     if (scope.isEmpty()) {
-        addNode(nodeType, text, lineNumber);
+        addNode(nodeType, text, lineNumber, columnNumber);
         return;
     }
 
@@ -435,7 +435,7 @@ void ProgramParser::addNodeToScope(const QString &scope, const int scopeType, co
     }
 
     QTreeWidgetItem *node = new QTreeWidgetItem(scopeRoot, nodeType);
-    setNodeProperties(node, nodeType, text, lineNumber);
+    setNodeProperties(node, nodeType, text, lineNumber, columnNumber);
 }
 
 

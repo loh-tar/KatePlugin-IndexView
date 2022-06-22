@@ -151,7 +151,7 @@ void DocumentParser::prepareForParse()
 }
 
 
-void DocumentParser::addNode(const int nodeType, const QString &text, const int lineNumber)
+void DocumentParser::addNode(const int nodeType, const QString &text, const int lineNumber, const int columnNumber/* = 0*/)
 {
     QTreeWidgetItem *node = nullptr;
 
@@ -178,7 +178,7 @@ void DocumentParser::addNode(const int nodeType, const QString &text, const int 
         node = new QTreeWidgetItem(p_indexTree, nodeType);
     }
 
-    setNodeProperties(node, nodeType, text, lineNumber);
+    setNodeProperties(node, nodeType, text, lineNumber, columnNumber);
 }
 
 

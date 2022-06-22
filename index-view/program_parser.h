@@ -186,7 +186,7 @@ protected:
     /**
      * @see Parser::addNode()
      */
-    virtual void addNode(const int nodeType, const QString &text, const int lineNumber) override;
+    virtual void addNode(const int nodeType, const QString &text, const int lineNumber, const int columnNumber = 0);
 
     /**
      * This function can be used instead of @c addNode to slightly bypass the normal
@@ -198,8 +198,10 @@ protected:
      * @param nodeType the type of the new node, like header or function
      * @param text the caption of the new node, visible in the view
      * @param lineNumber the line where the pattern is located in the file
+     * @param columnNumber the column where the pattern is located in the file
+     * NOTE @p columnNumber is set but not reported (used) by any known sub class atm.
      */
-    void addNodeToScope(const QString &scope, const int scopeType, const int nodeType, const QString &text, const int lineNumber);
+    void addNodeToScope(const QString &scope, const int scopeType, const int nodeType, const QString &text, const int lineNumber, const int columnNumber = 0);
 
     int parentNodeType() { return p_parentNode ? p_parentNode->type() : -1; }; // Introduced for C++ function declarations
     int nestingLevel() { return p_nestingStack.size(); }; // Introduced for Tcl

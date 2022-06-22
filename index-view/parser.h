@@ -238,8 +238,11 @@ protected:
     * @param nodeType the type of the new node, like header or function
     * @param text the caption of the new node, visible in the view
     * @param lineNumber the line where the pattern is located in the file
+    * @param columnNumber the column where the pattern is located in the file
     */
-    virtual void addNode(const int nodeType, const QString &text, const int lineNumber) = 0;
+    // FIXME Now disabled/remove because not really needed here. While coding XmlTypeParser I noticed that
+    //       this func should return bool if successful or not. But don't wanted update all other stuff...
+    // virtual void addNode(const int nodeType, const QString &text, const int lineNumber, const int columnNumber = 0) = 0;
 
     /**
     * Call this function at the beginning of addNode() to test if you must go on.
@@ -259,7 +262,7 @@ protected:
     * @param text the caption of the new node, visible in the view
     * @param lineNumber the line where the pattern is located in the file
     */
-    void setNodeProperties(QTreeWidgetItem *const node, const int nodeType, const QString &text, const int lineNumber);
+    void setNodeProperties(QTreeWidgetItem *const node, const int nodeType, const QString &text, const int lineNumber, const int columnNumber = 0);
 
     /**
      * @return the last added node, which is p_lastNode
@@ -337,7 +340,7 @@ protected:
     QString author() override { return QStringLiteral("2018 loh.tar"); } ;
 
     void parseDocument() override;
-    void addNode(const int nodeType, const QString &text, const int lineNumber) override;
+    void addNode(const int nodeType, const QString &text);
 
     QString     m_docType;
 

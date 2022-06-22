@@ -62,7 +62,7 @@ DummyParser::~DummyParser()
 }
 
 
-void DummyParser::addNode(const int nodeType, const QString &text, const int lineNumber)
+void DummyParser::addNode(const int nodeType, const QString &text)
 {
     QTreeWidgetItem *node = new QTreeWidgetItem(p_indexTree, nodeType);
 
@@ -74,7 +74,8 @@ void DummyParser::addNode(const int nodeType, const QString &text, const int lin
         node->setText(0, text);
         // Don't set icon, looks odd
         // node->setIcon(0, p_icons.value(nodeType));
-        node->setData(0, NodeData::Line, lineNumber);
+        node->setData(0, NodeData::Column, -1);
+        node->setData(0, NodeData::Line, -1);
     }
 }
 
@@ -82,8 +83,8 @@ void DummyParser::addNode(const int nodeType, const QString &text, const int lin
 void DummyParser::parseDocument()
 {
     p_indexTree->setRootIsDecorated(0);
-    addNode(InfoNode, i18n("Sorry, not supported yet!"), -1);
-    addNode(InfoNode, i18n("File type: %1", m_docType), -1);
+    addNode(InfoNode, i18n("Sorry, not supported yet!"));
+    addNode(InfoNode, i18n("File type: %1", m_docType));
 }
 
 
@@ -318,7 +319,7 @@ bool Parser::nodeTypeIsWanted(int nodeType)
 }
 
 
-void Parser::setNodeProperties(QTreeWidgetItem *const node, const int nodeType, const QString &text, const int lineNumber)
+void Parser::setNodeProperties(QTreeWidgetItem *const node, const int nodeType, const QString &text, const int lineNumber, const int columnNumber/* = 0*/)
 {
     static QTreeWidgetItem *lastNodeWasDetached = nullptr;
 
@@ -330,6 +331,7 @@ void Parser::setNodeProperties(QTreeWidgetItem *const node, const int nodeType, 
     if (p_addIcons->isChecked()) {
     node->setIcon(0, p_icons.value(nodeType)); }
     node->setData(0, NodeData::Line, lineNumber);
+    node->setData(0, NodeData::Column, columnNumber);
     node->setData(0, NodeData::EndLine, -1); // ATM, we don't know the end line
 
     if (p_viewExpanded->isChecked()) {
