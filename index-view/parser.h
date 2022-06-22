@@ -55,9 +55,9 @@ class KatePluginIndexView;
 /**
  * The @c Parser class must be the base for all @c IndexView parser.
  * However it may not recommended to use this class as a direct parent for new
- * written parser. There are (currently two) derivated master parser available
+ * written parser. There are (currently three) derivated master parser available
  * which offer a couple of helpful features.
- * @see DocumentParser, ProgramParser
+ * @see DocumentParser, ProgramParser, XmlTypeParser
  * @author loh.tar
  */
 class Parser : public QObject
@@ -69,6 +69,7 @@ class Parser : public QObject
     friend class DummyParser;
     friend class DocumentParser;
     friend class ProgramParser;
+    friend class XmlTypeParser;
 
 public:
     Parser(IndexView *view);

@@ -38,6 +38,7 @@
 #include "python_parser.h"
 #include "ruby_parser.h"
 #include "tcl_parser.h"
+#include "xml_type_parser.h"
 
 #include "parser.h"
 
@@ -115,7 +116,6 @@ Parser::~Parser()
 
 Parser *Parser::create(const QString &type, IndexView *view)
 {
-// qDebug() << "Parser::create" << type;
     // FIXME Do you know some more elegant way to achieve the desired result?
     // The bad things here are, that you must add here each new parser and recompile
     // at least this plugin
@@ -143,6 +143,8 @@ Parser *Parser::create(const QString &type, IndexView *view)
         return new RubyParser(view);
     else if (type == QStringLiteral("Tcl/Tk"))
         return new TclParser(view);
+    else if (type == QStringLiteral("DTD") || type == QStringLiteral("XML") || type == QStringLiteral("HTML") || type == QStringLiteral("SGML") || type == QStringLiteral("xslt") || type == QStringLiteral("AMPLE"))
+        return new XmlTypeParser(view, type);
 
     // ...the last one, our dummy
     Parser *p = new DummyParser(type, view);

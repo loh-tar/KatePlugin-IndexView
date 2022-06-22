@@ -9,6 +9,7 @@ set(kateindexviewplugin_PART_SRCS
     parser.cpp
     document_parser.cpp
     program_parser.cpp
+    xml_type_parser.cpp
     # ...and derivated classes, alphabetical ordered
     bash_parser.cpp
     cpp_parser.cpp
