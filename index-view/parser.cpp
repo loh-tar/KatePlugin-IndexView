@@ -168,7 +168,19 @@ QTreeWidgetItem *Parser::rootNode(int nodeType)
         return node;
     }
 
-    node = new QTreeWidgetItem(p_indexTree, nodeType);
+    if (m_detachedNodeTypes.contains(nodeType)) {
+        // We want detached nodes always on top of the view, in order of their enum value
+        node = new QTreeWidgetItem(nodeType);
+        int index = 0;
+        while (p_indexTree->topLevelItem(index) && p_indexTree->topLevelItem(index)->type() < nodeType) {
+            ++index;
+        }
+        p_indexTree->insertTopLevelItem(index, node);
+
+    } else {
+        node = new QTreeWidgetItem(p_indexTree, nodeType);
+    }
+
     node->setText(0, p_viewOptions.value(nodeType)->objectName());
     if (p_addIcons->isChecked()) {
     node->setIcon(0, p_icons.value(nodeType));}
