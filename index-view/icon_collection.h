@@ -31,6 +31,7 @@
 
 namespace IconCollection {
 
+// TODO Get rid of these enum and related stuff
 enum IconType {
     BlueIcon,
     Head1Icon = BlueIcon,
@@ -67,11 +68,16 @@ enum IconType {
 };
 
 QIcon getIcon(IconType type);
+
 /**
- * @parm size How many circle to use 1-3
- * @parm color A color from Qt::GlobalColor or -1 for auto color
+ * This little function return an on the fly generated icon.
+ * When called only with a size argument is a color auto chosen from an intern list
+ * of Qt::GlobalColor. With each such auto gen call is an other color used. When no
+ * new color is available the frst known color is used again.
+ * @parm size How many circle to use 1-3 or -1 to reset auto color counter
+ * @parm qtGlobalColorEnum A color from Qt::GlobalColor or -1 for auto color
  */
-QIcon getIcon(const int size, int color = -1);
+QIcon getIcon(const int size, const int qtGlobalColorEnum = -1);
 
 }
 
