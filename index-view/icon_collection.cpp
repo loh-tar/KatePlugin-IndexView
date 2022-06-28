@@ -29,7 +29,8 @@
 // approach. Anyone knows why that was not done?
 
 #include <QIcon>
-#include <QIcon>
+#include <QPainter>
+#include <QDebug>
 
 #include "icon_collection.h"
 
@@ -42,6 +43,71 @@
 // which should adding new colored icons more easily.
 
 namespace IconCollection {
+
+QIcon getIcon(const int size, const int colorIdx/* = -1 */)
+{
+    static int autoColor = 0;
+    const static QList<int> autoColors = { Qt::blue, Qt::red, Qt::green, Qt::cyan, Qt::magenta, Qt::yellow, Qt::gray };
+
+    const qreal pixmapSize = 24.0;
+    const qreal pixmapHalf = pixmapSize / 2.0;
+    const qreal penWidth = 1.0;
+    const qreal circleSize = pixmapSize / 4.0 - penWidth;
+    const qreal circleHalf = circleSize / 2.0;
+
+    QPixmap pixmap(pixmapSize,pixmapSize);
+    pixmap.fill();
+
+    if (size < 1) {
+        // No error, just reset our auto color counter
+        autoColor = 0;
+        return QIcon(pixmap);
+    }
+
+    QColor color;
+    if (colorIdx < 0) {
+        color = QColor((Qt::GlobalColor)autoColors.at(autoColor++));
+        if (autoColors.size() == autoColor) {
+            autoColor = 0;
+        }
+    }
+
+    QPainter painter(&pixmap);
+    QPen pen = painter.pen();
+    pen.setWidthF(penWidth);
+    painter.setPen(pen);
+
+    QBrush brush(color);
+
+    if (size == 3) {
+        brush.setColor(color.darker(150));
+        painter.setBrush(brush);
+        painter.drawEllipse(QPointF(pixmapHalf - circleSize, pixmapHalf - circleSize), circleSize * 1.2, circleSize * 1.2);
+
+        brush.setColor(color);
+        painter.setBrush(brush);
+        painter.drawEllipse(QPointF(pixmapHalf + circleSize, pixmapHalf), circleSize * 1.2, circleSize * 1.2);
+
+        brush.setColor(color.lighter(150));
+        painter.setBrush(brush);
+        painter.drawEllipse(QPointF(pixmapHalf - circleSize, pixmapHalf + circleSize), circleSize, circleSize);
+
+    } else if (size == 2) {
+        brush.setColor(color.lighter(150));
+        painter.setBrush(brush);
+        painter.drawEllipse(QPointF(pixmapHalf - circleSize, pixmapHalf - circleSize), circleSize * 1.2, circleSize * 1.2);
+
+        brush.setColor(color);
+        painter.setBrush(brush);
+        painter.drawEllipse(QPointF(pixmapHalf + circleSize, pixmapHalf + circleSize), circleSize * 1.2, circleSize * 1.2);
+
+    } else {
+        painter.setBrush(brush);
+        painter.drawEllipse(QPointF(pixmapHalf/* + circleSize*/, pixmapHalf), circleSize * 1.2, circleSize * 1.2);
+    }
+
+    return QIcon(pixmap);
+}
 
 static const char* const blueXpm[] = {
     "16 16 10 1",

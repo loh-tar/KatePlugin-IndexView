@@ -67,6 +67,11 @@ enum IconType {
 };
 
 QIcon getIcon(IconType type);
+/**
+ * @parm size How many circle to use 1-3
+ * @parm color A color from Qt::GlobalColor or -1 for auto color
+ */
+QIcon getIcon(const int size, int color = -1);
 
 }
 
