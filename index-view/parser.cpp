@@ -121,7 +121,7 @@ Parser *Parser::create(const QString &type, IndexView *view)
     // at least this plugin
 
     // Ordered by parser class name, except...
-    if (type == QStringLiteral("Bash"))
+    if (type == QStringLiteral("Bash") || type == QStringLiteral("Zsh"))
         return new BashParser(view);
     else if (type == QStringLiteral("C++") || type == QStringLiteral("C") || type == QStringLiteral("ANSI C89") || type == QStringLiteral("Java"))
         return new CppParser(view);

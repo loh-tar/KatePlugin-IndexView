@@ -21,6 +21,7 @@ official Kate version.
 
   - Prepare for Qt6, Required Qt version is now 5.15
   - Parser: Keep the editing responsive when the file is large
+  - Parser: Use BashParser for "Zsh" files
   - Add "Outline" to the plugin description to accommodate the apparently
     established terms
 
