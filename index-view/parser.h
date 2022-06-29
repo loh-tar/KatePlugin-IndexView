@@ -307,7 +307,14 @@ private:
     QHash<int, QIcon>               p_icons;
     QHash<int, QAction*>            p_viewOptions;
     QHash<int, QTreeWidgetItem*>    p_rootNodes;
-    QHash<QAction*, QAction*>       p_modifierOptions;
+
+    struct DependencyPair {
+        DependencyPair(QAction *t ,QAction *y) : dDent(t), dDency(y) {};
+        QAction* dDent;  // dependent
+        QAction* dDency; // dependency
+    };
+    QList<DependencyPair>           p_modifierOptions;
+
     QSet<QAction*>                  p_usefulOptions;
     int                             p_lineNumber;           // Counter in appendNextLine()
     int                             p_currentLineNumber;    // Where the user edit the file

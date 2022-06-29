@@ -105,7 +105,7 @@ Parser::Parser(IndexView *view)
 
     addViewOptionSeparator();
 
-    p_modifierOptions.insert(p_viewExpanded, p_viewTree);
+    p_modifierOptions.append(DependencyPair(p_viewExpanded, p_viewTree));
 }
 
 
@@ -268,10 +268,9 @@ void Parser::parse()
     for (QAction *action : qAsConst(viewOptions)) {
         action->setVisible(true);
     }
-    QHashIterator<QAction*, QAction*> modifierOptionsIterator(p_modifierOptions);
-    while (modifierOptionsIterator.hasNext()) {
-        modifierOptionsIterator.next();
-        modifierOptionsIterator.key()->setEnabled(modifierOptionsIterator.value()->isChecked());
+    // Enable (or not) view options with respect of their dependencies
+    for (int i = 0; i < p_modifierOptions.size(); ++i) {
+        p_modifierOptions.at(i).dDent->setEnabled(p_modifierOptions.at(i).dDency->isChecked() && p_modifierOptions.at(i).dDency->isEnabled());
     }
 
     prepareForParse();
@@ -298,10 +297,8 @@ void Parser::parse()
     for (QAction *action : qAsConst(viewOptions)) {
         action->setVisible(p_usefulOptions.contains(action));
     }
-    modifierOptionsIterator.toFront();
-    while (modifierOptionsIterator.hasNext()) {
-        modifierOptionsIterator.next();
-        modifierOptionsIterator.key()->setVisible(modifierOptionsIterator.value()->isVisible());
+    for (int i = 0; i < p_modifierOptions.size(); ++i) {
+        p_modifierOptions.at(i).dDent->setVisible(p_modifierOptions.at(i).dDency->isVisible());
     }
 }
 
@@ -441,7 +438,7 @@ QAction *Parser::registerViewOptionModifier(const int nodeType, const QString &n
 
     viewOption->setIcon(p_icons.value(nodeType));
 
-    p_modifierOptions.insert(viewOption, p_viewOptions.value(nodeType));
+    p_modifierOptions.append(DependencyPair(viewOption, p_viewOptions.value(nodeType)));
 
     return viewOption;
 }
@@ -464,7 +461,7 @@ void Parser::addViewOptionDependency(int dependentNodeType, int dependencyNodeTy
         return;
     }
 
-    p_modifierOptions.insert(p_viewOptions.value(dependentNodeType), p_viewOptions.value(dependencyNodeType));
+    p_modifierOptions.append(DependencyPair(p_viewOptions.value(dependentNodeType), p_viewOptions.value(dependencyNodeType)));
 }
 
 // kate: space-indent on; indent-width 4; replace-tabs on;
