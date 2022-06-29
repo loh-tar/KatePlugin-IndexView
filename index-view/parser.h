@@ -317,7 +317,6 @@ private:
 
     QSet<QAction*>                  p_usefulOptions;
     int                             p_lineNumber;           // Counter in appendNextLine()
-    int                             p_currentLineNumber;    // Where the user edit the file
 
     // No one should change this variable except Parser::parse and Parser::setNodeProperties
     QTreeWidgetItem                *p_lastNode = nullptr;

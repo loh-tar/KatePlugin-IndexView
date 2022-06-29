@@ -492,6 +492,7 @@ void IndexView::parseDocument()
     }
 
     // Since we parse in time slices, we don't want intermediate updates of the tree
+    // furthermore help this to avoid flicker, see below
     m_indexTree->setUpdatesEnabled(false);
 
     if (m_parser) {
@@ -513,10 +514,14 @@ void IndexView::parseDocument()
         m_indexTree->scrollToItem(m_indexTree->currentItem());
     }
 
-    // We are done, don't forget to enable again
-    m_indexTree->setUpdatesEnabled(true);
-
     filterTree();
+
+    // This is (hopefully!) the ultimate-special-final-director-cut flicker-avoidance :-/
+    // Can't say why 300, this has worked here
+    QTimer::singleShot(300, this, [this]() {
+        // We are done, don't forget to enable again
+        m_indexTree->setUpdatesEnabled(true);
+    });
 }
 
 

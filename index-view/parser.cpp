@@ -255,8 +255,6 @@ void Parser::parse()
     p_view->m_indexList.clear();
     p_view->m_filtered = false;
 
-    p_currentLineNumber = p_view->m_currentLineNumber;
-
     p_lastNode = nullptr;
     p_rootNodes.clear();
     p_usefulOptions.clear();
@@ -276,15 +274,6 @@ void Parser::parse()
     prepareForParse();
     m_runTime.start();
     parseDocument();
-
-    if ((!p_viewExpanded->isChecked()) && (p_currentLineNumber != -1)) {
-        // User edited below last added node
-        QTreeWidgetItem *node = lastNode();
-        while (node) {
-            p_indexTree->expandItem(node);
-            node = node->parent();
-        }
-    }
 
     // Keep the tree free from useless root noodes
     for (QTreeWidgetItem* node : qAsConst(p_rootNodes)) {
@@ -330,8 +319,6 @@ bool Parser::nodeTypeIsWanted(int nodeType)
 
 void Parser::setNodeProperties(QTreeWidgetItem *const node, const int nodeType, const QString &text, const int lineNumber, const int columnNumber/* = 0*/)
 {
-    static QTreeWidgetItem *lastNodeWasDetached = nullptr;
-
     if (!node) {
         return;
     }
@@ -345,45 +332,12 @@ void Parser::setNodeProperties(QTreeWidgetItem *const node, const int nodeType, 
 
     if (p_viewExpanded->isChecked()) {
         p_indexTree->expandItem(node->parent());
-
-    // Expand in advance the node which will be the "current" to avoid annoying flicker
-    } else if (p_currentLineNumber != -1) {
-        if (lineNumber == p_currentLineNumber) {
-            QTreeWidgetItem *nodeToExpand = node;
-            while (nodeToExpand) {
-                p_indexTree->expandItem(nodeToExpand);
-                nodeToExpand = nodeToExpand->parent();
-            }
-            p_currentLineNumber = -1; // We are done, don't try again
-
-        } else if ((lineNumber > p_currentLineNumber) && !lastNodeWasDetached) {
-            QTreeWidgetItem *nodeToExpand;
-            nodeToExpand = lastNodeWasDetached ? lastNodeWasDetached : p_lastNode;
-            nodeToExpand = (lineNumber == p_currentLineNumber) ? node : nodeToExpand;
-            p_currentLineNumber = -1; // We are done, don't try again
-            while (nodeToExpand) {
-                p_indexTree->expandItem(nodeToExpand);
-                nodeToExpand = nodeToExpand->parent();
-            }
-        }
-
-        if ((p_currentLineNumber < 0) && (!lastNodeWasDetached) && (m_detachedNodeTypes.contains(nodeType))) {
-            // To minimize flicker even more, expand in case of a just expanded
-            // detached node also the last none detached node
-            QTreeWidgetItem *nodeToExpand = p_lastNode;
-            while (nodeToExpand) {
-                p_indexTree->expandItem(nodeToExpand);
-                nodeToExpand = nodeToExpand->parent();
-            }
-        }
     }
 
     if (m_detachedNodeTypes.contains(nodeType)) {
         node->setData(0, NodeData::EndLine, lineNumber);
-        lastNodeWasDetached = node;
     } else {
         p_lastNode = node;
-        lastNodeWasDetached = nullptr;
     }
 
     p_view->m_indexList.append(node);
