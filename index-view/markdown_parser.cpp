@@ -55,15 +55,18 @@ MarkdownParser::~MarkdownParser()
 
 void MarkdownParser::parseDocument()
 {
-    QString paraLine;   // First line of a paragraph
+    static const QRegularExpression rx1(QStringLiteral("^[=]{3,}$"));
+    static const QRegularExpression rx2(QStringLiteral("^[-]{3,}$"));
+    static const QRegularExpression rx3(QStringLiteral("^#{1,6}\\s.*$"));
 
+    QString paraLine;   // First line of a paragraph
     initHistory(3);
 
     while (nextLine()) {
         // Let's start the investigation
-        bool currIsEqualLine = rawLine().contains(QRegularExpression(QStringLiteral("^[=]{3,}$")));
-        bool currIsDashLine  = rawLine().contains(QRegularExpression(QStringLiteral("^[-]{3,}$")));
-        bool currIsHeader    = rawLine().contains(QRegularExpression(QStringLiteral("^#{1,6}\\s.*$")));
+        bool currIsEqualLine = rawLine().contains(rx1);
+        bool currIsDashLine  = rawLine().contains(rx2);
+        bool currIsHeader    = rawLine().contains(rx3);
 
         // Keep a record of the history
         if (m_line.isEmpty()) {

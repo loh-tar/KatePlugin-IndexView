@@ -98,24 +98,27 @@ CppParser::~CppParser()
 
 void CppParser::parseDocument()
 {
+    static const QRegularExpression typeDefStruct(QStringLiteral("\\btypedef struct( \\w+)?\\{"));
+    QRegularExpressionMatch rxMatch;
+
     while (nextInstruction()) {
 
-        const QString firstWord = m_line.section(QRegularExpression(QStringLiteral("\\b")), 1, 1);
+        static const QRegularExpression firstWordRx(QStringLiteral("^[\\W]*(\\w+)\\b"));
+        const QString firstWord = firstWordRx.match(m_line).captured(1);
 
         if (m_keywordsToIgnore.contains(firstWord)) {
             // Do nothing
 
-        } else if (m_line.contains(m_rxNamespace)) {
-            addNode(NamespaceNode, m_rxNamespace.match(m_line).captured(1), m_lineNumber);
+        } else if (m_line.contains(m_rxNamespace, &rxMatch)) {
+            addNode(NamespaceNode, rxMatch.captured(1), m_lineNumber);
 
-        } else if (m_line.contains(m_rxStruct)) {
-            addNode(StructNode, m_rxStruct.match(m_line).captured(3), m_lineNumber);
+        } else if (m_line.contains(m_rxStruct, &rxMatch)) {
+            addNode(StructNode, rxMatch.captured(3), m_lineNumber);
 
-        } else if (m_line.contains(m_rxEnum)) {
-            addNode(StructNode, m_rxEnum.match(m_line).captured(3), m_lineNumber);
+        } else if (m_line.contains(m_rxEnum, &rxMatch)) {
+            addNode(StructNode, rxMatch.captured(3), m_lineNumber);
 
-        } else if (m_line.contains(m_rxFuncDef)) {
-            const QRegularExpressionMatch rxMatch = m_rxFuncDef.match(m_line);
+        } else if (m_line.contains(m_rxFuncDef, &rxMatch)) {
             addFuncDefNode(rxMatch.captured(1), rxMatch.captured(2), rxMatch.captured(3));
 
             // https://en.cppreference.com/w/cpp/language/function
@@ -124,11 +127,11 @@ void CppParser::parseDocument()
             // like: SomeClass foo(bar, baz);
             // so I add these parentNodeType check to have functions in header files but no stupid
             // stuff elsewhere. Edit: Also below namespace
-        } else if ((parentNodeType() == StructNode || parentNodeType() == NamespaceNode) && m_line.contains(m_rxFuncDec)) {
+        } else if ((parentNodeType() == StructNode || parentNodeType() == NamespaceNode) && m_line.contains(m_rxFuncDec, &rxMatch)) {
     //  } else if ((parentNodeType() == StructNode) && m_line.contains(m_rxFuncDec)) {
-            addNode(FunctionDecNode, m_rxFuncDec.match(m_line).captured(2), m_lineNumber);
+            addNode(FunctionDecNode, rxMatch.captured(2), m_lineNumber);
 
-        } else if (m_line.contains(QRegularExpression(QStringLiteral("\\btypedef struct( \\w+)?\\{")))) {
+        } else if (m_line.contains(typeDefStruct)) {
                 // We must fast forward to grep from the end of this instruction
                 int lineNumber = m_lineNumber;
                 while ((checkForBlocks() != 0) || !m_line.endsWith(QLatin1Char(';'))) {
@@ -142,8 +145,8 @@ void CppParser::parseDocument()
                 m_line.chop(1);
                 addNode(TypedefNode, m_line, lineNumber);
 
-        } else if (m_line.contains(m_rxTypedef)) {
-            addNode(TypedefNode, m_rxTypedef.match(m_line).captured(2), m_lineNumber);
+        } else if (m_line.contains(m_rxTypedef, &rxMatch)) {
+            addNode(TypedefNode, rxMatch.captured(2), m_lineNumber);
 
         }
     }
@@ -152,7 +155,7 @@ void CppParser::parseDocument()
 
 void CppParser::addFuncDefNode(const QString &returnType, const QString &_nameSpace, const QString &funcName)
 {
-    QString nameSpace = _nameSpace.section(QStringLiteral("::"), -9, -2); // Remove trailing ::
+    const QString nameSpace = _nameSpace.section(QStringLiteral("::"), -9, -2); // Remove trailing ::
 
     // Don't add lambda functions but ctor and dtor
     if (returnType.isEmpty() && nameSpace.isEmpty()) {
@@ -172,7 +175,8 @@ bool CppParser::lineIsGood()
     // Despite the documentation to ProgramParser::lineIsGood(), I add these
     // quirk to solve some false detection of Q_FooMacro as function which has
     // occour when edit e.g. our index_view.h due to line concatenating
-    if (m_line.contains(QRegularExpression(QStringLiteral("^Q_\\w+")))) {
+    static const QRegularExpression rx(QStringLiteral("^Q_\\w+"));
+    if (m_line.contains(rx)) {
         return true;
     }
 
@@ -188,7 +192,8 @@ bool CppParser::appendNextLine()
         return false;
     }
 
-    while (m_line.contains(QRegularExpression(QStringLiteral("[^\\\\]\\\\$")))) {
+    static const QRegularExpression rx(QStringLiteral("[^\\\\]\\\\$"));
+    while (m_line.contains(rx)) {
         m_line.chop(1);
         if(!incrementLineNumber()) {
             break;
@@ -210,9 +215,9 @@ void CppParser::removeStrings()
 void CppParser::removeComment()
 {
     removeMultiLineSlashStarComment();
-
-    if (m_line.contains(m_rxMarcro)) {
-        addNode(MacroNode, m_rxMarcro.match(m_line).captured(1), m_lineNumber);
+    QRegularExpressionMatch rxMatch;
+    if (m_line.contains(m_rxMarcro, &rxMatch)) {
+        addNode(MacroNode, rxMatch.captured(1), m_lineNumber);
     }
 
     removeTrailingSharpComment();

@@ -53,22 +53,24 @@ TclParser::~TclParser()
 
 void TclParser::parseDocument()
 {
+    QRegularExpressionMatch rxMatch;
+
     while (nextInstruction()) {
         // Let's start the investigation
-        if (m_line.contains(m_rxVariable)) {
-            m_line = m_rxVariable.match(m_line).captured(1);
+        if (m_line.contains(m_rxVariable, &rxMatch)) {
+            m_line = rxMatch.captured(1);
             if (m_showAssignments->isChecked()) {
                 // Assignment could be improved, e.g. catch strings from m_niceLine
                 // but I'm not sure if variables are so important. I have kept
                 // them only for "historic reasons"
-                m_line.append(QLatin1Char(' ') + m_rxVariable.match(m_line).captured(2));
+                m_line.append(QLatin1Char(' ') + rxMatch.captured(2));
             }
             addNode(VariableNode, m_line, m_lineNumber);
 
-        } else if (m_line.contains(m_rxFunction)) {
-            m_line = m_rxFunction.match(m_line).captured(1);
+        } else if (m_line.contains(m_rxFunction, &rxMatch)) {
+            m_line = rxMatch.captured(1);
             if (m_showParameters->isChecked()) {
-                m_line.append(QLatin1Char(' ') + m_rxFunction.match(m_line).captured(2));
+                m_line.append(QLatin1Char(' ') + rxMatch.captured(2));
             }
             addNode(FunctionNode, m_line, m_lineNumber);
         }
@@ -79,13 +81,15 @@ void TclParser::parseDocument()
 bool TclParser::lineIsGood()
 {
     // contiuation by backslash
-    if (m_line.contains(QRegularExpression(QStringLiteral("[^\\\\]\\\\$")))) {
+    static const QRegularExpression rx1(QStringLiteral("[^\\\\]\\\\$"));
+    if (m_line.contains(rx1)) {
         m_line.chop(1);
         return false;
     }
 
     // heredoc like continuation
-    bool oddQuoteNumbers = (m_line.count(QRegularExpression(QStringLiteral("[^\\\\]\""))) % 2) == 1;
+    static const QRegularExpression rx2(QStringLiteral("[^\\\\]\""));
+    bool oddQuoteNumbers = (m_line.count(rx2) % 2) == 1;
     bool heredoc = m_funcAtWork.contains(Me_At_Work); // Just for readability
     if (!oddQuoteNumbers && heredoc) {
         // heredoc = false;
@@ -106,7 +110,8 @@ void TclParser::removeStrings()
 {
     // Remove "Bracket Commands", see testfile.tcl
     // Modification of ProgramParser::removeSingle/DoubleQuotedStrings()
-    m_line.remove(QRegularExpression(QStringLiteral("\\[[^\\[\\\\]*(?:\\\\.[^\\]\\\\]*)*\\]")));
+    static const QRegularExpression rx(QStringLiteral("\\[[^\\[\\\\]*(?:\\\\.[^\\]\\\\]*)*\\]"));
+    m_line.remove(rx);
 
     removeDoubleQuotedStrings();
 }
@@ -115,13 +120,15 @@ void TclParser::removeStrings()
 void TclParser::removeComment()
 {
     if (m_funcAtWork.contains(Me_At_Work)) {
-        if (!m_line.contains(QRegularExpression(QStringLiteral("[^\\\\]\\\\$")))) {
+        static const QRegularExpression rx(QStringLiteral("[^\\\\]\\\\$"));
+        if (!m_line.contains(rx)) {
             m_funcAtWork.remove(Me_At_Work);
         }
         m_line.clear();
     }
     // Comment contiuation by backslash
-    if (m_line.contains(QRegularExpression(QStringLiteral("^#.*[^\\\\]\\\\$")))) {
+    static const QRegularExpression rx(QStringLiteral("^#.*[^\\\\]\\\\$"));
+    if (m_line.contains(rx)) {
         m_funcAtWork.insert(Me_At_Work);
         m_line.clear();
     }
@@ -129,7 +136,8 @@ void TclParser::removeComment()
     removeTclIf0Comment();
     // Remove "somehow" inline comment
     // NOTE Braces are treated as comment terminator, see testfile.tcl
-    m_line.remove(QRegularExpression(QStringLiteral("#[^{}]*")));
+    static const QRegularExpression rx2(QStringLiteral("#[^{}]*"));
+    m_line.remove(rx2);
 }
 
 
@@ -146,7 +154,8 @@ void TclParser::removeTclIf0Comment()
         m_line.clear();
     }
 
-    if (m_line.contains(QRegularExpression(QStringLiteral("^if\\s+0\\s*\\{")))) {
+    static const QRegularExpression rx(QStringLiteral("^if\\s+0\\s*\\{"));
+    if (m_line.contains(rx)) {
         myNestingLevel = nestingLevel();
         checkForBlocks();
         checkNesting();

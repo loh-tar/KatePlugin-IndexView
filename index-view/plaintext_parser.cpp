@@ -43,14 +43,18 @@ PlainTextParser::~PlainTextParser()
 
 void PlainTextParser::parseDocument()
 {
+    static const QRegularExpression rxEqual(QStringLiteral("^[=#*]{3,}$"));
+    static const QRegularExpression rxDash(QStringLiteral("^[-~^]{3,}$"));
+    static const QRegularExpression rxIsoDate(QStringLiteral("^\\d{4}-([0]\\d|1[0-2])-([0-2]\\d|3[01])$"));
+
     QString paraLine;   // First line of a paragraph
 
     initHistory(3);
 
     while (nextLine()) {
         // Let's start the investigation
-        bool currIsEqualLine = m_line.contains(QRegularExpression(QStringLiteral("^[=#*]{3,}$")));
-        bool currIsDashLine  = m_line.contains(QRegularExpression(QStringLiteral("^[-~^]{3,}$")));
+        bool currIsEqualLine = m_line.contains(rxEqual);
+        bool currIsDashLine  = m_line.contains(rxDash);
 
         // Keep a record of the history
         if (m_line.isEmpty()) {
@@ -84,9 +88,8 @@ void PlainTextParser::parseDocument()
         // Special checks for ISO date header. They to add in a sane way and give them
         // an own LineType proved to be surprisingly complicated, so it's done quirky.
         // Thanks to https://stackoverflow.com/a/46362201
-        QRegularExpression isoDate(QStringLiteral("^\\d{4}-([0]\\d|1[0-2])-([0-2]\\d|3[01])$"));
-        bool line0IsDate = m_lineHistory.at(0).contains(isoDate);
-        bool line1IsDate = m_lineHistory.at(1).contains(isoDate);
+        bool line0IsDate = m_lineHistory.at(0).contains(rxIsoDate);
+        bool line1IsDate = m_lineHistory.at(1).contains(rxIsoDate);
 
         if (line0IsDate && lineType1 == EqualLine && lineType2 == NormalLine && lastNode()) {
             QString mask(QStringLiteral("%1 %2"));

@@ -54,19 +54,21 @@ EcmaParser::~EcmaParser()
 
 void EcmaParser::parseDocument()
 {
+    QRegularExpressionMatch rxMatch;
+
     while (nextInstruction()) {
 
-        if (m_line.contains(m_rxFunction)) {
-            addNode(FunctionNode, m_rxFunction.match(m_line).captured(1), m_lineNumber);
+        if (m_line.contains(m_rxFunction, &rxMatch)) {
+            addNode(FunctionNode, rxMatch.captured(1), m_lineNumber);
 
-        } else if (m_line.contains(m_rxFunc2)) {
-            addNode(Func2Node, m_rxFunc2.match(m_line).captured(1), m_lineNumber);
+        } else if (m_line.contains(m_rxFunc2, &rxMatch)) {
+            addNode(Func2Node, rxMatch.captured(1), m_lineNumber);
 
-        } else if (m_line.contains(m_rxFunc3)) {
-            addNode(Func3Node, m_rxFunc3.match(m_line).captured(1), m_lineNumber);
+        } else if (m_line.contains(m_rxFunc3, &rxMatch)) {
+            addNode(Func3Node, rxMatch.captured(1), m_lineNumber);
 
-        } else if (m_niceLine.contains(m_rxFunc4)) {
-            addNode(Func2Node, m_rxFunc4.match(m_line).captured(1), m_lineNumber);
+        } else if (m_niceLine.contains(m_rxFunc4, &rxMatch)) {
+            addNode(Func2Node, rxMatch.captured(1), m_lineNumber);
 
         }
     }
@@ -75,19 +77,22 @@ void EcmaParser::parseDocument()
 
 bool EcmaParser::lineIsGood()
 {
+    // >The five restricted productions are return, throw, break, continue, and post-increment/decrement.
+    static const QRegularExpression rx1(QStringLiteral("\\b(return|throw|break|continue)\\b(.*)?$"));
+    static const QRegularExpression rx2(QStringLiteral("(\\+\\+|--)$"));
+
     if (ProgramParser::lineIsGood()) {
         return true;
 
     // https://en.wikipedia.org/wiki/JavaScript_syntax#Whitespace_and_semicolons
     // > Some suggest instead the use of leading semicolons ...This is known as a defensive semicolon,
     // > and is particularly recommended
-    } else if (rawLine(1).startsWith(QStringLiteral(";"))) {
+    } else if (rawLine(1).startsWith(QLatin1Char(';'))) {
         return true;
 
-    // >The five restricted productions are return, throw, break, continue, and post-increment/decrement.
-    } else if (m_line.contains(QRegularExpression(QStringLiteral("\\b(return|throw|break|continue)\\b(.*)?$")))) {
+    } else if (m_line.contains(rx1)) {
         return true;
-    } else if (m_line.contains(QRegularExpression(QStringLiteral("(++|--)$")))) {
+    } else if (m_line.contains(rx2)) {
         return true;
 
     // Due to our test file, from https://en.wikipedia.org/wiki/JavaScript

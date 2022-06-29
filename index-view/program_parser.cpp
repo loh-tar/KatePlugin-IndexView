@@ -95,13 +95,14 @@ bool ProgramParser::lineIsGood()
         m_funcAtWork.remove(Line_Is_Good);
         return true;
     }
-
-    if (m_line.contains(QRegularExpression(QStringLiteral("[{};]$")))) {
+    static const QRegularExpression rx1(QStringLiteral("[{};]$"));
+    if (m_line.contains(rx1)) {
         return true;
     }
 
-    // Match lables like, "protected:" or "public Q_SLOTS:"
-    if (m_line.contains(QRegularExpression(QStringLiteral("^[\\w\\s]+:$")))) {
+    static const QRegularExpression rx2(QStringLiteral("^[\\w\\s]+:$"));
+    // Match labels like, "protected:" or "public Q_SLOTS:"
+    if (m_line.contains(rx2)) {
         return true;
     }
 
@@ -144,12 +145,14 @@ void ProgramParser::stripLine()
     }
 
     // Squash the line, remove all unneeded space
-    m_line.replace(QRegularExpression(QStringLiteral("(\\s)?(\\W)(\\s)?")), QStringLiteral("\\2"));
+    static const QRegularExpression rx(QStringLiteral("(\\s)?(\\W)(\\s)?"));
+    m_line.replace(rx, QStringLiteral("\\2"));
 }
 
 
 bool ProgramParser::addCommentTagNode(const QString &tag, const int nodeType)
 {
+    // FIXME ? No static here, but could be done when we again check what kind of tag it is
     const QRegularExpression regEx = QRegularExpression(QStringLiteral("(.*)\\b(%1)\\b(.*)?").arg(tag));
     const QRegularExpressionMatch rxMatch = regEx.match(rawLine());
     if (!rxMatch.hasMatch()) {
@@ -157,11 +160,15 @@ bool ProgramParser::addCommentTagNode(const QString &tag, const int nodeType)
     }
 
     // Support also notes where the token is at the end
+    // FIXME This solutuon is not best. Better is the trick done in XmlTypeParser but that can we not do
+    // here because we have (yet) no "clean" comment string. But we could collect one in our removeComment functions
     QString txt = rxMatch.captured(3).isEmpty() ? rxMatch.captured(1) : rxMatch.captured(3);
     // Remove possible comment char from both ends in a lazy way. So,
     // something too much could be gone but guess it's OK
-    txt.remove(QRegularExpression(QStringLiteral("^\\W*")));
-    txt.remove(QRegularExpression(QStringLiteral("\\W*$")));
+    static const QRegularExpression rx1(QStringLiteral("^\\W*"));
+    txt.remove(rx1);
+    static const QRegularExpression rx2(QStringLiteral("\\W*$"));
+    txt.remove(rx2);
     addNode(nodeType, rxMatch.captured(2).at(0) + QStringLiteral(": ") + txt, m_lineNumber);
 
     return true;
@@ -177,7 +184,8 @@ void ProgramParser::removeStrings()
 void ProgramParser::removeDoubleQuotedStrings()
 {
     // Thanks to https://stackoverflow.com/a/5696141
-    m_line.remove(QRegularExpression(QStringLiteral("\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\"")));
+    static const QRegularExpression rx(QStringLiteral("\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\""));
+    m_line.remove(rx);
     // Not sure if complete deletion is best or keeping a dummy
 //     m_line.replace(QRegularExpression(QStringLiteral("\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\"")), QStringLiteral("X"));
 }
@@ -186,7 +194,8 @@ void ProgramParser::removeDoubleQuotedStrings()
 void ProgramParser::removeSingleQuotedStrings()
 {
     // Thanks to https://stackoverflow.com/a/5696141
-    m_line.remove(QRegularExpression(QStringLiteral("\'[^\'\\\\]*(?:\\\\.[^\'\\\\]*)*\'")));
+    static const QRegularExpression rx(QStringLiteral("\'[^\'\\\\]*(?:\\\\.[^\'\\\\]*)*\'"));
+    m_line.remove(rx);
 }
 
 
@@ -245,14 +254,14 @@ void ProgramParser::initHereDoc(const QString &hereDocOperator, const QString &q
     QRegularExpression rx;
     for (int i = 0; i < quoteChars.size(); ++i) {
 // qDebug() << "HereDocQuote:" << quoteChars.at(i);
-        rx = QRegularExpression(QString(QStringLiteral("%1\\s?%2(.+)%2")).arg(hereDocOperator).arg(quoteChars.at(i)), QRegularExpression::InvertedGreedinessOption);
+        rx = QRegularExpression(QStringLiteral("%1\\s?%2(.+)%2").arg(hereDocOperator).arg(quoteChars.at(i)), QRegularExpression::InvertedGreedinessOption);
 //         rx.setMinimal(true);
         p_hereDocRxList << rx;
     }
     // Add at last a special RegEx for unquoted tokens
     // FIXME To avoid a couple of false catch, this regex may be more limited as useful
     // Problem was ";" in Perl and left shift a number "<< 20"
-    rx = QRegularExpression(QString(QStringLiteral("%1\\s?([A-Za-z][^\\s;]*)")).arg(hereDocOperator));
+    rx = QRegularExpression(QStringLiteral("%1\\s?([A-Za-z][^\\s;]*)").arg(hereDocOperator));
     p_hereDocRxList << rx;
 }
 

@@ -62,34 +62,35 @@ FortranParser::~FortranParser()
 void FortranParser::parseDocument()
 {
     m_BlockStack.clear();
+    QRegularExpressionMatch rxMatch;
 
     while (nextInstruction()) {
         //Fortran is case insensitive
         m_line = m_line.toLower();
 
-        if (m_line.contains(m_rxEnd)) {
+        if (m_line.contains(m_rxEnd, &rxMatch)) {
             endBlock(m_rxEnd.match(m_line).captured(1));
 
-        } else if (m_line.contains(m_rxSubroutine)) {
-            addNode(SubroutineNode, m_rxSubroutine.match(m_line).captured(1), m_lineNumber);
+        } else if (m_line.contains(m_rxSubroutine, &rxMatch)) {
+            addNode(SubroutineNode, rxMatch.captured(1), m_lineNumber);
             beginBlock(QStringLiteral("subroutine"));
 
         } else if (m_line.startsWith(QStringLiteral("module procedure "))) {
             // Ignored
-        } else if (m_line.contains(m_rxModule)) {
-            addNode(ModuleNode, m_rxModule.match(m_line).captured(1), m_lineNumber);
+        } else if (m_line.contains(m_rxModule, &rxMatch)) {
+            addNode(ModuleNode, rxMatch.captured(1), m_lineNumber);
             beginBlock(QStringLiteral("module"));
 
-        } else if (m_line.contains(m_rxType)) {
-            addNode(TypeNode, m_rxType.match(m_line).captured(1), m_lineNumber);
+        } else if (m_line.contains(m_rxType, &rxMatch)) {
+            addNode(TypeNode, rxMatch.captured(1), m_lineNumber);
             beginBlock(QStringLiteral("type"));
 
-        } else if (m_line.contains(m_rxFunction)) {
-            addNode(FunctionNode, m_rxFunction.match(m_line).captured(1), m_lineNumber);
+        } else if (m_line.contains(m_rxFunction, &rxMatch)) {
+            addNode(FunctionNode, rxMatch.captured(1), m_lineNumber);
             beginBlock(QStringLiteral("function"));
 
-        } else if (m_line.contains(m_rxProgram)) {
-            addNode(SubroutineNode, QStringLiteral("Main: ") + m_rxProgram.match(m_line).captured(1), m_lineNumber);
+        } else if (m_line.contains(m_rxProgram, &rxMatch)) {
+            addNode(SubroutineNode, QStringLiteral("Main: ") + rxMatch.captured(1), m_lineNumber);
             beginBlock(QStringLiteral("program"));
 
         }

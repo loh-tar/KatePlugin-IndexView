@@ -68,29 +68,31 @@ PhpParser::~PhpParser()
 
 void PhpParser::parseDocument()
 {
+    QRegularExpressionMatch rxMatch;
+
     while (nextInstruction()) {
 
-        if (m_line.contains(m_rxNamespace)) {
-            addNode(NamespaceNode, m_rxNamespace.match(m_line).captured(1), m_lineNumber);
+        if (m_line.contains(m_rxNamespace, &rxMatch)) {
+            addNode(NamespaceNode, rxMatch.captured(1), m_lineNumber);
 
         } else if (m_line.contains(QStringLiteral("define(,);"))) {
-            m_niceLine.contains(m_rxDefine);
-            addNode(ConstantNode, m_rxDefine.match(m_line).captured(1), m_lineNumber);
+            m_niceLine.contains(m_rxDefine, &rxMatch);
+            addNode(ConstantNode, rxMatch.captured(1), m_lineNumber);
 
-        } else if (m_line.contains(m_rxConst)) {
-            addNode(ConstantNode, m_rxConst.match(m_line).captured(1), m_lineNumber);
+        } else if (m_line.contains(m_rxConst, &rxMatch)) {
+            addNode(ConstantNode, rxMatch.captured(1), m_lineNumber);
 
-        } else if (m_line.contains(m_rxClass)) {
-            addNode(ClassNode, m_rxClass.match(m_line).captured(1), m_lineNumber);
+        } else if (m_line.contains(m_rxClass, &rxMatch)) {
+            addNode(ClassNode, rxMatch.captured(1), m_lineNumber);
 
-        } else if (m_line.contains(m_rxInterface)) {
-            addNode(InterfaceNode, m_rxInterface.match(m_line).captured(1), m_lineNumber);
+        } else if (m_line.contains(m_rxInterface, &rxMatch)) {
+            addNode(InterfaceNode, rxMatch.captured(1), m_lineNumber);
 
-        } else if (m_line.contains(m_rxVariable)) {
-            addNode(VariableNode, m_rxVariable.match(m_line).captured(1), m_lineNumber);
+        } else if (m_line.contains(m_rxVariable, &rxMatch)) {
+            addNode(VariableNode, rxMatch.captured(1), m_lineNumber);
 
-        } else if (m_line.contains(m_rxFunction)) {
-            addNode(FunctionNode, m_rxFunction.match(m_line).captured(1), m_lineNumber);
+        } else if (m_line.contains(m_rxFunction, &rxMatch)) {
+            addNode(FunctionNode, rxMatch.captured(1), m_lineNumber);
 
         }
     }

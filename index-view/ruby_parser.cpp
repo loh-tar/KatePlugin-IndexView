@@ -53,6 +53,9 @@ RubyParser::~RubyParser()
 
 void RubyParser::parseDocument()
 {
+    static const QRegularExpression rxEndBlock(QStringLiteral("^end(\\s)*$"));
+    // TODO Use rx/match too
+
     while (nextInstruction()) {
         if (m_line.startsWith(QStringLiteral("class "))) {
             addNode(ClassNode, m_line.mid(6), m_lineNumber);
@@ -76,7 +79,7 @@ void RubyParser::parseDocument()
         } else if (m_line.startsWith(QStringLiteral("prepend "))) {
             addNode(MixinNode, m_line.mid(8), m_lineNumber);
 
-        } else if (m_line.contains(QRegularExpression(QStringLiteral("^end(\\s)*$")))) {
+        } else if (m_line.contains(rxEndBlock)) {
             endOfBlock();
 
         } else {

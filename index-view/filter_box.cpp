@@ -41,7 +41,8 @@ FilterBox::FilterBox(IndexView *view, KatePluginIndexView *plugin)
     setMaxCount(9);
     setMaxVisibleItems(5);
     // Accept only pattern without space
-    setValidator(new QRegularExpressionValidator(QRegularExpression(QStringLiteral("^\\S+$")), this));
+    static const QRegularExpression rx(QStringLiteral("^\\S+$"));
+    setValidator(new QRegularExpressionValidator(rx, this));
     lineEdit()->setClearButtonEnabled(true);
     lineEdit()->setPlaceholderText(i18n("%1 Filter", plugin->name()));
 }

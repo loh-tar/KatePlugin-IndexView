@@ -294,12 +294,13 @@ void IndexView::filterTree()
     // suitable Qt build in for that. QTreeWidget::findItems() does not traverse
     // and delivers only toplevel matches
     KTextEditor::View *view = m_mainWindow->activeView();
-
+    // Only pattern without space and at least three char long
+    static const QRegularExpression rx(QStringLiteral("^\\S{3,}$"));
     QString pattern;
+
     if (view->selection()) {
         pattern = view->selectionText();
-        // Only pattern without space and at least three char long
-        if (!pattern.contains(QRegularExpression(QStringLiteral("^\\S{3,}$")))) {
+        if (!pattern.contains(rx)) {
             // Without a reasonable pattern ensure the tree is shown unfiltered
             restoreTree();
             return;
