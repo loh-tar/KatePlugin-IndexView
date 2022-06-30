@@ -38,7 +38,6 @@
 #include "python_parser.h"
 #include "ruby_parser.h"
 #include "tcl_parser.h"
-#include "xslt_parser.h"
 
 #include "parser.h"
 
@@ -144,8 +143,6 @@ Parser *Parser::create(const QString &type, IndexView *view)
         return new RubyParser(view);
     else if (type == QStringLiteral("Tcl/Tk"))
         return new TclParser(view);
-    else if (type == QStringLiteral("xslt"))
-        return new XsltParser(view);
 
     // ...the last one, our dummy
     Parser *p = new DummyParser(type, view);

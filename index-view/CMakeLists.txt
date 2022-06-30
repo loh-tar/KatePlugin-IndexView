@@ -21,7 +21,6 @@ set(kateindexviewplugin_PART_SRCS
     python_parser.cpp
     ruby_parser.cpp
     tcl_parser.cpp
-    xslt_parser.cpp
 )
 
 set(kateindexviewplugin_PART_UI
