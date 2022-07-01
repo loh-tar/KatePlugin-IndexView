@@ -380,6 +380,10 @@ void IndexView::restoreTree()
 
 void IndexView::updateCurrTreeItem()
 {
+    if (!m_indexList.size()) {
+        return;
+    }
+
     if (!m_mainWindow) {
         return;
     }
@@ -396,39 +400,46 @@ void IndexView::updateCurrTreeItem()
     }
     m_currentLineNumber = currLine;
 
+    bool newItemIsFullMatch = true;
     QTreeWidgetItem *newItem = nullptr;
-    QTreeWidgetItem *fallBackItem = nullptr;
-    int i = 0;
-    while (i < m_indexList.size()) {
-        newItem = m_indexList.at(i);
-        const int beginLine = newItem->data(0, NodeData::Line).toInt();
-        const int endLine   = newItem->data(0, NodeData::EndLine).toInt();
-        if (beginLine == currLine) {
-            break;
-        }
+    QTreeWidgetItem *currItem = nullptr;
+    QTreeWidgetItem *previousItem = nullptr;
+    for (int i = 0; i < m_indexList.size(); ++i) {
+        currItem = m_indexList.at(i);
+        const int beginLine = currItem->data(0, NodeData::Line).toInt();
+        // FIXME Some parser don't set the end line in some cases, as work around we use here begin line
+        //qDebug() << currItem->data(0, NodeData::EndLine).toInt() << currItem->text(0);
+        const int endLine   = currItem->data(0, NodeData::EndLine).toInt() < 0 ? beginLine : currItem->data(0, NodeData::EndLine).toInt();
+
         if (beginLine > currLine) {
-            newItem = fallBackItem;// ? fallBackItem : m_indexList.at(--i);
+            // We are already below the cursor
             break;
         }
-        if (endLine >= currLine) {
-            fallBackItem = newItem;
+
+        if (endLine >= currLine && beginLine <= currLine) {
+            // We are inside a candidate
+            newItem = currItem;
+            newItemIsFullMatch = true;
+        } else if (newItem) {
+            // We are in a nested situation, we want the last one above the cursor
+            newItem = currItem;
+            newItemIsFullMatch = false;
         }
-        ++i;
+        previousItem = currItem;
+    }
+
+    if (currItem == m_indexTree->currentItem() && (!newItem || !newItemIsFullMatch)) {
+        // The situation is fuzzy, any change make nothing better
+        return;
     }
 
     if (!newItem) {
-        while (--i >= 0) {
-            newItem = m_indexList.at(i);
-            const int beginLine = newItem->data(0, NodeData::Line).toInt();
-            const int endLine   = newItem->data(0, NodeData::EndLine).toInt();
-//             if (endLine >= currLine) {
-            if (beginLine != endLine) {
-                break;
-            }
-        }
+        // We want the last one above the cursor
+        newItem = previousItem;
     }
 
-    if (newItem) {
+    if (newItem != m_indexTree->currentItem()) {
+        //qDebug() << "set new item from" << newItem->data(0, NodeData::Line).toInt() << "to" << newItem->data(0, NodeData::EndLine).toInt();
         m_indexTree->blockSignals(true);
         m_indexTree->setCurrentItem(newItem);
         m_indexTree->scrollToItem(newItem);
