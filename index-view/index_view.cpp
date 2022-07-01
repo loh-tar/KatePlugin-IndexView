@@ -42,7 +42,7 @@
 
 #include "index_view.h"
 
-#define UpdateCurrItemDelay 200
+#define UpdateCurrItemDelay 400
 
 IndexView::IndexView(KatePluginIndexView *plugin, KTextEditor::MainWindow *mw)
     : QObject(mw)
