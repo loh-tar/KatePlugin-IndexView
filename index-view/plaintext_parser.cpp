@@ -68,16 +68,16 @@ void PlainTextParser::parseDocument()
         }
 
         // Waste some memory to increase readability
-        const int lineType0 = m_lineTypeHistory.at(0); // Oldest line
-        const int lineType1 = m_lineTypeHistory.at(1);
-        const int lineType2 = m_lineTypeHistory.at(2); // Current line
+        const int line0Type = m_lineTypeHistory.at(0); // Oldest line
+        const int line1Type = m_lineTypeHistory.at(1);
+        const int line2Type = m_lineTypeHistory.at(2); // Current line
 
         // Check for Paragraph begin
         if (m_paraLineNumber < 0) {
-            if (lineType1 == NormalLine) {
+            if (line1Type == NormalLine) {
                 paraLine = m_lineHistory.at(1);
                 m_paraLineNumber = lineNumber() - 1;
-            } else if (lineType2 == NormalLine) {
+            } else if (line2Type == NormalLine) {
                 paraLine = m_lineHistory.at(2);
                 m_paraLineNumber = lineNumber();
             } else {
@@ -91,35 +91,35 @@ void PlainTextParser::parseDocument()
         bool line0IsDate = m_lineHistory.at(0).contains(rxIsoDate);
         bool line1IsDate = m_lineHistory.at(1).contains(rxIsoDate);
 
-        if (line0IsDate && lineType1 == EqualLine && lineType2 == NormalLine && lastNode()) {
+        if (line0IsDate && line1Type == EqualLine && line2Type == NormalLine && lastNode()) {
             QString mask(QStringLiteral("%1 %2"));
             lastNode()->setText(0, mask.arg(m_lineHistory.at(0)).arg(m_lineHistory.at(2)));
             initHistory();
 
-        } else if (lineType0 != NormalLine && line1IsDate && lineType2 == NormalLine) {
+        } else if (line0Type != NormalLine && line1IsDate && line2Type == NormalLine) {
             QString mask(QStringLiteral("%1 %2"));
             addNode(SectNode, mask.arg(m_lineHistory.at(1)).arg(m_lineHistory.at(2)), lineNumber() - 1);
             initHistory();
             //  [End] Special checks for ISO date header
 
             // Check for Paragraph continuation
-        } else if (lineType0 == NormalLine && lineType1 == NormalLine  && lineType2 == NormalLine) {
+        } else if (line0Type == NormalLine && line1Type == NormalLine  && line2Type == NormalLine) {
             continue;
 
             // Check for Paragraph - Single line
-        } else if (lineType0 != NormalLine && lineType1 == NormalLine  && lineType2 == EmptyLine) {
+        } else if (line0Type != NormalLine && line1Type == NormalLine  && line2Type == EmptyLine) {
             addNode(ParaNode, paraLine, m_paraLineNumber);
 
             // Check for Paragraph - Two or more lines
-        } else if (lineType0 == NormalLine && lineType1 == NormalLine  && lineType2 != NormalLine) {
+        } else if (line0Type == NormalLine && line1Type == NormalLine  && line2Type != NormalLine) {
             addNode(ParaNode, paraLine, m_paraLineNumber);
 
             // Check for Header
-        } else if (lineType0 != NormalLine && lineType1 == NormalLine && lineType2 == DashLine) {
+        } else if (line0Type != NormalLine && line1Type == NormalLine && line2Type == DashLine) {
             addNode(HeadNode, m_lineHistory.at(1), lineNumber() - 1);
 
             // Check for Section
-        } else if (lineType0 != NormalLine && lineType1 == NormalLine && lineType2 == EqualLine) {
+        } else if (line0Type != NormalLine && line1Type == NormalLine && line2Type == EqualLine) {
             addNode(SectNode, m_lineHistory.at(1), lineNumber() - 1);
         }
     }

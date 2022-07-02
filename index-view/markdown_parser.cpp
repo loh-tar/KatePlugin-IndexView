@@ -82,45 +82,45 @@ void MarkdownParser::parseDocument()
         }
 
         // Waste some memory to increase readability
-        const int lineType0 = m_lineTypeHistory.at(0); // Oldest line
-        const int lineType1 = m_lineTypeHistory.at(1);
-        const int lineType2 = m_lineTypeHistory.at(2); // Current line
+        const int line0Type = m_lineTypeHistory.at(0); // Oldest line
+        const int line1Type = m_lineTypeHistory.at(1);
+        const int line2Type = m_lineTypeHistory.at(2); // Current line
 
         // Check for Paragraph begin
         if (m_paraLineNumber < 0) {
-            if (lineType1 == NormalLine) {
+            if (line1Type == NormalLine) {
                 paraLine = m_lineHistory.at(1);
                 m_paraLineNumber = lineNumber() - 1;
-            } else if (lineType2 == NormalLine) {
+            } else if (line2Type == NormalLine) {
                 paraLine = m_lineHistory.at(2);
                 m_paraLineNumber = lineNumber();
-            } else if (lineType2 != HeaderLine) {
+            } else if (line2Type != HeaderLine) {
                 continue;
             }
         }
 
         // Check for Paragraph continuation
-        if (lineType0 == NormalLine && lineType1 == NormalLine  && lineType2 == NormalLine) {
+        if (line0Type == NormalLine && line1Type == NormalLine  && line2Type == NormalLine) {
             continue;
 
             // Check for Paragraph - Single line
-        } else if (lineType0 != NormalLine && lineType1 == NormalLine  && lineType2  == EmptyLine) {
+        } else if (line0Type != NormalLine && line1Type == NormalLine  && line2Type  == EmptyLine) {
             addNode(ParaNode, paraLine, m_paraLineNumber);
 
             // Check for Paragraph - Two or more lines
-        } else if (lineType0 == NormalLine && lineType1 == NormalLine  && lineType2 != NormalLine) {
+        } else if (line0Type == NormalLine && line1Type == NormalLine  && line2Type != NormalLine) {
             addNode(ParaNode, paraLine, m_paraLineNumber);
 
             // Check for Setext-style header H2
-        } else if (lineType0 != NormalLine && lineType1 == NormalLine && lineType2 == DashLine) {
+        } else if (line0Type != NormalLine && line1Type == NormalLine && line2Type == DashLine) {
             addNode(Head2Node, m_lineHistory.at(1), lineNumber() - 1);
 
             // Check for Setext-style header H1
-        } else if (lineType0 != NormalLine && lineType1 == NormalLine && lineType2 == EqualLine) {
+        } else if (line0Type != NormalLine && line1Type == NormalLine && line2Type == EqualLine) {
             addNode(Head1Node, m_lineHistory.at(1), lineNumber() - 1);
 
             // Check for sharp # header
-        } else if (lineType2 == HeaderLine) {
+        } else if (line2Type == HeaderLine) {
             QString text = m_lineHistory.at(2).section(QLatin1Char(' '), 1);
             int    level = m_lineHistory.at(2).section(QLatin1Char(' '), 0, 0).size();
             NodeType headerType;
