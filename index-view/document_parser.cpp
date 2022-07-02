@@ -78,12 +78,12 @@ bool DocumentParser::nextLine()
             m_line.clear();
         }
 
-        // Treat some lines as empty lines to avaoid to start a new paragraph
+        // Ignore some lines to avoid to start a new paragraph
         // or to break a continuation paragraph. Useful with some config files
         if (m_line.size() == 1) {
-            m_line.clear();
+            continue;
         } else if (m_line.contains(m_rxIgnoreLine)) {
-            m_line.clear();
+            continue;
         }
 
         if (m_line.isEmpty() && m_lineTypeHistory.last() == EmptyLine) {

@@ -39,21 +39,19 @@ public:
 
 protected:
    enum NodeType {
-        RootNode,
-        SectNode,
+        SectNode = FirstCustomNodeType,
         HeadNode,
         ParaNode
     };
 
     enum LineType {
-        EmptyLine,
-        NormalLine,
+        NormalLine = FirstCustomLineType,
         DashLine,
         EqualLine
     };
 
-    QString version() override { return QStringLiteral("0.8, Okt 2018"); } ;
-    QString author() override { return QStringLiteral("2018 loh.tar"); } ;
+    QString version() override { return QStringLiteral("0.9, Jul 2022"); } ;
+    QString author() override { return QStringLiteral("2018, 2022 loh.tar"); } ;
 
     void parseDocument() override;
 

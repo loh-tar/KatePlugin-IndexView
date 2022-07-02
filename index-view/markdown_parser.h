@@ -41,8 +41,7 @@ public:
 
 protected:
     enum NodeType {
-        RootNode,
-        Head1Node,
+        Head1Node = FirstCustomNodeType,
         Head2Node,
         Head3Node,
         Head4Node,
@@ -52,8 +51,7 @@ protected:
     };
 
     enum LineType {
-        EmptyLine,
-        NormalLine,
+        NormalLine = FirstCustomLineType,
         HeaderLine,
         EqualLine,
         DashLine

@@ -49,7 +49,8 @@ protected:
     * @see Parser::NodeType for more hints
     */
     enum NodeType {
-        RootNode
+        RootNode,
+        FirstCustomNodeType
     };
 
     /**
@@ -57,7 +58,9 @@ protected:
     * the code good readable but ensure to list EmptyLine first.
     */
     enum LineType {
-        EmptyLine
+        IgnoredLine,
+        EmptyLine,
+        FirstCustomLineType
     };
 
     /**

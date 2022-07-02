@@ -28,17 +28,18 @@ So this is a paragraph consist only of one line.
  - two lines
 
 This is a new paragraph
-with a lengh
+with a length
 of three lines.
 
-There is no lengh compare done to test if the underlining fit the title lengh.
+There is no length compare done to test if the underlining fit the title length.
 I had though about to add these check in a way that it is somehow fuzzy, because
 my style is to add to more underlining characters, others prefer to fill a
 complete line or 70%, 80% of a full line.
 
-The decision to use a min lengh of three fit to all these but of cause no
+The decision to use a min length of three fit to all these but of cause no
 shorter headers, because that looks to me rather unlikely.
-(Don't wonder, see also "Special Treatments" below)
+Don't wonder the "1 (with underline -)" is not shown, see "Special Treatments"
+below.
 
 1
 -
@@ -67,15 +68,15 @@ Special Treatments
 
 Avoided Paragraphs
 --------------------
-To keep the symbol list free from useless entries, will some lines treated as an
-empty line. So none of the following must treated as start of a new paragraph.
+To keep the symbol list free from useless entries, will some lines ignored. So
+none of the following must treated as start of a new paragraph.
 
 A single line of section/header characters...
 
 ---
 ===
 
-...any line consists of only one charater...
+...any line consists of only one character...
 
 x
 y
@@ -149,7 +150,7 @@ a check of five lines or some other special quirk.
 
 Other Seen Structuring Styles
 -------------------------------
-I can remeber that I have seen plain text files where was other characters used
+I can remember that I have seen plain text files where was other characters used
 as underlining to indicate a section or header, e.g.
 
 Using Sharp
