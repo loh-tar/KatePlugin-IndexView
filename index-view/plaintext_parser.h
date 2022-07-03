@@ -57,6 +57,41 @@ protected:
 
 };
 
+/**
+ * The \p IniFileParser provide a table of contents
+ *
+ * @author loh.tar
+ */
+class IniFileParser : public DocumentParser
+{
+    Q_OBJECT
+
+public:
+    IniFileParser(IndexView *view, const QString &docType);
+    ~IniFileParser();
+
+protected:
+    enum NodeType {
+        Section1Node = FirstCustomNodeType,
+        Section2Node,
+        Section3Node,
+        Section4Node,
+        Section5Node,
+        Section6Node,
+        LastNodeType  // Keep it at the end
+    };
+
+    QString version() override { return QStringLiteral("0.7, Jul 2022"); } ;
+    QString author() override { return QStringLiteral("2022 loh.tar"); } ;
+
+    void parseDocument() override;
+
+    void addNodesToParent(QTreeWidgetItem *parentNode, int pos);
+    QTreeWidgetItem *addNodeToParent(int nodeType, QTreeWidgetItem *parentNode, const QString &text);
+
+    QStringList m_sections; // Collect all sub sections, like a path
+};
+
 #endif
 
 // kate: space-indent on; indent-width 4; replace-tabs on;

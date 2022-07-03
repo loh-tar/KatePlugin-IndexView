@@ -121,10 +121,12 @@ Parser *Parser::create(const QString &type, IndexView *view)
     // at least this plugin
 
     const QString typeToken = QStringLiteral(";%1;").arg(type);
+    // Ordered by parser class name, except
     static const QString typeBashParser(QStringLiteral(";Bash;Zsh;"));
     static const QString typeCppParser(QStringLiteral(";C++;C;ANSI C89;Java;Groovy;"));
     static const QString typeEcmaParser(QStringLiteral(";ActionScript 2.0;JavaScript;QML;"));
-    static const QString typePlainTextParser(QStringLiteral(";Normal;.desktop;"));
+    static const QString typeIniFileParser(QStringLiteral(";INI Files;.desktop;"));
+    static const QString typePlainTextParser(QStringLiteral(";Normal;.desktop;")); // This .desktop is now only some placeholder, remove it!
     static const QString typeXmlTypeParser(QStringLiteral(";DTD;XML;HTML;SGML;xslt;"));
 
     // Ordered by parser class name, except...
@@ -136,6 +138,8 @@ Parser *Parser::create(const QString &type, IndexView *view)
         return new EcmaParser(view, type);
     else if (type.startsWith(QStringLiteral("Fortran")))
         return new FortranParser(view, type);
+    else if (typeIniFileParser.contains(typeToken))
+        return new IniFileParser(view, type);
     else if (type == QStringLiteral("Markdown"))
         return new MarkdownParser(view, type);
     else if (type == QStringLiteral("Perl"))

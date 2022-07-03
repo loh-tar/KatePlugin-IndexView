@@ -22,6 +22,7 @@
 #include <KLocalizedString>
 
 #include "icon_collection.h"
+#include "index_view.h"
 
 #include "plaintext_parser.h"
 
@@ -124,6 +125,120 @@ void PlainTextParser::parseDocument()
             addNode(SectNode, m_lineHistory.at(1), lineNumber() - 1);
         }
     }
+}
+
+
+IniFileParser::IniFileParser(IndexView *view, const QString &docType)
+    : DocumentParser(view, docType)
+{
+    using namespace IconCollection;
+    registerViewOption(Section1Node, Head1Icon, QStringLiteral("Header1"), i18n("Show Header 1"));
+    registerViewOption(Section2Node, Head2Icon, QStringLiteral("Header2"), i18n("Show Header 2"));
+    registerViewOption(Section3Node, Head3Icon, QStringLiteral("Header3"), i18n("Show Header 3"));
+    registerViewOption(Section4Node, Head4Icon, QStringLiteral("Header4"), i18n("Show Header 4"));
+    registerViewOption(Section5Node, Head5Icon, QStringLiteral("Header5"), i18n("Show Header 5"));
+    registerViewOption(Section6Node, Head6Icon, QStringLiteral("Header6"), i18n("Show Header 6"));
+}
+
+
+IniFileParser::~IniFileParser()
+{
+}
+
+
+void IniFileParser::parseDocument()
+{
+    static const QRegularExpression rxBrackets(QStringLiteral(R"(^\[(.+)\]$)"));
+    static const QRegularExpression rxSubSect(QStringLiteral(R"([:])"));
+//  static const QRegularExpression rxSubSect(QStringLiteral(R"([:.-])")); <= FIXME too simple, see below
+
+    // https://en.wikipedia.org/wiki/INI_file
+    //      ; comment text
+    //      # comment text
+    //      [section]
+    //      [section.subsection]                                 <= So far no problem, but disabled
+    //      [.subsection]                                        <= TODO
+    //
+    // ~/.kde4/share/config/kdeglobals
+    //      [Colors:Header][Inactive]
+    //
+    // ~/.local/share/kate/sessions/Foo.katesession
+    //      [Plugin:kateindexviewplugin:MainWindow:0]
+    //      [MainWindow0]
+    //      [MainWindow0 Settings]
+    //      [MainWindow0-Splitter 0]
+    //      [MainWindow0-ViewSpace 0]
+    //      [MainWindow0-ViewSpace 0 file:///some/url/foo.bar]   <= Make nice trouble
+
+    initHistory(1);
+
+    QRegularExpressionMatch rxMatch;
+
+    QTreeWidgetItem *docRoot = rootNode(RootNode);
+
+    while (nextLine()) {
+        // Let's start the investigation
+        if (!m_line.contains(rxBrackets, &rxMatch)) {
+            continue;
+        }
+//         qDebug() << lineNumber() << rxMatch.captured(1);
+//         qDebug() << lineNumber() << m_line;
+
+        m_sections.clear();
+
+        // Split the found bracket into it's section parts, if some
+        QStringList bracketSections = rxMatch.captured(1).split(QStringLiteral("]["));
+        for (int i = 0; i < bracketSections.size(); ++i) {
+            QStringList subSections = bracketSections.at(i).split(rxSubSect);
+            for (int j = 0; j < subSections.size(); ++j) {
+                m_sections << subSections.at(j);
+            }
+        }
+
+//         qDebug() << lineNumber() << m_sections;
+
+        // We can't assume that the now collected "path" is already in it's logical position
+        // so we must look at our tree if we find some existing top section
+        QTreeWidgetItem *node = docRoot;
+        int i = 0;
+        bool sectionExist = false;
+        while (i < m_sections.size()) {
+            for (int j = 0; j < node->childCount(); ++j) {
+//                 qDebug() << "COMPARE" << i << j << node->child(j)->text(0) << m_sections.at(i);
+                if (node->child(j)->text(0) == m_sections.at(i)) {
+                    node = node->child(j);
+                    sectionExist = true;
+                    break;
+                }
+            }
+            if (!sectionExist) {
+                lastNode()->setData(0, NodeData::EndLine, lineNumber() - 1);
+                addNodesToParent(node, i);
+                break;
+            }
+            sectionExist = false;
+            ++i;
+        }
+    }
+}
+
+
+void IniFileParser::addNodesToParent(QTreeWidgetItem *parentNode, int pos)
+{
+    for (int i = pos; i < m_sections.size(); ++i) {
+        parentNode = addNodeToParent(i+1, parentNode, m_sections.at(i));
+    }
+}
+
+
+QTreeWidgetItem *IniFileParser::addNodeToParent(int nodeType, QTreeWidgetItem *parentNode, const QString &text)
+{
+//     qDebug() << "ADD " << text << "type" << nodeType << "TO" << parentNode->text(0);
+
+    QTreeWidgetItem *node = new QTreeWidgetItem(parentNode, nodeType);
+    setNodeProperties(node, nodeType, text, lineNumber());
+
+    return lastNode();
 }
 
 // kate: space-indent on; indent-width 4; replace-tabs on;
