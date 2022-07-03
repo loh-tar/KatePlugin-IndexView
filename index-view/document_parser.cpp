@@ -146,7 +146,7 @@ void DocumentParser::prepareForParse()
     // Add the root node here keeps addNode() less complex
     // Using line number 0 will cause a jump to the top of the document when
     // clicked which make absolutely sense.
-    QTreeWidgetItem *node = new QTreeWidgetItem(p_indexTree, RootNode);
+    QTreeWidgetItem *node = rootNode(RootNode);
     setNodeProperties(node, RootNode, i18n("Document"), 0);
 }
 
