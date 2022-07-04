@@ -30,13 +30,15 @@ MarkdownParser::MarkdownParser(IndexView *view)
     : DocumentParser(view)
 {
     using namespace IconCollection;
-    registerViewOption(Head1Node, Head1Icon, QStringLiteral("Header1"), i18n("Show Header 1"));
-    registerViewOption(Head2Node, Head2Icon, QStringLiteral("Header2"), i18n("Show Header 2"));
-    registerViewOption(Head3Node, Head3Icon, QStringLiteral("Header3"), i18n("Show Header 3"));
-    registerViewOption(Head4Node, Head4Icon, QStringLiteral("Header4"), i18n("Show Header 4"));
-    registerViewOption(Head5Node, Head5Icon, QStringLiteral("Header5"), i18n("Show Header 5"));
-    registerViewOption(Head6Node, Head6Icon, QStringLiteral("Header6"), i18n("Show Header 6"));
     registerViewOption(ParaNode, ParaIcon, QStringLiteral("Paragraph"), i18n("Show Paragraphs"));
+
+    setNodeTypeIcon(Head1Node, 3, Qt::blue);
+    setNodeTypeIcon(Head2Node, 2, Qt::blue);
+    setNodeTypeIcon(Head3Node, 1, Qt::blue);
+    setNodeTypeIcon(Head4Node, 3, Qt::magenta);
+    setNodeTypeIcon(Head5Node, 2, Qt::magenta);
+    setNodeTypeIcon(Head6Node, 1, Qt::darkMagenta);
+    setNodeTypeIcon(ParaNode, 1, Qt::darkGray); // Override above setting TODO we need new/other registerViewOption
 }
 
 

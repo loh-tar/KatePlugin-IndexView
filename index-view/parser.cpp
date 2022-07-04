@@ -73,7 +73,7 @@ void DummyParser::addNode(const int nodeType, const QString &text)
     if (node) {
         node->setText(0, text);
         // Don't set icon, looks odd
-        // node->setIcon(0, p_icons.value(nodeType));
+        // node->setIcon(0, p_nodeTypes.value(nodeType).icon);
         node->setData(0, NodeData::Column, -1);
         node->setData(0, NodeData::Line, -1);
     }
@@ -181,9 +181,11 @@ QTreeWidgetItem *Parser::rootNode(int nodeType)
         node = new QTreeWidgetItem(p_indexTree, nodeType);
     }
 
-    node->setText(0, p_viewOptions.value(nodeType)->objectName());
+    const auto nt = p_nodeTypes.value(nodeType);
+
+    node->setText(0, nt.name);
     if (p_addIcons->isChecked()) {
-    node->setIcon(0, p_icons.value(nodeType));}
+    node->setIcon(0, nt.icon);}
     node->setData(0, NodeData::Line, -1);
     p_rootNodes.insert(nodeType, node);
 
@@ -262,9 +264,10 @@ void Parser::parse()
     p_lineNumber = 0;
 
     // Make all options visible because "not visible" is treated by Qt as "not enabled"
-    QList<QAction*> viewOptions(p_viewOptions.values());
-    for (QAction *action : qAsConst(viewOptions)) {
-        action->setVisible(true);
+    for (auto it = p_nodeTypes.constBegin(); it != p_nodeTypes.constEnd(); ++it) {
+        if (it.value().option) {
+            it.value().option->setVisible(true);
+        }
     }
     // Enable (or not) view options with respect of their dependencies
     for (int i = 0; i < p_modifierOptions.size(); ++i) {
@@ -283,9 +286,12 @@ void Parser::parse()
     }
 
     // Keep the context menu free from useless options
-    for (QAction *action : qAsConst(viewOptions)) {
-        action->setVisible(p_usefulOptions.contains(action));
+    for (auto it = p_nodeTypes.constBegin(); it != p_nodeTypes.constEnd(); ++it) {
+        if (it.value().option) {
+            it.value().option->setVisible(p_usefulOptions.contains(it.value().option));
+        }
     }
+
     for (int i = 0; i < p_modifierOptions.size(); ++i) {
         p_modifierOptions.at(i).dDent->setVisible(p_modifierOptions.at(i).dDency->isVisible());
     }
@@ -300,11 +306,11 @@ void Parser::docChanged()
 
 bool Parser::nodeTypeIsWanted(int nodeType)
 {
-    QAction *viewOption = p_viewOptions.value(nodeType, nullptr);
+    QAction *viewOption = p_nodeTypes.value(nodeType).option;
 
     if (!viewOption) {
-        qDebug() << "FATAL - No option to nodeType " << nodeType;
-        return false;
+        // Prior was an option mandatory, but now I think this way is better
+        return true;
     }
 
     p_usefulOptions.insert(viewOption);
@@ -325,7 +331,7 @@ void Parser::setNodeProperties(QTreeWidgetItem *const node, const int nodeType, 
 
     node->setText(0, text);
     if (p_addIcons->isChecked()) {
-    node->setIcon(0, p_icons.value(nodeType)); }
+    node->setIcon(0, p_nodeTypes.value(nodeType).icon); }
     node->setData(0, NodeData::Line, lineNumber);
     node->setData(0, NodeData::Column, columnNumber);
     node->setData(0, NodeData::EndLine, -1); // ATM, we don't know the end line
@@ -367,14 +373,24 @@ QAction *Parser::addViewOption(const QString &name, const QString &caption)
 }
 
 
+void Parser::setNodeTypeIcon(const int nodeType, const int size, const int qtGlobalColorEnum/* = -1*/)
+{
+    if (p_nodeTypes.contains(nodeType)) {
+        p_nodeTypes[nodeType].icon = IconCollection::getIcon(size, qtGlobalColorEnum);
+    } else {
+        p_nodeTypes.insert(nodeType, NodeTypeStruct(QString(), IconCollection::getIcon(size, qtGlobalColorEnum)));
+    }
+}
+
+
 QAction *Parser::registerViewOption(const int nodeType, const IconCollection::IconType iconType, const QString &name, const QString &caption)
 {
     QAction *viewOption = addViewOption(name, caption);
 
     viewOption->setIcon(IconCollection::getIcon(iconType));
 
-    p_icons.insert(nodeType, IconCollection::getIcon(iconType));
-    p_viewOptions.insert(nodeType, viewOption);
+//  p_nodeTypes.insert(nodeType, NodeTypeStruct(name, IconCollection::getIcon(size, qtGlobalColorEnum))); TODO
+    p_nodeTypes.insert(nodeType, NodeTypeStruct(name, IconCollection::getIcon(iconType), viewOption));
 
     return viewOption;
 }
@@ -382,17 +398,17 @@ QAction *Parser::registerViewOption(const int nodeType, const IconCollection::Ic
 
 QAction *Parser::registerViewOptionModifier(const int nodeType, const QString &name, const QString &caption)
 {
-    QAction *viewOption = addViewOption(name, caption);
+    const auto nt = p_nodeTypes.value(nodeType);
 
-    if (!p_viewOptions.contains(nodeType)) {
+    if (!nt.option) {
         qDebug() << "FATAL: View option not registred:" << nodeType << "Modifier caption:" << caption;
         qDebug() << "Hint:  Call registerViewOption() first";
         return nullptr;
     }
 
-    viewOption->setIcon(p_icons.value(nodeType));
-
-    p_modifierOptions.append(DependencyPair(viewOption, p_viewOptions.value(nodeType)));
+    QAction *viewOption = addViewOption(name, caption);
+    viewOption->setIcon(nt.icon);
+    p_modifierOptions.append(DependencyPair(viewOption, nt.option));
 
     return viewOption;
 }
@@ -406,16 +422,19 @@ void Parser::addViewOptionSeparator()
 
 void Parser::addViewOptionDependency(int dependentNodeType, int dependencyNodeType)
 {
-    if (!p_viewOptions.contains(dependentNodeType)) {
+    const auto dent = p_nodeTypes.value(dependentNodeType);
+    if (!dent.option) {
         qDebug() << "FATAL: View option dependent not registred:" << dependentNodeType;
         return;
     }
-    if (!p_viewOptions.contains(dependencyNodeType)) {
+
+    const auto dency = p_nodeTypes.value(dependencyNodeType);
+    if (!dency.option) {
         qDebug() << "FATAL: View option dependency not registred:" << dependencyNodeType;
         return;
     }
 
-    p_modifierOptions.append(DependencyPair(p_viewOptions.value(dependentNodeType), p_viewOptions.value(dependencyNodeType)));
+    p_modifierOptions.append(DependencyPair(dent.option, dency.option));
 }
 
 // kate: space-indent on; indent-width 4; replace-tabs on;

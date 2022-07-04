@@ -181,6 +181,12 @@ protected:
     QTreeWidgetItem *rootNode(int nodeType);
 
     /**
+     * Register an icon to use for @p nodeType.
+     * See @c IconCollection::getIcon for @p size and @p qtGlobalColorEnum.
+     */
+    void setNodeTypeIcon(const int nodeType, const int size, const int qtGlobalColorEnum = -1);
+
+    /**
     * Add a new view option to the context menu to toggle the visibility of the
     * node in question.
     * @note There should be no need to store and use the returned QAction,
@@ -304,8 +310,17 @@ private:
     QAction                        *p_viewTree = nullptr;
     QAction                        *p_addIcons = nullptr;
     QAction                        *p_viewExpanded = nullptr;
-    QHash<int, QIcon>               p_icons;
-    QHash<int, QAction*>            p_viewOptions;
+
+    struct NodeTypeStruct {
+        NodeTypeStruct() {};
+        NodeTypeStruct(const  QString &name, QIcon icon, QAction *option = nullptr)
+        : name(name), icon(icon), option(option) {};
+        QString     name;
+        QIcon       icon;
+        QAction    *option = nullptr;
+    };
+    QHash<int, NodeTypeStruct>      p_nodeTypes;
+
     QHash<int, QTreeWidgetItem*>    p_rootNodes;
 
     struct DependencyPair {

@@ -32,6 +32,7 @@
 DocumentParser::DocumentParser(IndexView *view)
     : Parser(view)
 {
+    setNodeTypeIcon(RootNode, 3, Qt::green);
 }
 
 
@@ -104,7 +105,7 @@ QString DocumentParser::disableDependentOptions()
     bool    somePrevIsAvailable = true;
 
     for(int i = 0; true; i++) {
-        QAction *viewOption = p_viewOptions.value(i);
+        QAction *viewOption = p_nodeTypes.value(i).option;
         if (!viewOption) {
             break;
         }
@@ -131,17 +132,6 @@ void DocumentParser::prepareForParse()
     }
 
     p_indexTree->setRootIsDecorated(1);
-
-    // What here is done is like registerViewOption(int, int, QString, QString)
-    // but then would there a pointless option to disable the root node in the menu
-    // and that option will be saved, regardless if we hide the option.
-    // So we go this quirky way.
-    QAction *viewOption = new QAction(this);
-    viewOption->setCheckable(true);
-    viewOption->setChecked(true);
-
-    p_icons.insert(RootNode, IconCollection::getIcon(IconCollection::BlueIcon));
-    p_viewOptions.insert(RootNode, viewOption);
 
     // Add the root node here keeps addNode() less complex
     // Using line number 0 will cause a jump to the top of the document when
