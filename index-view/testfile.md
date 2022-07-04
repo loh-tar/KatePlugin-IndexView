@@ -11,7 +11,30 @@ whereby everything which is not a header is treated as paragraph.
 
 # The largest heading H1
 ## The second largest heading H2
+Some paragraph
+
+Some more paragraph
+
+### The third level heading H3
+Some paragraph
+
+Some more paragraph
+
+#### The forth heading H4
+Some paragraph
+
+Some more paragraph
+
+##### The fifths heading H5
+Some paragraph
+
+Some more paragraph
+
 ###### The smallest heading H6
+Some paragraph
+
+Some more paragraph
+
 ####### More sharps than six are not treated as header, therefore is this a
 paragraph, which conforms to Kate's syntax highliter.
 
