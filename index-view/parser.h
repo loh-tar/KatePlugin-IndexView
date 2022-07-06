@@ -181,6 +181,19 @@ protected:
     QTreeWidgetItem *rootNode(int nodeType);
 
     /**
+     * Call this function in an ctor of a (master) class to add nesting options to the context menu.
+     * Use @p adjust, when needed. E.g. DocumentParser need that, XmlTypeParser do not. It is related
+     * how/when the nesting is calculated, before or after calling setNodeProperties(..).
+     * @param adjust to use @c p_nestingLevelAdjustment or not
+     */
+    void useNestingOptions(bool adjust = false);
+
+    /**
+     * Call this function e.g. in prepareForParse() to init @c p_nestingLevel and @c p_nestingAllowed
+     */
+    void resetNesting();
+
+    /**
      * Register an icon to use for @p nodeType.
      * See @c IconCollection::getIcon for @p size and @p qtGlobalColorEnum.
      */
@@ -251,9 +264,9 @@ protected:
     // virtual void addNode(const int nodeType, const QString &text, const int lineNumber, const int columnNumber = 0) = 0;
 
     /**
-    * Call this function at the beginning of addNode() to test if you must go on.
+    * You can call this function at the beginning of addNode() to test if you must go on.
     * @note This function ensures that a "not enabled" option is treated as "not checked"
-    *       and that @c p_usefulOptions is filled.
+    *       and that @c p_usefulOptions is filled. It's also called in setNodeProperties()
     * @param nodeType the type of the new node, like header or paragraph
     * @return false when @p nodeType is not wanted to show.
     */
@@ -332,6 +345,15 @@ private:
 
     QSet<QAction*>                  p_usefulOptions;
     int                             p_lineNumber;           // Counter in appendNextLine()
+
+    QAction                        *p_nesting1 = nullptr;
+    QAction                        *p_nesting2 = nullptr;
+    QAction                        *p_nesting3 = nullptr;
+    QAction                        *p_nesting4 = nullptr;
+    int                             p_nestingAllowed =  100000;
+    int                             p_nestingLevel = 0;           // You must count +/- with this the nesting
+    int                             p_nestingLevelAdjustment = 0; // To adjust p_nestingLevel, managed by useNestingOptions()
+    int                             p_maxNesting =  -1;
 
     // No one should change this variable except Parser::parse and Parser::setNodeProperties
     QTreeWidgetItem                *p_lastNode = nullptr;

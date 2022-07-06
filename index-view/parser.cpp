@@ -269,6 +269,14 @@ void Parser::parse()
             it.value().option->setVisible(true);
         }
     }
+
+    if (p_nesting1) {
+        p_nesting1->setVisible(true);
+        p_nesting2->setVisible(true);
+        p_nesting3->setVisible(true);
+        p_nesting4->setVisible(true);
+    }
+
     // Enable (or not) view options with respect of their dependencies
     for (int i = 0; i < p_modifierOptions.size(); ++i) {
         p_modifierOptions.at(i).dDent->setEnabled(p_modifierOptions.at(i).dDency->isChecked() && p_modifierOptions.at(i).dDency->isEnabled());
@@ -290,6 +298,19 @@ void Parser::parse()
         if (it.value().option) {
             it.value().option->setVisible(p_usefulOptions.contains(it.value().option));
         }
+    }
+
+    if (p_nesting1) {
+        p_nesting1->setVisible(p_maxNesting > 0);
+
+        p_nesting2->setVisible(p_maxNesting > 1);
+        p_nesting2->setEnabled(p_nesting1->isChecked() && p_nesting1->isEnabled());
+
+        p_nesting3->setVisible(p_maxNesting > 2);
+        p_nesting3->setEnabled(p_nesting2->isChecked() && p_nesting2->isEnabled());
+
+        p_nesting4->setVisible(p_maxNesting > 3);
+        p_nesting4->setEnabled(p_nesting3->isChecked() && p_nesting3->isEnabled());
     }
 
     for (int i = 0; i < p_modifierOptions.size(); ++i) {
@@ -346,7 +367,13 @@ void Parser::setNodeProperties(QTreeWidgetItem *const node, const int nodeType, 
         p_lastNode = node;
     }
 
-    p_view->m_indexList.append(node);
+    p_maxNesting = qMax(p_maxNesting, p_nestingLevel);
+
+    if (!nodeTypeIsWanted(nodeType) || (p_nestingAllowed < (p_nestingLevel + p_nestingLevelAdjustment))) {
+        node->setHidden(true);
+    } else {
+        p_view->m_indexList.append(node);
+    }
 }
 
 
@@ -370,6 +397,41 @@ QAction *Parser::addViewOption(const QString &name, const QString &caption)
 
 
     return viewOption;
+}
+
+void Parser::useNestingOptions(bool adjust/* = false*/)
+{
+    p_nestingLevelAdjustment = adjust ? 1 : 0;
+
+    p_nesting1     = addViewOption(QStringLiteral("Nesting1"), i18n("Show nesting 1"));
+    p_nesting2     = addViewOption(QStringLiteral("Nesting2"), i18n("Show nesting 2"));
+    p_nesting3     = addViewOption(QStringLiteral("Nesting3"), i18n("Show nesting 3"));
+    p_nesting4     = addViewOption(QStringLiteral("Nesting4"), i18n("Show nesting 4+"));
+
+    addViewOptionSeparator();
+}
+
+
+void Parser::resetNesting()
+{
+    Q_ASSERT_X(p_nesting1, "Parser::resetNesting", "No p_nesting1, forgot to call useNestingOptions() ?");
+
+    p_nestingAllowed   = 100000; // Just some big enough value, unlikely to reach in reality..
+    p_nestingLevel = -1;
+    p_maxNesting =  -1;
+
+    if (!p_nesting4->isChecked()) {
+        p_nestingAllowed = 4;
+    }
+    if (!p_nesting3->isChecked()) {
+        p_nestingAllowed = 3;
+    }
+    if (!p_nesting2->isChecked()) {
+        p_nestingAllowed = 2;
+    }
+    if (!p_nesting1->isChecked()) {
+        p_nestingAllowed = 1;
+    }
 }
 
 

@@ -32,6 +32,8 @@
 DocumentParser::DocumentParser(IndexView *view)
     : Parser(view)
 {
+    useNestingOptions(true/* with adjustment of nesting level*/);
+
     setNodeTypeIcon(RootNode, 3, Qt::green);
 }
 
@@ -126,6 +128,8 @@ QString DocumentParser::disableDependentOptions()
 
 void DocumentParser::prepareForParse()
 {
+    resetNesting();
+
     if (!p_viewTree->isChecked()) {
         p_indexTree->setRootIsDecorated(0);
         return;
@@ -148,15 +152,13 @@ void DocumentParser::addNode(const int nodeType, const QString &text, const int 
     // Indicate, there is no paragraph waiting for completion
     m_paraLineNumber = -1;
 
-    if (!nodeTypeIsWanted(nodeType)) {
-        return;
-    }
-
     if (p_viewTree->isChecked()) {
         if (lastNode()) {
             QTreeWidgetItem *parentNode = lastNode();
+            ++p_nestingLevel;
             while (parentNode->type() >= nodeType) {
                 parentNode = parentNode->parent();
+                --p_nestingLevel;
             }
             node = new QTreeWidgetItem(parentNode, nodeType);
         } else {
