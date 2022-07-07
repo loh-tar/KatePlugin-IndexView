@@ -80,9 +80,8 @@ public Q_SLOTS:
     void currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void itemClicked(QTreeWidgetItem *);
 
-// protected:
-    // Disabled because I can't see any effect
-//     bool eventFilter(QObject *obj, QEvent *ev) override;
+protected:
+    bool eventFilter(QObject *obj, QEvent *ev) override;
 
 private:
     int  filterBoxPosition();

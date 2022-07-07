@@ -82,7 +82,6 @@ IndexView::IndexView(KatePluginIndexView *plugin, KTextEditor::MainWindow *mw)
                                             , KTextEditor::MainWindow::Left
                                             , plugin->icon(), plugin->name());
 
-    m_toolview->installEventFilter(this);
 
     QWidget *container = new QWidget(m_toolview);
     QVBoxLayout *layout = new QVBoxLayout(container);
@@ -92,9 +91,10 @@ IndexView::IndexView(KatePluginIndexView *plugin, KTextEditor::MainWindow *mw)
     layout->addWidget(m_indexTree, 1);
 
     // When the current file is BIG and our time-slice parsing take effect, will on very first show
-    // will with this delayed connect&update an ugly black QTreeWidget avoided
+    // with this delayed connect&update an ugly black QTreeWidget avoided
     QTimer::singleShot(0, this, [this]() {
         connect(m_mainWindow, &KTextEditor::MainWindow::viewChanged, this, &IndexView::docChanged);
+        m_toolview->installEventFilter(this);
         docChanged();
     });
 }
@@ -267,6 +267,10 @@ bool IndexView::docModeChanged()
 
 void IndexView::docEdited()
 {
+    if (!m_toolview->isVisible()) {
+        return;
+    }
+
     m_updateCurrItemDelayTimer.stop(); // Avoid unneeded update
     m_parseDelayTimer.start(m_parseDelay);
 }
@@ -274,12 +278,20 @@ void IndexView::docEdited()
 
 void IndexView::docSelectionChanged()
 {
+    if (!m_toolview->isVisible()) {
+        return;
+    }
+
     m_filterDelayTimer.start(UpdateCurrItemDelay + 300);
 }
 
 
 void IndexView::docCursorPositionChanged()
 {
+    if (!m_toolview->isVisible()) {
+        return;
+    }
+
     if (m_parseDelayTimer.isActive()) {
         // No need for update, will come anyway
         return;
@@ -290,14 +302,22 @@ void IndexView::docCursorPositionChanged()
 
 void IndexView::filterTree()
 {
+    if (!m_toolview->isVisible()) {
+        return;
+    }
+
+    KTextEditor::View *view = m_mainWindow->activeView();
+    if (!view) {
+        return;
+    }
+
     // To filter our tree is surprising complex because there seams to be no
     // suitable Qt build in for that. QTreeWidget::findItems() does not traverse
     // and delivers only toplevel matches
-    KTextEditor::View *view = m_mainWindow->activeView();
+
     // Only pattern without space and at least three char long
     static const QRegularExpression rx(QStringLiteral("^\\S{3,}$"));
     QString pattern;
-
     if (view->selection()) {
         pattern = view->selectionText();
         if (!pattern.contains(rx)) {
@@ -380,6 +400,10 @@ void IndexView::restoreTree()
 
 void IndexView::updateCurrTreeItem()
 {
+    if (!m_toolview->isVisible()) {
+        return;
+    }
+
     if (!m_indexList.size()) {
         return;
     }
@@ -447,21 +471,24 @@ void IndexView::updateCurrTreeItem()
     }
 }
 
-// Disabled because I can't see any effect
-// bool IndexView::eventFilter(QObject *obj, QEvent *event)
-// {
-//     if (event->type() == QEvent::KeyPress) {
-//         qDebug() << "eventFilter";
-//         QKeyEvent *ke = static_cast<QKeyEvent*>(event);
-//         if ((obj == m_toolview) && (ke->key() == Qt::Key_Escape)) {
-//             m_mainWindow->activeView()->setFocus();
-//             event->accept();
-//             return true;
-//         }
-//     }
-//
-//     return QObject::eventFilter(obj, event);
-// }
+
+bool IndexView::eventFilter(QObject *obj, QEvent *event)
+{
+    if (obj == m_toolview) { // Meh, we filter no other ATM but anyway
+        if (event->type() == QEvent::KeyPress) {
+            QKeyEvent *ke = static_cast<QKeyEvent*>(event);
+            if ((ke->key() == Qt::Key_Escape)) {
+                m_mainWindow->activeView()->setFocus();
+                event->accept();
+                return true;
+            }
+        } else if (event->type() == QEvent::Show) {
+            m_parseDelayTimer.start(0); // trigger parsing immediately
+        }
+    }
+
+    return QObject::eventFilter(obj, event);
+}
 
 
 void IndexView::showContextMenu(const QPoint&)
@@ -474,6 +501,10 @@ void IndexView::showContextMenu(const QPoint&)
 
 void IndexView::parseDocument()
 {
+    if (!m_toolview->isVisible()) {
+        return;
+    }
+
     if (!m_indexTree) {
         return;
     }
