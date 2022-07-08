@@ -54,6 +54,10 @@ void DocumentParser::parse()
     if (checksum != disableDependentOptions()) {
         Parser::parse();
     }
+
+    if (lastNode()) {
+        lastNode()->setData(0, NodeData::EndLine, lineNumber() - 1);
+    }
 }
 
 
@@ -145,7 +149,7 @@ void DocumentParser::prepareForParse()
 }
 
 
-void DocumentParser::addNode(const int nodeType, const QString &text, const int lineNumber, const int columnNumber/* = 0*/)
+void DocumentParser::addNode(const int nodeType, const QString &text, const int lineNumber)
 {
     QTreeWidgetItem *node = nullptr;
 
@@ -154,10 +158,14 @@ void DocumentParser::addNode(const int nodeType, const QString &text, const int 
 
     if (p_viewTree->isChecked()) {
         if (lastNode()) {
-            QTreeWidgetItem *parentNode = lastNode();
             ++p_nestingLevel;
+            QTreeWidgetItem *parentNode = lastNode();
+            //qDebug() << "UPDATE   LAST" << parentNode->text(0) << "from" << parentNode->data(0, NodeData::EndLine).toInt() << "to" << fromLine -1;
+            parentNode->setData(0, NodeData::EndLine, lineNumber - 1);
             while (parentNode->type() >= nodeType) {
                 parentNode = parentNode->parent();
+                //qDebug() << "UPDATE PARENT" << parentNode->text(0) << "from" << parentNode->data(0, NodeData::EndLine).toInt() << "to" << lineNumber -1;
+                parentNode->setData(0, NodeData::EndLine, lineNumber - 1);
                 --p_nestingLevel;
             }
             node = new QTreeWidgetItem(parentNode, nodeType);
@@ -167,10 +175,14 @@ void DocumentParser::addNode(const int nodeType, const QString &text, const int 
         }
 
     } else {
+        if (lastNode()) {
+            lastNode()->setData(0, NodeData::EndLine, lineNumber - 1);
+        }
         node = new QTreeWidgetItem(p_indexTree, nodeType);
     }
 
-    setNodeProperties(node, nodeType, text, lineNumber, columnNumber);
+    setNodeProperties(node, nodeType, text, lineNumber);
+    //qDebug() << "new node" <<  lineNumber << text;
 }
 
 
