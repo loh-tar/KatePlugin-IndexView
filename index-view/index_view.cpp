@@ -92,7 +92,7 @@ IndexView::IndexView(KatePluginIndexView *plugin, KTextEditor::MainWindow *mw)
 
     // When the current file is BIG and our time-slice parsing take effect, will on very first show
     // with this delayed connect&update an ugly black QTreeWidget avoided
-    QTimer::singleShot(0, this, [this]() {
+    QTimer::singleShot(100, this, [this]() {
         connect(m_mainWindow, &KTextEditor::MainWindow::viewChanged, this, &IndexView::docChanged);
         m_toolview->installEventFilter(this);
         docChanged();
@@ -234,7 +234,7 @@ void IndexView::docChanged()
     if (!docModeChanged()) {
         m_indexTree->clear(); // Hint parseDocument() not to restore scroll position
         // Don't call parseDocument() direct, must wait until new cursor position is updated
-        QTimer::singleShot(/*UpdateCurrItemDelay + 10*/0, this, &IndexView::parseDocument);
+        m_parseDelayTimer.start(10);
     }
 }
 
@@ -258,7 +258,7 @@ bool IndexView::docModeChanged()
     loadViewSettings();
     m_indexTree->clear(); // Hint parseDocument() not to restore scroll position
     // Don't call parseDocument() direct, must wait until new cursor position is updated
-    QTimer::singleShot(/*UpdateCurrItemDelay + 10*/0, this, &IndexView::parseDocument);
+    m_parseDelayTimer.start(10);
 
     return true;
 }
