@@ -232,7 +232,6 @@ void IndexView::docChanged()
           , this, &IndexView::docEdited, Qt::UniqueConnection);
 
     if (!docModeChanged()) {
-        m_parser->docChanged();
         m_indexTree->clear(); // Hint parseDocument() not to restore scroll position
         // Don't call parseDocument() direct, must wait until new cursor position is updated
         QTimer::singleShot(/*UpdateCurrItemDelay + 10*/0, this, &IndexView::parseDocument);

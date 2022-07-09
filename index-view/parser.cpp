@@ -90,7 +90,6 @@ void DummyParser::parseDocument()
 
 Parser::Parser(IndexView *view)
     : QObject(view)
-    , p_document(view->m_mainWindow->activeView()->document())
     , p_indexTree(view->m_indexTree)
     , p_view(view)
 {
@@ -257,6 +256,8 @@ void Parser::parse()
     p_view->m_indexList.clear();
     p_view->m_filtered = false;
 
+    p_document = p_view->m_mainWindow->activeView()->document();
+
     p_lastNode = nullptr;
     p_rootNodes.clear();
     p_usefulOptions.clear();
@@ -316,12 +317,6 @@ void Parser::parse()
     for (int i = 0; i < p_modifierOptions.size(); ++i) {
         p_modifierOptions.at(i).dDent->setVisible(p_modifierOptions.at(i).dDency->isVisible());
     }
-}
-
-
-void Parser::docChanged()
-{
-    p_document = p_view->m_mainWindow->activeView()->document();
 }
 
 

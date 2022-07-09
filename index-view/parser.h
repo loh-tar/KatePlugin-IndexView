@@ -108,11 +108,6 @@ public:
     virtual void parse();
 
     /**
-     * Call this function to inform the parser to use a different document.
-     */
-    void docChanged();
-
-    /**
      * Get the context menu which hold all view settings.
      */
     QMenu *contextMenu() { return &p_menu; };
@@ -316,7 +311,7 @@ protected:
     QElapsedTimer                   m_runTime;
 
 private:
-    KTextEditor::Document          *p_document = nullptr;
+    KTextEditor::Document          *p_document; // Always set in parse()
     QTreeWidget                    *p_indexTree = nullptr;
     IndexView                      *p_view = nullptr;
     QMenu                           p_menu;
