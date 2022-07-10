@@ -416,30 +416,40 @@ void IndexView::updateCurrTreeItem()
         return;
     }
 
-    int currLine = editView->cursorPositionVirtual().line();
-    if (currLine == m_currentLineNumber) {
-        // Nothing to do
-        return;
+    KTextEditor::Cursor cursorPos = editView->cursorPositionVirtual();
+    QTreeWidgetItem *currItem = m_indexTree->currentItem();
+    if (currItem) {
+        if (currItem->data(0, NodeData::Line).toInt() < cursorPos.line() && currItem->data(0, NodeData::EndLine).toInt() > cursorPos.line()) {
+            //qDebug() << "IndexView::updateCurrTreeItem in range, nothing todo";
+            return;
+        }
+        if (currItem->data(0, NodeData::Line).toInt() == cursorPos.line() && currItem->data(0, NodeData::Column).toInt() <= cursorPos.column()) {
+            //qDebug() << "IndexView::updateCurrTreeItem same line, nothing todo";
+            return;
+        }
     }
-    m_currentLineNumber = currLine;
 
     bool newItemIsFullMatch = true;
     QTreeWidgetItem *newItem = nullptr;
-    QTreeWidgetItem *currItem = nullptr;
     QTreeWidgetItem *previousItem = nullptr;
     for (int i = 0; i < m_indexList.size(); ++i) {
         currItem = m_indexList.at(i);
         const int beginLine = currItem->data(0, NodeData::Line).toInt();
+        const int beginColumn = currItem->data(0, NodeData::Column).toInt();
         // FIXME Some parser don't set the end line in some cases, as work around we use here begin line
         //qDebug() << currItem->data(0, NodeData::EndLine).toInt() << currItem->text(0);
         const int endLine   = currItem->data(0, NodeData::EndLine).toInt() < 0 ? beginLine : currItem->data(0, NodeData::EndLine).toInt();
 
-        if (beginLine > currLine) {
+        if (beginLine > cursorPos.line() || (cursorPos.line() == beginLine && cursorPos.column() < beginColumn) ) {
             // We are already below the cursor
             break;
         }
 
-        if (endLine >= currLine && beginLine <= currLine) {
+        if (cursorPos.line() == beginLine && cursorPos.column() >= beginColumn) {
+            // We are just inside a candidate
+            newItem = currItem;
+            newItemIsFullMatch = true;
+        } else if (endLine >= cursorPos.line() && beginLine < cursorPos.line()) {
             // We are inside a candidate
             newItem = currItem;
             newItemIsFullMatch = true;
@@ -524,9 +534,6 @@ void IndexView::parseDocument()
         return;
     }
 
-    // Ensure to expand in advance the right node
-    m_currentLineNumber = m_mainWindow->activeView()->cursorPositionVirtual().line();
-
     // To avoid unpleasant fidgeting in the tree remember current scroll position
     int scrollPosition = -1;
     if (m_indexTree->topLevelItemCount() > 0) {
@@ -546,7 +553,6 @@ void IndexView::parseDocument()
         m_indexTree->sortItems(0, sortOrder);
     }
 
-    m_currentLineNumber = -1; // Ensure to bypass check in updateCurrTreeItem()
     updateCurrTreeItem();
 
     if (scrollPosition > -1) {

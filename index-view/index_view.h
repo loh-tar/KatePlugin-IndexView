@@ -102,7 +102,7 @@ private:
 
     QTimer                      m_parseDelayTimer;
     QTimer                      m_updateCurrItemDelayTimer;
-    int                         m_currentLineNumber;
+
     FilterBox                  *m_filterBox;
     QTimer                      m_filterDelayTimer;
     bool                        m_filtered;
