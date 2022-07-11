@@ -419,12 +419,7 @@ void IndexView::updateCurrTreeItem()
     KTextEditor::Cursor cursorPos = editView->cursorPositionVirtual();
     QTreeWidgetItem *currItem = m_indexTree->currentItem();
     if (currItem) {
-        if (currItem->data(0, NodeData::Line).toInt() < cursorPos.line() && currItem->data(0, NodeData::EndLine).toInt() > cursorPos.line()) {
-            //qDebug() << "IndexView::updateCurrTreeItem in range, nothing todo";
-            return;
-        }
         if (currItem->data(0, NodeData::Line).toInt() == cursorPos.line() && currItem->data(0, NodeData::Column).toInt() <= cursorPos.column()) {
-            //qDebug() << "IndexView::updateCurrTreeItem same line, nothing todo";
             return;
         }
     }
