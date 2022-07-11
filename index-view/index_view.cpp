@@ -426,7 +426,6 @@ void IndexView::updateCurrTreeItem()
 
     bool newItemIsFullMatch = true;
     QTreeWidgetItem *newItem = nullptr;
-    QTreeWidgetItem *previousItem = nullptr;
     for (int i = 0; i < m_indexList.size(); ++i) {
         currItem = m_indexList.at(i);
         const int beginLine = currItem->data(0, NodeData::Line).toInt();
@@ -434,6 +433,11 @@ void IndexView::updateCurrTreeItem()
         // FIXME Some parser don't set the end line in some cases, as work around we use here begin line
         //qDebug() << currItem->data(0, NodeData::EndLine).toInt() << currItem->text(0);
         const int endLine   = currItem->data(0, NodeData::EndLine).toInt() < 0 ? beginLine : currItem->data(0, NodeData::EndLine).toInt();
+
+        if (beginLine < 0) {
+            // Ignore (bad) root items
+            continue;
+        }
 
         if (beginLine > cursorPos.line() || (cursorPos.line() == beginLine && cursorPos.column() < beginColumn) ) {
             // We are already below the cursor
@@ -448,12 +452,12 @@ void IndexView::updateCurrTreeItem()
             // We are inside a candidate
             newItem = currItem;
             newItemIsFullMatch = true;
-        } else if (newItem) {
-            // We are in a nested situation, we want the last one above the cursor
+        } else if (newItem && (currItem->parent() == newItem->parent() || currItem->parent() == newItem)) {
+            // We are in a nested situation, we want the last one above the cursor but only
+            // if this is not some detached node like FIXME/TODO
             newItem = currItem;
             newItemIsFullMatch = false;
         }
-        previousItem = currItem;
     }
 
     if (currItem == m_indexTree->currentItem() && (!newItem || !newItemIsFullMatch)) {
@@ -461,12 +465,7 @@ void IndexView::updateCurrTreeItem()
         return;
     }
 
-    if (!newItem) {
-        // We want the last one above the cursor
-        newItem = previousItem;
-    }
-
-    if (newItem != m_indexTree->currentItem()) {
+    if (newItem && newItem != m_indexTree->currentItem()) {
         //qDebug() << "set new item from" << newItem->data(0, NodeData::Line).toInt() << "to" << newItem->data(0, NodeData::EndLine).toInt();
         m_indexTree->blockSignals(true);
         m_indexTree->setCurrentItem(newItem);
