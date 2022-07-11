@@ -424,7 +424,7 @@ void IndexView::updateCurrTreeItem()
         }
     }
 
-    bool newItemIsFullMatch = true;
+    bool newItemIsFuzzy = true;
     QTreeWidgetItem *newItem = nullptr;
     for (int i = 0; i < m_indexList.size(); ++i) {
         currItem = m_indexList.at(i);
@@ -447,20 +447,20 @@ void IndexView::updateCurrTreeItem()
         if (cursorPos.line() == beginLine && cursorPos.column() >= beginColumn) {
             // We are just inside a candidate
             newItem = currItem;
-            newItemIsFullMatch = true;
+            newItemIsFuzzy = false;
         } else if (endLine >= cursorPos.line() && beginLine < cursorPos.line()) {
             // We are inside a candidate
             newItem = currItem;
-            newItemIsFullMatch = true;
+            newItemIsFuzzy = false;
         } else if (newItem && (currItem->parent() == newItem->parent() || currItem->parent() == newItem)) {
             // We are in a nested situation, we want the last one above the cursor but only
             // if this is not some detached node like FIXME/TODO
             newItem = currItem;
-            newItemIsFullMatch = false;
+            newItemIsFuzzy = true;
         }
     }
 
-    if (currItem == m_indexTree->currentItem() && (!newItem || !newItemIsFullMatch)) {
+    if (currItem == m_indexTree->currentItem() && newItemIsFuzzy) {
         // The situation is fuzzy, any change make nothing better
         return;
     }
