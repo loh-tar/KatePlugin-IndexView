@@ -134,11 +134,6 @@ void DocumentParser::prepareForParse()
 {
     resetNesting();
 
-    if (!p_viewTree->isChecked()) {
-        p_indexTree->setRootIsDecorated(0);
-        return;
-    }
-
     p_indexTree->setRootIsDecorated(1);
 
     // Add the root node here keeps addNode() less complex
@@ -156,28 +151,20 @@ void DocumentParser::addNode(const int nodeType, const QString &text, const int 
     // Indicate, there is no paragraph waiting for completion
     m_paraLineNumber = -1;
 
-    if (p_viewTree->isChecked()) {
-        if (lastNode()) {
-            ++p_nestingLevel;
-            QTreeWidgetItem *parentNode = lastNode();
-            //qDebug() << "UPDATE   LAST" << parentNode->text(0) << "from" << parentNode->data(0, NodeData::EndLine).toInt() << "to" << fromLine -1;
+    if (lastNode()) {
+        ++p_nestingLevel;
+        QTreeWidgetItem *parentNode = lastNode();
+        //qDebug() << "UPDATE   LAST" << parentNode->text(0) << "from" << parentNode->data(0, NodeData::EndLine).toInt() << "to" << fromLine -1;
+        parentNode->setData(0, NodeData::EndLine, lineNumber - 1);
+        while (parentNode->type() >= nodeType) {
+            parentNode = parentNode->parent();
+            //qDebug() << "UPDATE PARENT" << parentNode->text(0) << "from" << parentNode->data(0, NodeData::EndLine).toInt() << "to" << lineNumber -1;
             parentNode->setData(0, NodeData::EndLine, lineNumber - 1);
-            while (parentNode->type() >= nodeType) {
-                parentNode = parentNode->parent();
-                //qDebug() << "UPDATE PARENT" << parentNode->text(0) << "from" << parentNode->data(0, NodeData::EndLine).toInt() << "to" << lineNumber -1;
-                parentNode->setData(0, NodeData::EndLine, lineNumber - 1);
-                --p_nestingLevel;
-            }
-            node = new QTreeWidgetItem(parentNode, nodeType);
-        } else {
-            qDebug() << "DocumentParser::addNode - surprising, should never happens!";
-            node = new QTreeWidgetItem(p_indexTree, nodeType);
+            --p_nestingLevel;
         }
-
+        node = new QTreeWidgetItem(parentNode, nodeType);
     } else {
-        if (lastNode()) {
-            lastNode()->setData(0, NodeData::EndLine, lineNumber - 1);
-        }
+        qDebug() << "DocumentParser::addNode - surprising, should never happens!";
         node = new QTreeWidgetItem(p_indexTree, nodeType);
     }
 

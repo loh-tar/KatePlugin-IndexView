@@ -317,6 +317,55 @@ void Parser::parse()
     for (int i = 0; i < p_modifierOptions.size(); ++i) {
         p_modifierOptions.at(i).dDent->setVisible(p_modifierOptions.at(i).dDency->isVisible());
     }
+
+    if (!p_viewTree->isChecked()) {
+        // To offer a plain list of our hard-raised tree, we must hack him in pieces again :-(
+        // We do it this way because the tree help us to decide what todo while parsing. And because
+        // we have already a list of our nodes of interest (m_indexList), we use this list to decide
+        // how to process with each node, keep or delete.
+
+        // We cut each "main" limb off the tree until he is empty..
+        while (p_indexTree->topLevelItemCount() > 0) {
+            QTreeWidgetItem *item = p_indexTree->takeTopLevelItem(0);
+            while (item->childCount() > 0) {
+                QTreeWidgetItem *ci = item->takeChild(0);
+                if (ci->isHidden()) {
+                    // A hidden one is not needed and can be deleted now
+                    delete ci;
+                } else if (!p_view->m_indexList.contains(ci)) {
+                    // Not in list, drop it. Unlikely for child nodes, but who knows
+                    delete ci;
+                }
+            }
+
+            if (!p_view->m_indexList.contains(item)) {
+                // Not in list, drop it. Happens often for top level nodes.
+                delete item;
+            }
+        }
+
+        // ...and now add the (good) nodes again to our non-tree..tree widget
+        for (int i = 0; i < p_view->m_indexList.size(); ++i) {
+            QTreeWidgetItem *item = p_view->m_indexList.at(i);
+            while (item->childCount() > 0) {
+                QTreeWidgetItem *ci = item->takeChild(0);
+                if (ci->isHidden()) {
+                    delete ci;
+                } else if (!p_view->m_indexList.contains(ci)) {
+                    delete ci;
+                }
+            }
+            // Here is the beef!
+            p_indexTree->addTopLevelItem(p_view->m_indexList.at(i));
+        }
+
+        // We need to take care of p_lastNode or we can crash e.g. with DocumentParser::parse()
+        if (!p_view->m_indexList.contains(p_lastNode)) {
+            p_lastNode = nullptr;
+        }
+
+        p_indexTree->setRootIsDecorated(0);
+    }
 }
 
 
