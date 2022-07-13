@@ -47,6 +47,7 @@ protected:
         TypedefNode,
 //         VariableNode,
         StructNode,
+        EnumNode,
         FunctionDefNode,// Function definition
         FunctionDecNode,// Function declaration
     };

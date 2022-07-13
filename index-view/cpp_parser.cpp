@@ -34,15 +34,18 @@ CppParser::CppParser(IndexView *view)
     : ProgramParser(view)
 {
     using namespace IconCollection;
-    registerViewOption(NamespaceNode, NamespaceIcon, QStringLiteral("Namespace"), i18n("Show Namespace"));
     registerViewOption(MacroNode, SmallGreenIcon, QStringLiteral("Macros"), i18n("Show Macros"));
     registerViewOption(TypedefNode, SmallRedIcon, QStringLiteral("Typedefs"), i18n("Show Typedefs"));
 //     registerViewOption(VariableNode, VariableIcon, QStringLiteral("Variable"), i18n("Show Variables"));
-    registerViewOption(StructNode, ClassIcon, QStringLiteral("Structs"), i18n("Show Structs"));
+    registerViewOption(EnumNode, ClassIcon, QStringLiteral("Enum"), i18n("Show Enums"));
     registerViewOption(FunctionDefNode, FunctionIcon, QStringLiteral("Functions"), i18n("Show Functions"));
 //     m_showParameters  = registerViewOptionModifier(FunctionDefNode, QStringLiteral("ParameterF"), i18n("Show FParameter"));
     registerViewOption(FunctionDecNode, FunctionIcon, QStringLiteral("Functions"), i18n("Show Functions"));
 //     m_showParameters  = registerViewOptionModifier(FunctionDecNode, QStringLiteral("ParameterC"), i18n("Show CParameter"));
+
+    setNodeTypeIcon(NamespaceNode, 3, Qt::magenta);
+    setNodeTypeIcon(StructNode, 3, Qt::blue);
+    setNodeTypeIcon(EnumNode, 2, Qt::lightGray);
 
     m_nonBlockElements << MacroNode << FunctionDecNode;
 
@@ -116,7 +119,7 @@ void CppParser::parseDocument()
             addNode(StructNode, rxMatch.captured(3), m_lineNumber);
 
         } else if (m_line.contains(m_rxEnum, &rxMatch)) {
-            addNode(StructNode, rxMatch.captured(3), m_lineNumber);
+            addNode(EnumNode, rxMatch.captured(3), m_lineNumber);
 
         } else if (m_line.contains(m_rxFuncDef, &rxMatch)) {
             addFuncDefNode(rxMatch.captured(1), rxMatch.captured(2), rxMatch.captured(3));
