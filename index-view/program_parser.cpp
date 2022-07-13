@@ -159,6 +159,10 @@ bool ProgramParser::addCommentTagNode(const QString &tag, const int nodeType)
         return false;
     }
 
+    if (!nodeTypeIsWanted(nodeType)) {
+        return true;
+    }
+
     // Support also notes where the token is at the end
     // FIXME This solutuon is not best. Better is the trick done in XmlTypeParser but that can we not do
     // here because we have (yet) no "clean" comment string. But we could collect one in our removeComment functions

@@ -93,7 +93,7 @@ protected:
     /**
      * Helper function only used by stripLine() to add FIXME/TODO/BEGIN tags and
      * maybe some more.
-     * @returns true when some tag was added
+     * @returns true when some tag was found
      */
     bool addCommentTagNode(const QString &tag, const int nodeType);
 
