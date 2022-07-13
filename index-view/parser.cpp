@@ -287,13 +287,6 @@ void Parser::parse()
     m_runTime.start();
     parseDocument();
 
-    // Keep the tree free from useless root noodes
-    for (QTreeWidgetItem* node : qAsConst(p_rootNodes)) {
-        if (!node->childCount()) {
-            node->setHidden(true);
-        }
-    }
-
     // Keep the context menu free from useless options
     for (auto it = p_nodeTypes.constBegin(); it != p_nodeTypes.constEnd(); ++it) {
         if (it.value().option) {
