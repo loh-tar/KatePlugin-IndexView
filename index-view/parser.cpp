@@ -500,7 +500,7 @@ QAction *Parser::registerViewOptionModifier(const int nodeType, const QString &n
     const auto nt = p_nodeTypes.value(nodeType);
 
     if (!nt.option) {
-        qDebug() << "FATAL: View option not registred:" << nodeType << "Modifier caption:" << caption;
+        qDebug() << "FATAL: View option not registered:" << nodeType << "Modifier caption:" << caption;
         qDebug() << "Hint:  Call registerViewOption() first";
         return nullptr;
     }
@@ -523,13 +523,13 @@ void Parser::addViewOptionDependency(int dependentNodeType, int dependencyNodeTy
 {
     const auto dent = p_nodeTypes.value(dependentNodeType);
     if (!dent.option) {
-        qDebug() << "FATAL: View option dependent not registred:" << dependentNodeType;
+        qDebug() << "FATAL: View option dependent not registered:" << dependentNodeType;
         return;
     }
 
     const auto dency = p_nodeTypes.value(dependencyNodeType);
     if (!dency.option) {
-        qDebug() << "FATAL: View option dependency not registred:" << dependencyNodeType;
+        qDebug() << "FATAL: View option dependency not registered:" << dependencyNodeType;
         return;
     }
 
