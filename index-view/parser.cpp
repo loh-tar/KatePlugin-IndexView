@@ -127,7 +127,7 @@ Parser *Parser::create(const QString &type, IndexView *view)
         return new CppParser(view);
     else if (type == QStringLiteral("ActionScript 2.0") || type == QStringLiteral("JavaScript") || type == QStringLiteral("QML"))
         return new EcmaParser(view);
-    else if (type == QStringLiteral("Fortran"))
+    else if (type.startsWith(QStringLiteral("Fortran")))
         return new FortranParser(view);
     else if (type == QStringLiteral("Markdown"))
         return new MarkdownParser(view);
