@@ -32,13 +32,12 @@ MarkdownParser::MarkdownParser(IndexView *view)
     using namespace IconCollection;
     registerViewOption(ParaNode, ParaIcon, QStringLiteral("Paragraph"), i18n("Show Paragraphs"));
 
-    setNodeTypeIcon(Head1Node, 3, Qt::blue);
-    setNodeTypeIcon(Head2Node, 2, Qt::blue);
-    setNodeTypeIcon(Head3Node, 1, Qt::blue);
-    setNodeTypeIcon(Head4Node, 3, Qt::magenta);
-    setNodeTypeIcon(Head5Node, 2, Qt::magenta);
-    setNodeTypeIcon(Head6Node, 1, Qt::darkMagenta);
-    setNodeTypeIcon(ParaNode, 1, Qt::darkGray); // Override above setting TODO we need new/other registerViewOption
+    setNodeTypeIcon(Head1Node, Head1Icon);
+    setNodeTypeIcon(Head2Node, Head2Icon);
+    setNodeTypeIcon(Head3Node, Head3Icon);
+    setNodeTypeIcon(Head4Node, Head4Icon);
+    setNodeTypeIcon(Head5Node, Head5Icon);
+    setNodeTypeIcon(Head6Node, Head6Icon);
 }
 
 

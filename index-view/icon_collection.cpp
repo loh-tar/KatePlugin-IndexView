@@ -45,7 +45,7 @@ QIcon getIcon(const int size, const int qtGlobalColorEnum/* = -1 */)
     const qreal pixmapHalf = pixmapSize / 2.0;
     const qreal penWidth = 1.0;
     const qreal circleSize = pixmapSize / 4.0 - penWidth;
-    const qreal circleHalf = circleSize / 2.0;
+    //const qreal circleHalf = circleSize / 2.0;
 
     QPixmap pixmap(pixmapSize,pixmapSize);
     pixmap.fill(Qt::transparent);
@@ -109,19 +109,34 @@ QIcon getIcon(IconType type)
     // TODO Remove this function
     // Here we chose some new icon halve way fitting to our old icons, yes fit not well
     switch (type) {
-        case BlueIcon:          return getIcon(3, Qt::blue); break;
-        case GreenYellowIcon:   return getIcon(3, Qt::green); break;
-        case RedBlueIcon:       return getIcon(2, Qt::darkCyan); break;
-        case GreyIcon:          return getIcon(3, Qt::gray); break;
-        case SmallYellowIcon:   return getIcon(2, Qt::yellow); break;
-        case SmallRedIcon:      return getIcon(2, Qt::red); break;
-        case SmallGreenIcon :   return getIcon(2, Qt::green); break;
-        case SmallDarkBlueIcon: return getIcon(1, Qt::blue); break;
-        case SmallBlueIcon:     return getIcon(1, Qt::blue); break;
-        case SmallGreyIcon:     return getIcon(1, Qt::gray); break;
+        case Blue3Icon:     return getIcon(3, Qt::blue); break;
+        case Red3Icon:      return getIcon(3, Qt::red); break;
+        case Green3Icon:    return getIcon(3, Qt::green); break;
+        case Cyan3Icon:     return getIcon(3, Qt::cyan); break;
+        case Magenta3Icon:  return getIcon(3, Qt::magenta); break;
+        case Yellow3Icon:   return getIcon(3, Qt::yellow); break;
+        case Gray3Icon:     return getIcon(3, Qt::gray); break;
+
+        case Blue2Icon:     return getIcon(2, Qt::blue); break;
+        case Red2Icon:      return getIcon(2, Qt::red); break;
+        case Green2Icon:    return getIcon(2, Qt::green); break;
+        case Cyan2Icon:     return getIcon(2, Qt::cyan); break;
+        case Magenta2Icon:  return getIcon(2, Qt::magenta); break;
+        case Yellow2Icon:   return getIcon(2, Qt::yellow); break;
+        case Gray2Icon:     return getIcon(2, Qt::gray); break;
+
+        case Blue1Icon:     return getIcon(1, Qt::blue); break;
+        case Red1Icon:      return getIcon(1, Qt::red); break;
+        case Green1Icon:    return getIcon(1, Qt::green); break;
+        case Cyan1Icon:     return getIcon(1, Qt::cyan); break;
+        case Magenta1Icon:  return getIcon(1, Qt::magenta); break;
+        case Yellow1Icon:   return getIcon(1, Qt::yellow); break;
+        case Gray1Icon:     return getIcon(1, Qt::gray); break;
 
         // Just to satisfy the compiler
-        default: return getIcon(3, Qt::blue); break;
+        default:
+            qDebug() << "FATAL getIcon not in case handled" << type;
+            return getIcon(3, Qt::blue); break;
     }
 }
 

@@ -48,7 +48,7 @@ DummyParser::DummyParser(const QString &type, IndexView *view)
     , m_docType(type)
 {
     using namespace IconCollection;
-    registerViewOption(InfoNode, RedBlueIcon, QStringLiteral("Info"), i18n("Show Info"));
+    registerViewOption(InfoNode, Red1Icon, QStringLiteral("Info"), i18n("Show Info"));
 
     // Hide all possible general options to deactivate the menu
     p_viewTree->setVisible(false);
@@ -472,12 +472,22 @@ void Parser::resetNesting()
 }
 
 
-void Parser::setNodeTypeIcon(const int nodeType, const int size, const int qtGlobalColorEnum/* = -1*/)
+void Parser::setNodeTypeIcon(const int nodeType, const int size, const int qtGlobalColorEnum)
 {
     if (p_nodeTypes.contains(nodeType)) {
         p_nodeTypes[nodeType].icon = IconCollection::getIcon(size, qtGlobalColorEnum);
     } else {
         p_nodeTypes.insert(nodeType, NodeTypeStruct(QString(), IconCollection::getIcon(size, qtGlobalColorEnum)));
+    }
+}
+
+
+void Parser::setNodeTypeIcon(const int nodeType, const IconCollection::IconType iconType)
+{
+    if (p_nodeTypes.contains(nodeType)) {
+        p_nodeTypes[nodeType].icon = IconCollection::getIcon(iconType);
+    } else {
+        p_nodeTypes.insert(nodeType, NodeTypeStruct(QString(), IconCollection::getIcon(iconType)));
     }
 }
 
@@ -488,7 +498,6 @@ QAction *Parser::registerViewOption(const int nodeType, const IconCollection::Ic
 
     viewOption->setIcon(IconCollection::getIcon(iconType));
 
-//  p_nodeTypes.insert(nodeType, NodeTypeStruct(name, IconCollection::getIcon(size, qtGlobalColorEnum))); TODO
     p_nodeTypes.insert(nodeType, NodeTypeStruct(name, IconCollection::getIcon(iconType), viewOption));
 
     return viewOption;

@@ -34,10 +34,10 @@ FortranParser::FortranParser(IndexView *view)
     : ProgramParser(view)
 {
     using namespace IconCollection;
-    registerViewOption(TypeNode, SmallBlueIcon, QStringLiteral("Types"), i18n("Show Types"));
-    registerViewOption(FunctionNode, FunctionIcon, QStringLiteral("Functions"), i18n("Show Functions"));
-    registerViewOption(SubroutineNode, BlueIcon, QStringLiteral("Subroutines"), i18n("Show Subroutines"));
-    registerViewOption(ModuleNode, GreenYellowIcon, QStringLiteral("Modules"), i18n("Show Modules"));
+    registerViewOption(TypeNode, TypeIcon, QStringLiteral("Types"), i18n("Show Types"));
+    registerViewOption(FunctionNode, FuncDefIcon, QStringLiteral("Functions"), i18n("Show Functions"));
+    registerViewOption(SubroutineNode, SubroutineIcon, QStringLiteral("Subroutines"), i18n("Show Subroutines"));
+    registerViewOption(ModuleNode, Green2Icon, QStringLiteral("Modules"), i18n("Show Modules"));
 
     // See Ruby
 //  m_blockElements << QStringLiteral("if") << QStringLiteral("do") << QStringLiteral("for") << QStringLiteral("select")

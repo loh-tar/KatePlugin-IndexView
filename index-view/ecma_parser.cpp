@@ -35,9 +35,9 @@ EcmaParser::EcmaParser(IndexView *view)
     using namespace IconCollection;
     // FIXME Give all these "Functions" more fitting names
     // See https://wiki.selfhtml.org/wiki/JavaScript/Objekte_-_Eigenschaften_und_Methoden
-    registerViewOption(FunctionNode, FunctionIcon, QStringLiteral("Functions"), i18n("Show Functions"));
-    registerViewOption(Func2Node, GreenYellowIcon, QStringLiteral("Func2"), i18n("Show Func2"));
-    registerViewOption(Func3Node, BlueIcon, QStringLiteral("Func3"), i18n("Show Func3"));
+    registerViewOption(FunctionNode, FuncDefIcon, QStringLiteral("Functions"), i18n("Show Functions"));
+    registerViewOption(Func2Node, Cyan2Icon, QStringLiteral("Func2"), i18n("Show Func2"));
+    registerViewOption(Func3Node, Blue2Icon, QStringLiteral("Func3"), i18n("Show Func3"));
 
     m_rxFunction = QRegularExpression(QStringLiteral("\\bfunction (\\w+)\\("));
     m_rxFunc2 = QRegularExpression(QStringLiteral("\\b(\\w+)=function\\((.*)\\)"));

@@ -36,7 +36,7 @@ TclParser::TclParser(IndexView *view)
     using namespace IconCollection;
     registerViewOption(VariableNode, VariableIcon, QStringLiteral("Variables"), i18n("Show Variables"));
     m_showAssignments = registerViewOptionModifier(VariableNode, QStringLiteral("Assignments"), i18n("Show Assignments"));
-    registerViewOption(FunctionNode, FunctionIcon, QStringLiteral("Functions"), i18n("Show Functions"));
+    registerViewOption(FunctionNode, FuncDefIcon, QStringLiteral("Functions"), i18n("Show Functions"));
     m_showParameters  = registerViewOptionModifier(FunctionNode, QStringLiteral("Parameters"), i18n("Show Parameter"));
 
     m_nonBlockElements << VariableNode;

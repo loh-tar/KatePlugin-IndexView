@@ -192,7 +192,13 @@ protected:
      * Register an icon to use for @p nodeType.
      * See @c IconCollection::getIcon for @p size and @p qtGlobalColorEnum.
      */
-    void setNodeTypeIcon(const int nodeType, const int size, const int qtGlobalColorEnum = -1);
+    void setNodeTypeIcon(const int nodeType, const int size, const int qtGlobalColorEnum);
+
+    /**
+     * Register an icon to use for @p nodeType.
+     * See @c IconCollection::getIcon
+     */
+    void setNodeTypeIcon(const int nodeType, const IconCollection::IconType iconType);
 
     /**
     * Add a new view option to the context menu to toggle the visibility of the

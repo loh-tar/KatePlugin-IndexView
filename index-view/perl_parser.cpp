@@ -34,10 +34,10 @@ PerlParser::PerlParser(IndexView *view)
     : ProgramParser(view)
 {
     using namespace IconCollection;
-    registerViewOption(PragmaNode, GreenYellowIcon, QStringLiteral("Pragmas"), i18n("Show Pragmas"));
-    registerViewOption(UsesNode, BlueIcon, QStringLiteral("Uses"), i18n("Show Uses"));
+    registerViewOption(UsesNode, UsesIcon, QStringLiteral("Uses"), i18n("Show Uses"));
+    registerViewOption(PragmaNode, PragmaIcon, QStringLiteral("Pragmas"), i18n("Show Pragmas"));
     registerViewOption(VariableNode, VariableIcon, QStringLiteral("Variables"), i18n("Show Variables"));
-    registerViewOption(SubroutineNode, FunctionIcon, QStringLiteral("Subroutines"), i18n("Show Subroutines"));
+    registerViewOption(SubroutineNode, FuncDefIcon, QStringLiteral("Subroutines"), i18n("Show Subroutines"));
 
     m_nonBlockElements << UsesNode << PragmaNode << VariableNode;
 

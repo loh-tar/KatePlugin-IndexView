@@ -102,7 +102,7 @@ QString KatePluginIndexView::name() const
 
 QIcon KatePluginIndexView::icon() const
 {
-    return IconCollection::getIcon(IconCollection::GreenYellowIcon);
+    return IconCollection::getIcon(IconCollection::ThisPluginIcon);
 }
 
 

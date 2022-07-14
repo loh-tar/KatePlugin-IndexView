@@ -34,7 +34,7 @@ DocumentParser::DocumentParser(IndexView *view)
 {
     useNestingOptions(true/* with adjustment of nesting level*/);
 
-    setNodeTypeIcon(RootNode, 3, Qt::green);
+    setNodeTypeIcon(RootNode, IconCollection::DocumentRootIcon);
 }
 
 

@@ -33,7 +33,7 @@ BashParser::BashParser(IndexView *view)
     : ProgramParser(view)
 {
     using namespace IconCollection;
-    registerViewOption(FunctionNode, FunctionIcon, QStringLiteral("Functions"), i18n("Show Functions"));
+    registerViewOption(FunctionNode, FuncDefIcon, QStringLiteral("Functions"), i18n("Show Functions"));
 //     registerViewOption(QStringLiteral("Parameters"), i18n("Show Parameter"));
 
     m_nestableElements << FunctionNode;

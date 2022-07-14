@@ -35,8 +35,8 @@ RubyParser::RubyParser(IndexView *view)
 {
     using namespace IconCollection;
     registerViewOption(ClassNode, ClassIcon, QStringLiteral("Classes"), i18n("Show Classes"));
-    registerViewOption(MixinNode, SmallGreenIcon, QStringLiteral("Mixin"), i18n("Show Mixin"));
-    registerViewOption(ModuleNode, GreenYellowIcon, QStringLiteral("Modules"), i18n("Show Modules"));
+    registerViewOption(MixinNode, Green1Icon, QStringLiteral("Mixin"), i18n("Show Mixin"));
+    registerViewOption(ModuleNode, Green2Icon, QStringLiteral("Modules"), i18n("Show Modules"));
     registerViewOption(MethodNode, MethodIcon, QStringLiteral("Methods"), i18n("Show Methods"));
     m_showParameters = registerViewOptionModifier(MethodNode, QStringLiteral("Parameters"), i18n("Show Parameter"));
 

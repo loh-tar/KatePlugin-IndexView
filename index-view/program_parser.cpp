@@ -36,8 +36,8 @@ ProgramParser::ProgramParser(IndexView *view)
     p_viewTree->setObjectName(QStringLiteral("StructureView"));
 
     using namespace IconCollection;
-    registerViewOption(FixmeTodoNode, SmallYellowIcon, QStringLiteral("FIXME/TODO"), i18n("Show FIXME/TODO"));
-    registerViewOption(BeginNode, BlueIcon, QStringLiteral("BEGIN"), i18n("Show BEGIN"));
+    registerViewOption(FixmeTodoNode, FixmeTodoIcon, QStringLiteral("FIXME/TODO"), i18n("Show FIXME/TODO"));
+    registerViewOption(BeginNode, BeginIcon, QStringLiteral("BEGIN"), i18n("Show BEGIN"));
     m_detachedNodeTypes << FixmeTodoNode << BeginNode;
 }
 

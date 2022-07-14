@@ -31,40 +31,64 @@
 
 namespace IconCollection {
 
-// TODO Get rid of these enum and related stuff
+// Don't use enums with a color name as node icon, use some descriptive name.
+// I hope this way we can have a more uniform look across different file types
+// and perhaps in the future an easier change to some better solution with e.g.
+// an option to let the user switch between sets of icons like normal/dark-mode.
 enum IconType {
-    BlueIcon,
-    Head1Icon = BlueIcon,
-    ClassIcon = BlueIcon,
+    // Three 3 Dot Icons
+    Blue3Icon,
+        Head1Icon = Blue3Icon,
+        ClassIcon = Blue3Icon,
+    Red3Icon,
+        UsesIcon = Red3Icon, // Perl
+    Green3Icon,
+        ThisPluginIcon = Green3Icon,
+        DocumentRootIcon = Green3Icon,
+        InterfaceIcon = Green3Icon, // PHP
+        SubroutineIcon = Green3Icon, // Fortran
+    Cyan3Icon,
+        NamespaceIcon = Cyan3Icon,
+    Magenta3Icon,
+        Head4Icon = Magenta3Icon,
+    Yellow3Icon,
+    Gray3Icon,
 
-    GreenYellowIcon,
-    Head2Icon = GreenYellowIcon,
+    // Two 2 Dot Icons
+    Blue2Icon,
+        Head2Icon = Blue2Icon,
+        TypeIcon = Blue2Icon, // Fortran
+    Red2Icon,
+        PragmaIcon = Red2Icon, // Perl
+    Green2Icon,
+        FuncDefIcon = Green2Icon,
+        MethodIcon = Green2Icon, // Python, Ruby
+    Cyan2Icon,
+        FuncDecIcon = Cyan2Icon,
+    Magenta2Icon,
+        Head5Icon = Magenta2Icon,
+        TypedefIcon = Magenta2Icon,
+    Yellow2Icon,
+    Gray2Icon,
+        EnumIcon = Gray2Icon,
 
-    RedBlueIcon,
-    Head3Icon = RedBlueIcon,
-    FunctionIcon = RedBlueIcon,
-    MethodIcon = RedBlueIcon,
-
-    GreyIcon,
-    Head4Icon = GreyIcon,
-    NamespaceIcon = GreyIcon,
-
-    SmallYellowIcon,
-    Head5Icon = SmallYellowIcon,
-
-    SmallRedIcon,
-    VariableIcon = SmallRedIcon,
-
-    SmallGreenIcon,
-
-    SmallDarkBlueIcon,
-    ConstantIcon = SmallDarkBlueIcon,
-
-    SmallBlueIcon,
-    Head6Icon = SmallBlueIcon,
-
-    SmallGreyIcon,
-    ParaIcon = SmallGreyIcon,
+    // One 1 Dot Icons
+    Blue1Icon,
+        Head3Icon = Blue1Icon,
+    Red1Icon,
+    Green1Icon,
+        MacroIcon = Green1Icon,
+    Cyan1Icon,
+        BeginIcon = Cyan1Icon,
+    Magenta1Icon,
+        Head6Icon = Magenta1Icon,
+        VariableIcon = Magenta1Icon,
+    Yellow1Icon,
+        FixmeTodoIcon = Yellow1Icon,
+    Gray1Icon,
+        ConstantIcon = Gray1Icon,
+        ParaIcon = Gray1Icon,
+        CommentIcon = Gray1Icon,
 };
 
 QIcon getIcon(IconType type);

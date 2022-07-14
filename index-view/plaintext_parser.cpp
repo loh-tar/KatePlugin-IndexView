@@ -32,9 +32,8 @@ PlainTextParser::PlainTextParser(IndexView *view)
     using namespace IconCollection;
     registerViewOption(ParaNode, ParaIcon, QStringLiteral("Paragraph"), i18n("Show Paragraphs"));
 
-    setNodeTypeIcon(SectNode, 3, Qt::blue);
-    setNodeTypeIcon(HeadNode, 2, Qt::darkCyan);
-    setNodeTypeIcon(ParaNode, 1, Qt::darkGray); // Override above setting TODO we need new/other registerViewOption
+    setNodeTypeIcon(SectNode, Head1Icon);
+    setNodeTypeIcon(HeadNode, Head2Icon);
 }
 
 

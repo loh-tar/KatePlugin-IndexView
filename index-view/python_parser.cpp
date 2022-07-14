@@ -35,7 +35,7 @@ PythonParser::PythonParser(IndexView *view)
     using namespace IconCollection;
     registerViewOption(ClassNode, ClassIcon, QStringLiteral("Classes"), i18n("Show Classes"));
     registerViewOption(MethodNode, MethodIcon, QStringLiteral("Methods"), i18n("Show Methods"));
-    registerViewOption(FunctionNode, FunctionIcon, QStringLiteral("Functions"), i18n("Show Functions"));
+    registerViewOption(FunctionNode, FuncDefIcon, QStringLiteral("Functions"), i18n("Show Functions"));
 
     addViewOptionDependency(MethodNode, ClassNode);
 }

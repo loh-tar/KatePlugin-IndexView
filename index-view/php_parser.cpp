@@ -36,10 +36,10 @@ PhpParser::PhpParser(IndexView *view)
 {
     using namespace IconCollection;
     registerViewOption(ClassNode, ClassIcon, QStringLiteral("Classes"), i18n("Show Classes"));
-    registerViewOption(InterfaceNode, BlueIcon, QStringLiteral("Interfaces"), i18n("Show Interfaces"));
+    registerViewOption(InterfaceNode, InterfaceIcon, QStringLiteral("Interfaces"), i18n("Show Interfaces"));
     registerViewOption(NamespaceNode, NamespaceIcon, QStringLiteral("Namespace"), i18n("Show Namespace"));
     registerViewOption(ConstantNode, ConstantIcon, QStringLiteral("Constants"), i18n("Show Constants"));
-    registerViewOption(FunctionNode, FunctionIcon, QStringLiteral("Functions"), i18n("Show Functions"));
+    registerViewOption(FunctionNode, FuncDefIcon, QStringLiteral("Functions"), i18n("Show Functions"));
     registerViewOption(VariableNode, VariableIcon, QStringLiteral("Variables"), i18n("Show Variables"));
 
     m_nonBlockElements << ConstantNode << VariableNode;//<< NamespaceNode;

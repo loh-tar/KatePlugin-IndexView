@@ -34,18 +34,17 @@ CppParser::CppParser(IndexView *view)
     : ProgramParser(view)
 {
     using namespace IconCollection;
-    registerViewOption(MacroNode, SmallGreenIcon, QStringLiteral("Macros"), i18n("Show Macros"));
-    registerViewOption(TypedefNode, SmallRedIcon, QStringLiteral("Typedefs"), i18n("Show Typedefs"));
+    registerViewOption(MacroNode, MacroIcon, QStringLiteral("Macros"), i18n("Show Macros"));
+    registerViewOption(TypedefNode, TypedefIcon, QStringLiteral("Typedefs"), i18n("Show Typedefs"));
 //     registerViewOption(VariableNode, VariableIcon, QStringLiteral("Variable"), i18n("Show Variables"));
-    registerViewOption(EnumNode, ClassIcon, QStringLiteral("Enum"), i18n("Show Enums"));
-    registerViewOption(FunctionDefNode, FunctionIcon, QStringLiteral("Functions"), i18n("Show Functions"));
+    registerViewOption(EnumNode, EnumIcon, QStringLiteral("Enum"), i18n("Show Enums"));
+    registerViewOption(FunctionDefNode, FuncDefIcon, QStringLiteral("Functions"), i18n("Show Function Def"));
 //     m_showParameters  = registerViewOptionModifier(FunctionDefNode, QStringLiteral("ParameterF"), i18n("Show FParameter"));
-    registerViewOption(FunctionDecNode, FunctionIcon, QStringLiteral("Functions"), i18n("Show Functions"));
+    registerViewOption(FunctionDecNode, FuncDecIcon, QStringLiteral("Functions"), i18n("Show Function Dec"));
 //     m_showParameters  = registerViewOptionModifier(FunctionDecNode, QStringLiteral("ParameterC"), i18n("Show CParameter"));
 
-    setNodeTypeIcon(NamespaceNode, 3, Qt::magenta);
-    setNodeTypeIcon(StructNode, 3, Qt::blue);
-    setNodeTypeIcon(EnumNode, 2, Qt::lightGray);
+    setNodeTypeIcon(NamespaceNode, NamespaceIcon);
+    setNodeTypeIcon(StructNode, ClassIcon);
 
     m_nonBlockElements << MacroNode << FunctionDecNode;
 
