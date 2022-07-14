@@ -112,7 +112,7 @@ void CppParser::parseDocument()
             // Do nothing
 
         } else if (m_line.contains(m_rxNamespace, &rxMatch)) {
-            addNode(NamespaceNode, rxMatch.captured(1), m_lineNumber);
+            addScopeNode(NamespaceNode, rxMatch.captured(1), m_lineNumber);
 
         } else if (m_line.contains(m_rxStruct, &rxMatch)) {
             addScopeNode(StructNode, rxMatch.captured(3), m_lineNumber);
