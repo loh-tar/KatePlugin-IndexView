@@ -447,4 +447,33 @@ void ProgramParser::addNodeToScope(const QString &scope, const int scopeType, co
 }
 
 
+void ProgramParser::addScopeNode(const int nodeType, const QString &text, const int lineNumber, const int columnNumber/* = 0*/)
+{
+    // Disabled. Guess it is unlikely we have an option for that.
+    // Why should we not want such important node see?
+    // if (!nodeTypeIsWanted(nodeType)) {
+    //     return;
+    // }
+
+    QTreeWidgetItem *node = nullptr;
+
+    if (!p_parentNode || p_nestingStack.isEmpty()) {
+        node = p_scopeRoots.value(text, nullptr);
+
+        if (node) {
+            // Hm, really nothing else todo?
+            return;
+        }
+
+        node = new QTreeWidgetItem(p_indexTree, nodeType);
+        p_scopeRoots.insert(text, node);
+        p_parentNode = node; // That's OK?
+
+    } else {
+        node = new QTreeWidgetItem(p_parentNode, nodeType);
+    }
+
+    setNodeProperties(node, nodeType, text, lineNumber, columnNumber);
+}
+
 // kate: space-indent on; indent-width 4; replace-tabs on;

@@ -116,7 +116,7 @@ void CppParser::parseDocument()
             addNode(NamespaceNode, rxMatch.captured(1), m_lineNumber);
 
         } else if (m_line.contains(m_rxStruct, &rxMatch)) {
-            addNode(StructNode, rxMatch.captured(3), m_lineNumber);
+            addScopeNode(StructNode, rxMatch.captured(3), m_lineNumber);
 
         } else if (m_line.contains(m_rxEnum, &rxMatch)) {
             addNode(EnumNode, rxMatch.captured(3), m_lineNumber);

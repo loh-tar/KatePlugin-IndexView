@@ -203,6 +203,20 @@ protected:
      */
     void addNodeToScope(const QString &scope, const int scopeType, const int nodeType, const QString &text, const int lineNumber, const int columnNumber = 0);
 
+    /**
+     * This function add a new root node with the caption of @p text to  the tree when
+     * there is no current nesting situation. With nesting the node is add below the parent.
+     * Without a nesting situation the new node is added to @c p_scopeRoots. Should such
+     * scope already exist, nothing is done.
+     * @param nodeType the type of the new node, like struct
+     * @param text the caption of the new node, visible in the view
+     * @param lineNumber the line where the pattern is located in the file
+     * @param columnNumber the column where the pattern is located in the file
+     * NOTE @p columnNumber is set but not reported (used) by any known sub class atm.
+     *
+     */
+    void addScopeNode(const int nodeType, const QString &text, const int lineNumber, const int columnNumber = 0);
+
     int parentNodeType() { return p_parentNode ? p_parentNode->type() : -1; }; // Introduced for C++ function declarations
     int nestingLevel() { return p_nestingStack.size(); }; // Introduced for Tcl
 
