@@ -51,7 +51,7 @@ protected:
         VariableNode,
     };
 
-    QString version() override { return QStringLiteral("0.8, Okt 2018"); } ;
+    QString version() override { return QStringLiteral("0.8.1, Jul 2022"); } ;
     QString author() override { return QStringLiteral("2018 loh.tar \n\nInspired by \n"
                                                       "2010 Emmanuel Bouthenot \n"
                                                       "2007 Massimo Callegari"); } ;

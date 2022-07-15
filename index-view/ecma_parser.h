@@ -48,7 +48,7 @@ protected:
         Func3Node,
     };
 
-    QString version() override { return QStringLiteral("0.5, Okt 2018"); } ;
+    QString version() override { return QStringLiteral("0.5.1, Jul 2022"); } ;
     QString author() override { return QStringLiteral("2018 loh.tar \n\nInspired by \n2012 Jesse Crossen"); } ;
 
     void parseDocument() override;

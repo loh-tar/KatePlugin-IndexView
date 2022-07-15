@@ -37,7 +37,7 @@
 #include "kate_plugin_index_view.h"
 
 
-#define IndexViewVersion QStringLiteral("0.8.4, May 2019")
+#define IndexViewVersion QStringLiteral("0.9, Jul 2022")
 
 
 KatePluginIndexViewConfigPage::KatePluginIndexViewConfigPage(KatePluginIndexView *plugin, QWidget *parentWidget /*= 0L*/)
@@ -46,7 +46,7 @@ KatePluginIndexViewConfigPage::KatePluginIndexViewConfigPage(KatePluginIndexView
 {
     setupUi(this);
     ui_pluginVersion->setText(IndexViewVersion);
-    ui_pluginAuthor->setText(QStringLiteral("2018 loh.tar \n\nBased on SymbolViewer \n2014 Kåre Särs \n2003 Massimo Callegari"));
+    ui_pluginAuthor->setText(QStringLiteral("2018, 2022 loh.tar \n\nBased on SymbolViewer \n2014 Kåre Särs \n2003 Massimo Callegari"));
     ui_aboutPluginBox->setTitle(i18n("About %1", name()));
 
     connect(ui_cozyClickExpand, &QCheckBox::toggled, this, &KatePluginIndexViewConfigPage::changed);

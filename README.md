@@ -17,7 +17,7 @@ Now, I offer it as an independent plugin. We will see if it find a way into the
 official Kate version.
 
 
-### Last version is 0.8.5, Jun 2022
+### Last version is 0.9, Jul 2022
 
   - Prepare for Qt6, Required Qt version is now 5.15
   - Parser: Keep the editing responsive when the file is large
@@ -84,7 +84,7 @@ KatePlugin-IndexView is licensed under LGPL2. See COPYING for the full license.
 
 <!-- CAUTION! Trailing two spaces are there to have a line break without new paragraph -->
 KatePlugin-IndexView  
-Copyright (C) 2018, 2019 loh.tar@googlemail.com
+Copyright (C) 2018, 2019, 2022 loh.tar@googlemail.com
 
 Because KatePlugin-IndexView is a fork there are rights from pervious main
 developers:
