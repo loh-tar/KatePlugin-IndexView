@@ -583,7 +583,9 @@ void IndexView::itemClicked(QTreeWidgetItem *it)
 
     int line   = it->data(0, NodeData::Line).toInt();
     int column = it->data(0, NodeData::Column).toInt();
+
     kv->setCursorPosition(KTextEditor::Cursor(line, column));
+    m_updateCurrItemDelayTimer.stop(); // Avoid unneeded update, yeah, strange but works because signal/slots are running immediately
 
     if (m_currentItemChanged) {
         m_currentItemChanged = false;
