@@ -36,6 +36,13 @@ namespace IconCollection {
 // and perhaps in the future an easier change to some better solution with e.g.
 // an option to let the user switch between sets of icons like normal/dark-mode.
 enum IconType {
+    // Keep the AutoColorNIcons on top of this enum
+    AutoColorReset = -1,
+    AutoColor = -1,
+    AutoColor3Icon,
+    AutoColor2Icon,
+    AutoColor1Icon,
+
     // Three 3 Dot Icons
     Blue3Icon,
         Head1Icon = Blue3Icon,
@@ -101,7 +108,7 @@ QIcon getIcon(IconType type);
  * @parm size How many circle to use 1-3 or -1 to reset auto color counter
  * @parm qtGlobalColorEnum A color from Qt::GlobalColor or -1 for auto color
  */
-QIcon getIcon(const int size, const int qtGlobalColorEnum = -1);
+QIcon getIcon(const int size = AutoColorReset, const int qtGlobalColorEnum = AutoColor);
 
 }
 
