@@ -123,7 +123,7 @@ Parser *Parser::create(const QString &type, IndexView *view)
     // Ordered by parser class name, except...
     if (type == QStringLiteral("Bash") || type == QStringLiteral("Zsh"))
         return new BashParser(view);
-    else if (type == QStringLiteral("C++") || type == QStringLiteral("C") || type == QStringLiteral("ANSI C89") || type == QStringLiteral("Java"))
+    else if (type == QStringLiteral("C++") || type == QStringLiteral("C") || type == QStringLiteral("ANSI C89") || type == QStringLiteral("Java") || type == QStringLiteral("Groovy"))
         return new CppParser(view);
     else if (type == QStringLiteral("ActionScript 2.0") || type == QStringLiteral("JavaScript") || type == QStringLiteral("QML"))
         return new EcmaParser(view);
