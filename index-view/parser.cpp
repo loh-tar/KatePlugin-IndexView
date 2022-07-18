@@ -251,6 +251,8 @@ bool Parser::appendNextLine()
 
 void Parser::parse()
 {
+    p_parsingIsRunning = true;
+
     // Looks odd, but we need to do this here because some parser parse in some situations
     // twice, e.g. DocumentParser, and then we end up with a doubled result tree
     p_view->m_indexTree->clear();
@@ -360,6 +362,8 @@ void Parser::parse()
 
         p_indexTree->setRootIsDecorated(0);
     }
+
+    p_parsingIsRunning = false;
 }
 
 

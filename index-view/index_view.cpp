@@ -240,6 +240,7 @@ void IndexView::docChanged()
     }
 
     if (!docModeChanged()) {
+        m_indexTree->setUpdatesEnabled(false);
         m_indexTree->clear(); // Hint parseDocument() not to restore scroll position
         // Don't call parseDocument() direct, must wait until new cursor position is updated
         m_parseDelayTimer.start(10);
@@ -264,7 +265,13 @@ bool IndexView::docModeChanged()
     m_docType = newDocType;
     m_parser = Parser::create(m_docType, this);
     loadViewSettings();
-    m_indexTree->clear(); // Hint parseDocument() not to restore scroll position
+
+    // This check avoid these ugly black widget on startup
+    if (m_indexTree->topLevelItemCount()) {
+        m_indexTree->setUpdatesEnabled(false);
+        m_indexTree->clear(); // Hint parseDocument() not to restore scroll position
+    }
+
     // Don't call parseDocument() direct, must wait until new cursor position is updated
     m_parseDelayTimer.start(10);
 
@@ -520,7 +527,7 @@ void IndexView::parseDocument()
         return;
     }
 
-    if (!m_indexTree->updatesEnabled()) {
+    if (m_parser && m_parser->isParsing()) {
         // Parse is already running, do it later
         docEdited();
         return;

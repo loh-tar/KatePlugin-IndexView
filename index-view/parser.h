@@ -105,6 +105,12 @@ public:
     bool isUsingDocument(KTextEditor::Document *doc) { return doc == p_document; };
 
     /**
+     * This function is used to avoid parsing restart when a parsing is already running.
+     * @return true when the parser is already parsing, otherwise false
+     */
+    bool isParsing() { return p_parsingIsRunning; };
+
+    /**
     * This is the main access function to parse the document. These will call
     * prepareForParse() and parseDocument(). Before and after that will done
     * some janitor task like clear the tree and update the context menu to hide
@@ -325,6 +331,7 @@ protected:
 
 private:
     KTextEditor::Document          *p_document; // Always set in parse()
+    bool                            p_parsingIsRunning = false;
     QTreeWidget                    *p_indexTree = nullptr;
     IndexView                      *p_view = nullptr;
     QMenu                           p_menu;
