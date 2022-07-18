@@ -90,6 +90,7 @@ void DummyParser::parseDocument()
 
 Parser::Parser(IndexView *view)
     : QObject(view)
+    , p_document(view->m_mainWindow->activeView()->document())
     , p_indexTree(view->m_indexTree)
     , p_view(view)
 {

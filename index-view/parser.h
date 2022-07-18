@@ -98,6 +98,13 @@ public:
     static Parser *create(const QString &type, IndexView *view);
 
     /**
+     * This function is used to avoid a parser re-creation when the current
+     * view is changed, like in split views
+     * @return true when @p doc is the same document as already in use, otherwise false
+     */
+    bool isUsingDocument(KTextEditor::Document *doc) { return doc == p_document; };
+
+    /**
     * This is the main access function to parse the document. These will call
     * prepareForParse() and parseDocument(). Before and after that will done
     * some janitor task like clear the tree and update the context menu to hide

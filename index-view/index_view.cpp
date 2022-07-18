@@ -231,6 +231,14 @@ void IndexView::docChanged()
     connect(view->document(), &KTextEditor::Document::textChanged
           , this, &IndexView::docEdited, Qt::UniqueConnection);
 
+    // No need to switch the parser when we have a split view situation
+    if (m_parser && m_parser->isUsingDocument(view->document())) {
+        // We don't call docCursorPositionChanged(), the delay looks bad and we
+        // don't call updateCurrTreeItem() direct, must wait until new cursor position is updated
+        m_updateCurrItemDelayTimer.start(0);
+        return;
+    }
+
     if (!docModeChanged()) {
         m_indexTree->clear(); // Hint parseDocument() not to restore scroll position
         // Don't call parseDocument() direct, must wait until new cursor position is updated
