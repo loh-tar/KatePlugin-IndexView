@@ -108,8 +108,7 @@ QIcon KatePluginIndexView::icon() const
 
 QObject *KatePluginIndexView::createView(KTextEditor::MainWindow *mainWindow)
 {
-    m_view = new IndexView(this, mainWindow);
-    return m_view;
+    return new IndexView(this, mainWindow);
 }
 
 
@@ -120,17 +119,25 @@ KTextEditor::ConfigPage *KatePluginIndexView::configPage(int number, QWidget *pa
     }
 
     KatePluginIndexViewConfigPage *p = new KatePluginIndexViewConfigPage(this, parent);
-    if (m_view) {
-        m_view->loadViewSettings();
 
-        p->ui_filterBoxOnTop->setChecked(m_view->filterBoxPosition() == 0);
-        p->ui_cozyClickExpand->setChecked(m_view->m_cozyClickExpand);
-        p->ui_parseDelay->setValue(m_view->m_parseDelay);
+    bool loaded = false;
+    for (auto view : m_views) {
+        if (!loaded) {
+            // No need to load/set for each view
+            loaded = true;
+            view->loadViewSettings();
+            p->ui_filterBoxOnTop->setChecked(view->filterBoxPosition() == 0);
+            p->ui_cozyClickExpand->setChecked(view->m_cozyClickExpand);
+            p->ui_parseDelay->setValue(view->m_parseDelay);
+        }
 
-        if (m_view->m_parser) {
-            p->ui_aboutParserBox->setTitle(i18n("About %1", QLatin1String(m_view->m_parser->metaObject()->className())));
-            p->ui_parserVersion->setText(m_view->m_parser->version());
-            p->ui_parserAuthor->setText(m_view->m_parser->author());
+        // FIXME Add a info box for each parser in use, or find a way to show the fitting parser info
+        // for the main window where the config page was called from, and ...
+        if (view->m_parser) {
+            p->ui_aboutParserBox->setTitle(i18n("About %1", QLatin1String(view->m_parser->metaObject()->className())));
+            p->ui_parserVersion->setText(view->m_parser->version());
+            p->ui_parserAuthor->setText(view->m_parser->author());
+            break; // ...remove this after the fix above
         }
     }
 
@@ -142,14 +149,19 @@ KTextEditor::ConfigPage *KatePluginIndexView::configPage(int number, QWidget *pa
 
 void KatePluginIndexView::applyConfig(KatePluginIndexViewConfigPage *p)
 {
-    if (m_view) {
+    bool saved = false;
+    for (auto view : m_views) {
         int pos = p->ui_filterBoxOnTop->isChecked() ? 0 : 1;
-        m_view->updateFilterBoxPosition(pos);
+        view->updateFilterBoxPosition(pos);
 
-        m_view->m_cozyClickExpand = p->ui_cozyClickExpand->isChecked();
-        m_view->m_parseDelay = p->ui_parseDelay->value();
+        view->m_cozyClickExpand = p->ui_cozyClickExpand->isChecked();
+        view->m_parseDelay = p->ui_parseDelay->value();
 
-        m_view->saveViewSettings();
+        if (!saved) {
+            // No need to save for each view
+            saved = true;
+            view->saveViewSettings();
+        }
     }
 }
 

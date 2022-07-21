@@ -27,6 +27,8 @@
 #ifndef KATE_PLUGIN_INDEX_VIEW_H
 #define KATE_PLUGIN_INDEX_VIEW_H
 
+#include <QSet>
+
 #include <KLocalizedString>
 #include <KTextEditor/ConfigPage>
 #include <KTextEditor/Plugin>
@@ -84,6 +86,7 @@ class KatePluginIndexView : public KTextEditor::Plugin
     Q_OBJECT
 
     friend class KatePluginIndexViewConfigPage;
+    friend class IndexView;
 
 public:
     explicit KatePluginIndexView(QObject *parent = nullptr, const QList<QVariant>& = QList<QVariant>());
@@ -101,7 +104,7 @@ public Q_SLOTS:
     void applyConfig(KatePluginIndexViewConfigPage *p);
 
 private:
-    IndexView *m_view = nullptr;
+    QSet<IndexView *> m_views;
 
 };
 

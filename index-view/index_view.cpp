@@ -47,6 +47,7 @@
 IndexView::IndexView(KatePluginIndexView *plugin, KTextEditor::MainWindow *mw)
     : QObject(mw)
     , KTextEditor::SessionConfigInterface()
+    , m_plugin(plugin)
     , m_mainWindow(mw)
 {
     // FIXME KF5 KGlobal::locale()->insertCatalog("kateindexviewplugin");
@@ -97,6 +98,9 @@ IndexView::IndexView(KatePluginIndexView *plugin, KTextEditor::MainWindow *mw)
         m_toolview->installEventFilter(this);
         docChanged();
     });
+
+    m_plugin->m_views.insert(this);
+
 }
 
 
@@ -111,6 +115,8 @@ IndexView::~IndexView()
     if (m_parser) {
         delete m_parser;
     }
+
+    m_plugin->m_views.remove(this);
 }
 
 

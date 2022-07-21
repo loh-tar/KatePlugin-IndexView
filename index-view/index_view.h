@@ -88,6 +88,7 @@ private:
     void updateFilterBoxPosition(int pos);
     void restoreTree();
 
+    KatePluginIndexView        *m_plugin;
     KTextEditor::MainWindow    *m_mainWindow;
     QPointer<Parser>            m_parser;
 
