@@ -428,10 +428,6 @@ void IndexView::updateCurrTreeItem()
         return;
     }
 
-    if (!m_mainWindow) {
-        return;
-    }
-
     KTextEditor::View *editView = m_mainWindow->activeView();
     if (!editView) {
         return;
