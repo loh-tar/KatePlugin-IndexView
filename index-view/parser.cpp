@@ -21,6 +21,8 @@
 
 #include <QApplication>
 #include <QDebug>
+#include <QHeaderView>
+#include <QScrollBar>
 
 #include <KLocalizedString>
 
@@ -43,14 +45,14 @@
 #include "parser.h"
 
 
-DummyParser::DummyParser(const QString &type, IndexView *view)
+DummyParser::DummyParser(IndexView *view)
     : Parser(view)
-    , m_docType(type)
 {
     using namespace IconCollection;
     registerViewOption(InfoNode, Red1Icon, QStringLiteral("Info"), i18n("Show Info"));
 
     // Hide all possible general options to deactivate the menu
+    p_viewSort->setVisible(false);
     p_viewTree->setVisible(false);
     p_addIcons->setVisible(false);
     p_viewExpanded->setVisible(false);
@@ -84,24 +86,21 @@ void DummyParser::parseDocument()
 {
     p_indexTree->setRootIsDecorated(0);
     addNode(InfoNode, i18n("Sorry, not supported yet!"));
-    addNode(InfoNode, i18n("File type: %1", m_docType));
+    addNode(InfoNode, i18n("File type: %1", docType()));
 }
 
 
 Parser::Parser(IndexView *view)
     : QObject(view)
     , p_document(view->m_mainWindow->activeView()->document())
-    , p_indexTree(view->m_indexTree)
+    , p_docType(p_document->mode())
+    , p_indexTree(new QTreeWidget())
     , p_view(view)
 {
-    view->m_viewSort = addViewOption(QStringLiteral("SortIndex"), i18n("Show Sorted"));
-
+    p_viewSort     = addViewOption(QStringLiteral("SortIndex"), i18n("Show Sorted"));
     p_viewTree     = addViewOption(QStringLiteral("TreeView"), i18n("Tree View"));
     p_addIcons     = addViewOption(QStringLiteral("AddIcons"), i18n("Adorn View"));
     p_viewExpanded = addViewOption(QStringLiteral("ExpandView"), i18n("Expand View"));
-
-    view->m_viewTree = p_viewTree;
-    view->m_viewExpanded = p_viewExpanded;
 
     addViewOptionSeparator();
 
@@ -111,6 +110,7 @@ Parser::Parser(IndexView *view)
 
 Parser::~Parser()
 {
+    delete p_indexTree;
 }
 
 
@@ -147,11 +147,8 @@ Parser *Parser::create(const QString &type, IndexView *view)
         return new XmlTypeParser(view, type);
 
     // ...the last one, our dummy
-    Parser *p = new DummyParser(type, view);
-    // Hide the only left over general option there, so menu is deactivated
-    view->m_viewSort->setVisible(false);
+    return new DummyParser(view);
 
-    return p;
 }
 
 
@@ -250,15 +247,19 @@ bool Parser::appendNextLine()
 
 void Parser::parse()
 {
+    if (!p_docNeedParsing) {
+        // Well, yes, we could go ahead, parse, and all will be fine, but nope!
+        // I'm stubborn and don't want unneeded CPU waste
+        qDebug() << "Parser::parse FATAL - We will crash! You need to protect this call by Parser::needsUpdate()";
+        return;
+    }
+
+    p_docNeedParsing = false;
     p_parsingIsRunning = true;
 
-    // Looks odd, but we need to do this here because some parser parse in some situations
-    // twice, e.g. DocumentParser, and then we end up with a doubled result tree
-    p_view->m_indexTree->clear();
-    p_view->m_indexList.clear();
-    p_view->m_filtered = false;
-
-    p_document = p_view->m_mainWindow->activeView()->document();
+    p_mustyTree = p_indexTree;
+    p_indexTree = new QTreeWidget();
+    p_indexList.clear();
 
     p_lastNode = nullptr;
     p_rootNodes.clear();
@@ -327,41 +328,70 @@ void Parser::parse()
                 if (ci->isHidden()) {
                     // A hidden one is not needed and can be deleted now
                     delete ci;
-                } else if (!p_view->m_indexList.contains(ci)) {
+                } else if (!p_indexList.contains(ci)) {
                     // Not in list, drop it. Unlikely for child nodes, but who knows
                     delete ci;
                 }
             }
 
-            if (!p_view->m_indexList.contains(item)) {
+            if (!p_indexList.contains(item)) {
                 // Not in list, drop it. Happens often for top level nodes.
                 delete item;
             }
         }
 
         // ...and now add the (good) nodes again to our non-tree..tree widget
-        for (int i = 0; i < p_view->m_indexList.size(); ++i) {
-            QTreeWidgetItem *item = p_view->m_indexList.at(i);
+        for (int i = 0; i < p_indexList.size(); ++i) {
+            QTreeWidgetItem *item = p_indexList.at(i);
             while (item->childCount() > 0) {
                 QTreeWidgetItem *ci = item->takeChild(0);
                 if (ci->isHidden()) {
                     delete ci;
-                } else if (!p_view->m_indexList.contains(ci)) {
+                } else if (!p_indexList.contains(ci)) {
                     delete ci;
                 }
             }
             // Here is the beef!
-            p_indexTree->addTopLevelItem(p_view->m_indexList.at(i));
+            p_indexTree->addTopLevelItem(p_indexList.at(i));
         }
 
         // We need to take care of p_lastNode or we can crash e.g. with DocumentParser::parse()
-        if (!p_view->m_indexList.contains(p_lastNode)) {
+        if (!p_indexList.contains(p_lastNode)) {
             p_lastNode = nullptr;
         }
 
         p_indexTree->setRootIsDecorated(0);
     }
 
+    p_indexTree->setFocusPolicy(Qt::NoFocus);
+    p_indexTree->setLayoutDirection(Qt::LeftToRight);
+    p_indexTree->setHeaderLabels({i18nc("@title:column", "Index")});
+    p_indexTree->setContextMenuPolicy(Qt::CustomContextMenu);
+    p_indexTree->setIndentation(10);
+    connect(p_indexTree, &QTreeWidget::currentItemChanged, p_view, &IndexView::currentItemChanged);
+    connect(p_indexTree, &QTreeWidget::itemClicked, p_view, &IndexView::itemClicked);
+    connect(p_indexTree, &QTreeWidget::customContextMenuRequested, p_view, &IndexView::showContextMenu);
+
+    if (showSorted()) {
+        p_indexTree->setSortingEnabled(true);
+        p_indexTree->sortItems(0, p_mustyTree->header()->sortIndicatorOrder());
+    }
+
+
+    Q_EMIT parsingDone(this);
+}
+
+
+void Parser::burnDownMustyTree()
+{
+    if (!isParsing()) {
+        return;
+    }
+
+    // Restore scroll position from old tree to avoid flicker
+    p_indexTree->verticalScrollBar()->setSliderPosition(p_mustyTree->verticalScrollBar()->sliderPosition());
+
+    delete p_mustyTree;
     p_parsingIsRunning = false;
 }
 
@@ -413,14 +443,21 @@ void Parser::setNodeProperties(QTreeWidgetItem *const node, const int nodeType, 
     if (!nodeTypeIsWanted(nodeType) || (p_nestingAllowed < (p_nestingLevel + p_nestingLevelAdjustment))) {
         node->setHidden(true);
     } else {
-        p_view->m_indexList.append(node);
+        p_indexList.append(node);
     }
+}
+
+
+void Parser:: menuActionTriggered()
+{
+    docNeedParsing();
+    p_view->parseDocument();
 }
 
 
 QAction *Parser::addViewOption(const QString &name, const QString &caption)
 {
-    QAction *viewOption = p_menu.addAction(caption, p_view, &IndexView::parseDocument);
+    QAction *viewOption = p_menu.addAction(caption, this, &Parser::menuActionTriggered);
     viewOption->setCheckable(true);
 
     // The object name must be unique due to use as config key
@@ -439,6 +476,7 @@ QAction *Parser::addViewOption(const QString &name, const QString &caption)
 
     return viewOption;
 }
+
 
 void Parser::useNestingOptions(bool adjust/* = false*/)
 {

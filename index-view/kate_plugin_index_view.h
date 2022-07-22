@@ -34,6 +34,7 @@
 #include <KTextEditor/Plugin>
 
 #include "ui_kate_plugin_index_view_config_page.h"
+#include "ui_kate_plugin_index_view_config_page_about_parser.h"
 
 class KatePluginIndexView;
 
@@ -78,6 +79,11 @@ private:
 
 };
 
+class AboutParserWidget : public QWidget, public Ui::AboutParserWidget
+{
+public:
+    AboutParserWidget(QWidget *parent = 0);
+};
 
 class IndexView;
 

@@ -83,6 +83,13 @@ void KatePluginIndexViewConfigPage::apply()
 }
 
 
+AboutParserWidget::AboutParserWidget(QWidget *parent/* = 0*/)
+    : QWidget(parent)
+{
+    setupUi(this);
+}
+
+
 KatePluginIndexView::KatePluginIndexView(QObject *parent, const QList<QVariant>&)
     : KTextEditor::Plugin(parent)
 {
@@ -120,7 +127,9 @@ KTextEditor::ConfigPage *KatePluginIndexView::configPage(int number, QWidget *pa
 
     KatePluginIndexViewConfigPage *p = new KatePluginIndexViewConfigPage(this, parent);
 
+    QSet<QString> parserClassAdded;
     bool loaded = false;
+
     for (auto view : m_views) {
         if (!loaded) {
             // No need to load/set for each view
@@ -131,13 +140,43 @@ KTextEditor::ConfigPage *KatePluginIndexView::configPage(int number, QWidget *pa
             p->ui_parseDelay->setValue(view->m_parseDelay);
         }
 
-        // FIXME Add a info box for each parser in use, or find a way to show the fitting parser info
-        // for the main window where the config page was called from, and ...
-        if (view->m_parser) {
-            p->ui_aboutParserBox->setTitle(i18n("About %1", QLatin1String(view->m_parser->metaObject()->className())));
-            p->ui_parserVersion->setText(view->m_parser->version());
-            p->ui_parserAuthor->setText(view->m_parser->author());
-            break; // ...remove this after the fix above
+        for (auto parser : view->m_cache) {
+            QString className = QLatin1String(parser->metaObject()->className());
+            if (parserClassAdded.contains(className)) {
+                continue;
+            }
+            parserClassAdded.insert(className);
+
+            AboutParserWidget *w = new AboutParserWidget();
+            w->ui_parserVersion->setText(parser->version());
+            w->ui_parserAuthor->setText(parser->author());
+            p->ui_parserTabs->addTab(w, className);
+            if (view->m_parser == parser) {
+                p->ui_parserTabs->setCurrentWidget(w);
+            }
+        }
+    }
+
+    p->ui_currentParserHint->setHidden(true);
+
+    // It is unfortunately quite cumbersome to display this little extra hint in a sane way
+    if (p->ui_parserTabs->count() > 1) {
+        int marked = 0;
+        p->ui_currentParserHint->setHidden(false);
+        for (int i = 0; i < p->ui_parserTabs->count(); ++i) {
+            for (auto view : m_views) {
+                QString className = QLatin1String(view->m_parser->metaObject()->className());
+                if (p->ui_parserTabs->tabText(i) == className) {
+                    className.append(QStringLiteral(" *"));
+                    p->ui_parserTabs->setTabText(i, className);
+                    ++marked;
+                    break;
+                }
+            }
+        }
+
+        if (marked > 1) {
+            p->ui_currentParserHint->setText(i18n("The current parser in use are market with an asterisk *"));
         }
     }
 

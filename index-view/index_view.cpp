@@ -26,12 +26,14 @@
 #include <QEvent>
 #include <QHeaderView>
 #include <QKeyEvent>
-#include <QScrollBar>
+#include <QStackedWidget>
 #include <QVBoxLayout>
 
 #include <KConfigGroup>
 #include <KLocalizedString>
 #include <KSharedConfig>
+#include <KTextEditor/Application>
+#include <KTextEditor/Editor>
 #include <KTextEditor/View>
 #include <KXMLGUIFactory>
 
@@ -61,20 +63,15 @@ IndexView::IndexView(KatePluginIndexView *plugin, KTextEditor::MainWindow *mw)
     connect(&m_parseDelayTimer, &QTimer::timeout, this, &IndexView::parseDocument);
 
     m_updateCurrItemDelayTimer.setSingleShot(true);
-    connect(&m_updateCurrItemDelayTimer, &QTimer::timeout, this, &IndexView::updateCurrTreeItem);
+    connect(&m_updateCurrItemDelayTimer, &QTimer::timeout, this, [this]() {
+        updateCurrTreeItem();
+        // We do this here once to avoid so much special cases in updateCurrTreeItem()
+        // where we have to call it
+        m_treeStack->setCurrentWidget(m_indexTree);
+    });
 
     m_filterDelayTimer.setSingleShot(true);
     connect(&m_filterDelayTimer, &QTimer::timeout, this, &IndexView::filterTree);
-
-    m_indexTree = new QTreeWidget();
-    m_indexTree->setFocusPolicy(Qt::NoFocus);
-    m_indexTree->setLayoutDirection(Qt::LeftToRight);
-    m_indexTree->setHeaderLabels({i18nc("@title:column", "Index")});
-    m_indexTree->setContextMenuPolicy(Qt::CustomContextMenu);
-    m_indexTree->setIndentation(10);
-    connect(m_indexTree, &QTreeWidget::currentItemChanged, this, &IndexView::currentItemChanged);
-    connect(m_indexTree, &QTreeWidget::itemClicked, this, &IndexView::itemClicked);
-    connect(m_indexTree, &QTreeWidget::customContextMenuRequested, this, &IndexView::showContextMenu);
 
     m_filterBox = new FilterBox(this, plugin);
     connect(m_filterBox, &QComboBox::currentTextChanged, this, &IndexView::docSelectionChanged);
@@ -83,24 +80,35 @@ IndexView::IndexView(KatePluginIndexView *plugin, KTextEditor::MainWindow *mw)
                                             , KTextEditor::MainWindow::Left
                                             , plugin->icon(), plugin->name());
 
-
     QWidget *container = new QWidget(m_toolview);
     QVBoxLayout *layout = new QVBoxLayout(container);
+    m_treeStack = new QStackedWidget();
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(m_filterBox);
-    layout->addWidget(m_indexTree, 1);
+    layout->addWidget(m_treeStack, 1);
 
-    // When the current file is BIG and our time-slice parsing take effect, will on very first show
-    // with this delayed connect&update an ugly black QTreeWidget avoided
-    QTimer::singleShot(100, this, [this]() {
-        connect(m_mainWindow, &KTextEditor::MainWindow::viewChanged, this, &IndexView::docChanged);
-        m_toolview->installEventFilter(this);
-        docChanged();
+    m_toolview->installEventFilter(this);
+
+    // We protect with these timer/slot combinations against a mass of doc change signals when a split view is closed
+    m_viewChangedDelayTimer.setSingleShot(true);
+    connect(&m_viewChangedDelayTimer, &QTimer::timeout, this, [this]() {
+        viewChanged();
+    });
+    connect(m_mainWindow, &KTextEditor::MainWindow::viewChanged, this, [this]() {
+        m_viewChangedDelayTimer.start(10);
+    });
+
+    // Ensure we don't keep stuff for gone docs
+    connect(KTextEditor::Editor::instance()->application(), &KTextEditor::Application::documentWillBeDeleted, this, [this](KTextEditor::Document *doc) {
+        auto parser = m_cache.take(doc);
+        if (parser) {
+            m_treeStack->removeWidget(parser->indexTree());
+            delete parser;
+        }
     });
 
     m_plugin->m_views.insert(this);
-
 }
 
 
@@ -110,11 +118,12 @@ IndexView::~IndexView()
 
     m_mainWindow->guiFactory()->removeClient(this);
 
-    delete m_toolview;
-
-    if (m_parser) {
-        delete m_parser;
+    for (auto parser : m_cache) {
+        m_treeStack->removeWidget(parser->indexTree());
+        delete parser;
     }
+
+    delete m_toolview;
 
     m_plugin->m_views.remove(this);
 }
@@ -167,7 +176,7 @@ void IndexView::loadViewSettings()
     m_cozyClickExpand = mainGroup.readEntry(QStringLiteral("CozyClickExpand"), false);
     m_parseDelay = mainGroup.readEntry(QStringLiteral("ParseDelay"), 1000);
 
-    KConfigGroup config(&mainGroup, m_docType);
+    KConfigGroup config(&mainGroup, m_parser->docType());
     // Sub-Menus are not supported here, if needed see https://stackoverflow.com/a/38429982
     for (QAction *action : m_parser->contextMenu()->actions()) {
         if (action->isSeparator()) {
@@ -201,7 +210,7 @@ void IndexView::saveViewSettings()
     mainGroup.writeEntry(QStringLiteral("CozyClickExpand"), m_cozyClickExpand);
     mainGroup.writeEntry(QStringLiteral("ParseDelay"), m_parseDelay);
 
-    KConfigGroup config(&mainGroup, m_docType);
+    KConfigGroup config(&mainGroup, m_parser->docType());
     for (QAction *action : m_parser->contextMenu()->actions()) {
         if (action->isSeparator()) {
             continue;
@@ -214,79 +223,94 @@ void IndexView::saveViewSettings()
 }
 
 
-void IndexView::docChanged()
+void IndexView::viewChanged()
 {
     KTextEditor::View *view = m_mainWindow->activeView();
     if (!view) {
         return;
     }
 
-    if (!view->document()) {
+    KTextEditor::Document* doc = view->document();
+    if (!doc) {
         return;
     }
 
-    connect(view, &KTextEditor::View::cursorPositionChanged
-          , this, &IndexView::docCursorPositionChanged, Qt::UniqueConnection);
-
-    connect(view, &KTextEditor::View::selectionChanged
-          , this, &IndexView::docSelectionChanged, Qt::UniqueConnection);
-
-    connect(view->document(), &KTextEditor::Document::modeChanged
-          , this, &IndexView::docModeChanged, Qt::UniqueConnection);
-
-    connect(view->document(), &KTextEditor::Document::textChanged
-          , this, &IndexView::docEdited, Qt::UniqueConnection);
-
-    // No need to switch the parser when we have a split view situation
-    if (m_parser && m_parser->isUsingDocument(view->document())) {
-        // We don't call docCursorPositionChanged(), the delay looks bad and we
-        // don't call updateCurrTreeItem() direct, must wait until new cursor position is updated
+    if (m_parser && m_parser->usingThisDoc(doc)) {
+        connect(view, &KTextEditor::View::cursorPositionChanged, this, &IndexView::docCursorPositionChanged, Qt::UniqueConnection);
+        connect(view, &KTextEditor::View::selectionChanged, this, &IndexView::docSelectionChanged, Qt::UniqueConnection);
         m_updateCurrItemDelayTimer.start(0);
         return;
     }
 
-    if (!docModeChanged()) {
-        m_indexTree->setUpdatesEnabled(false);
-        m_indexTree->clear(); // Hint parseDocument() not to restore scroll position
-        // Don't call parseDocument() direct, must wait until new cursor position is updated
-        m_parseDelayTimer.start(10);
+    m_parser = m_cache.value(doc);
+
+    if (!m_parser) {
+        docModeChanged(doc);
+        return;
+    }
+
+    m_indexTree = m_parser->indexTree();
+    m_indexList = m_parser->indexList();
+    if (m_parser->needsUpdate()) {
+        m_parseDelayTimer.start(0);
+    } else {
+        m_updateCurrItemDelayTimer.start(0);
     }
 }
 
 
-bool IndexView::docModeChanged()
+void IndexView::docModeChanged(KTextEditor::Document *doc)
 {
-    const QString newDocType = m_mainWindow->activeView()->document()->mode();
-
-    if (newDocType == m_docType) {
-        return false;
+    if (!doc) {
+        return;
     }
 
-    saveViewSettings();
+    const QString newDocType = doc->mode();
+    auto parser = m_cache.value(doc);
 
-    if (m_parser) {
-        delete m_parser;
+    if (parser) {
+        if (newDocType == parser->docType()) {
+            return;
+        }
+        saveViewSettings();
+
+        m_cache.remove(doc);
+        m_treeStack->removeWidget(parser->indexTree());
+        delete parser;
     }
 
-    m_docType = newDocType;
-    m_parser = Parser::create(m_docType, this);
+    KTextEditor::View *view = m_mainWindow->activeView();
+    if (view && view->document() != doc) {
+        // Some doc not of our current interest changed
+        return;
+    }
+
+    m_parser = Parser::create(newDocType, this);
+    m_indexTree = m_parser->indexTree();
+    m_indexList = m_parser->indexList();
+    m_treeStack->addWidget(m_indexTree);
+
+    m_cache.insert(doc, m_parser);
+
     loadViewSettings();
 
-    // This check avoid these ugly black widget on startup
-    if (m_indexTree->topLevelItemCount()) {
-        m_indexTree->setUpdatesEnabled(false);
-        m_indexTree->clear(); // Hint parseDocument() not to restore scroll position
-    }
+    connect(view, &KTextEditor::View::cursorPositionChanged, this, &IndexView::docCursorPositionChanged, Qt::UniqueConnection);
+    connect(view, &KTextEditor::View::selectionChanged, this, &IndexView::docSelectionChanged, Qt::UniqueConnection);
+    connect(doc, &KTextEditor::Document::modeChanged, this, &IndexView::docModeChanged);
+    connect(doc, &KTextEditor::Document::textChanged, this, &IndexView::docEdited);
+    connect(m_parser, &Parser::parsingDone, this, &IndexView::parsingDone);
 
-    // Don't call parseDocument() direct, must wait until new cursor position is updated
+    // Don't call parseDocument() direct, must wait a little until other stuff is done
     m_parseDelayTimer.start(10);
-
-    return true;
 }
 
 
 void IndexView::docEdited()
 {
+    if (m_parser) {
+        m_parser->docNeedParsing();
+    }
+
     if (!m_toolview->isVisible()) {
         return;
     }
@@ -316,6 +340,12 @@ void IndexView::docCursorPositionChanged()
         // No need for update, will come anyway
         return;
     }
+
+    if (m_updateCurrItemDelayTimer.remainingTime() == 0) {
+        // Timer was very likely started with zero time e.g. after view change, don't restart now!
+        return;
+    }
+
     m_updateCurrItemDelayTimer.start(UpdateCurrItemDelay);
 }
 
@@ -374,7 +404,7 @@ void IndexView::filterTree()
     }
 
     m_filterBox->indicateMatch(FilterBox::Match);
-    m_filtered = true;
+    m_parser->treeIsFiltered(true);
 
     for (QTreeWidgetItem *item : qAsConst(m_indexList)) {
         if (item->text(0).contains(pattern, Qt::CaseInsensitive)) {
@@ -394,21 +424,21 @@ void IndexView::restoreTree()
 {
     m_filterBox->indicateMatch(FilterBox::Neutral);
 
-    if (!m_filtered) {
+    if (!m_parser->isTreeFiltered()) {
         return;
     }
 
-    m_filtered = false;
+    m_parser->treeIsFiltered(false);
 
-    if (m_viewTree->isChecked()) {
+    if (m_parser->showAsTree()) {
         for (int i = 0; i < m_indexTree->topLevelItemCount(); i++) {
-            m_indexTree->topLevelItem(i)->setExpanded(m_viewExpanded->isChecked());
+            m_indexTree->topLevelItem(i)->setExpanded(m_parser->showExpanded());
         }
     }
 
     for (QTreeWidgetItem *item : qAsConst(m_indexList)) {
         item->setHidden(false);
-        item->setExpanded(m_viewExpanded->isChecked());
+        item->setExpanded(m_parser->showExpanded());
     }
 
     QTreeWidgetItem *node = m_indexTree->currentItem();
@@ -533,62 +563,53 @@ void IndexView::parseDocument()
         return;
     }
 
-    if (!m_indexTree) {
+    if (!m_parser) {
         return;
     }
 
-    if (m_parser && m_parser->isParsing()) {
+    if (m_parser->isParsing()) {
         // Parse is already running, do it later
         docEdited();
         return;
     }
 
-    // Qt docu recommends to populate view with disabled sorting
-    // https://doc.qt.io/qt-5/qtreeview.html#sortingEnabled-prop
-    Qt::SortOrder sortOrder = m_indexTree->header()->sortIndicatorOrder();
-    m_indexTree->setSortingEnabled(false);
+    if (!m_parser->needsUpdate()) {
+        return;
+    }
 
     if (!m_mainWindow->activeView()) {
         m_indexTree->clear();
         return;
     }
 
-    // To avoid unpleasant fidgeting in the tree remember current scroll position
-    int scrollPosition = -1;
-    if (m_indexTree->topLevelItemCount() > 0) {
-        scrollPosition = m_indexTree->verticalScrollBar()->sliderPosition();
+    m_parser->parse();
+}
+
+
+void IndexView::parsingDone(Parser *parser)
+{
+    if (parser != m_parser) {
+        // View/Doc has changed in the meanwhile
+        // Remove the old stuff
+        m_treeStack->addWidget(parser->indexTree());
+        m_treeStack->removeWidget(parser->mustyTree());
+        parser->burnDownMustyTree();
+        return;
     }
 
-    // Since we parse in time slices, we don't want intermediate updates of the tree
-    // furthermore help this to avoid flicker, see below
-    m_indexTree->setUpdatesEnabled(false);
+    m_indexTree = m_parser->indexTree();
+    m_indexList = m_parser->indexList();
 
-    if (m_parser) {
-        m_parser->parse();
-    }
-
-    if (m_viewSort->isChecked()) {
-        m_indexTree->setSortingEnabled(true);
-        m_indexTree->sortItems(0, sortOrder);
-    }
-
+    // Don't use timer here, we must do it all in one rush
+    filterTree();
     updateCurrTreeItem();
 
-    if (scrollPosition > -1) {
-        // Now, that all updates are done, scroll back to old position...
-        m_indexTree->verticalScrollBar()->setSliderPosition(scrollPosition);
-        // ...but ensure it is visible e.g. in case of some rename
-        m_indexTree->scrollToItem(m_indexTree->currentItem());
-    }
-
-    filterTree();
-
-    // This is (hopefully!) the ultimate-special-final-director-cut flicker-avoidance :-/
-    // Can't say why 300, this has worked here
-    QTimer::singleShot(300, this, [this]() {
-        // We are done, don't forget to enable again
-        m_indexTree->setUpdatesEnabled(true);
-    });
+    // All updates are done, switch to the new tree now...
+    m_treeStack->addWidget(m_indexTree);
+    m_treeStack->setCurrentWidget(m_indexTree);
+    m_treeStack->removeWidget(m_parser->mustyTree());
+    // ...and Parser take care to restore scroll position, so we have no flicker
+    m_parser->burnDownMustyTree();
 }
 
 

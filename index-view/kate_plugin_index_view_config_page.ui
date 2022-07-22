@@ -42,6 +42,12 @@
           <string>General Config Options</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
+          <property name="leftMargin">
+           <number>12</number>
+          </property>
+          <property name="bottomMargin">
+           <number>12</number>
+          </property>
           <item>
            <widget class="QCheckBox" name="ui_filterBoxOnTop">
             <property name="text">
@@ -112,6 +118,9 @@
        <string>About</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_5">
+       <property name="spacing">
+        <number>2</number>
+       </property>
        <property name="leftMargin">
         <number>0</number>
        </property>
@@ -130,6 +139,12 @@
           <string notr="true">About Index View</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
+          <property name="leftMargin">
+           <number>12</number>
+          </property>
+          <property name="rightMargin">
+           <number>12</number>
+          </property>
           <item>
            <layout class="QFormLayout" name="formLayout">
             <property name="labelAlignment">
@@ -213,83 +228,31 @@ bar</string>
        <item>
         <widget class="QGroupBox" name="ui_aboutParserBox">
          <property name="title">
-          <string notr="true">About &lt;parser&gt;</string>
+          <string notr="true">About Parser</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_4">
-          <item>
-           <layout class="QFormLayout" name="formLayout_2">
-            <property name="labelAlignment">
-             <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+         <layout class="QGridLayout" name="gridLayout">
+          <property name="leftMargin">
+           <number>12</number>
+          </property>
+          <property name="rightMargin">
+           <number>12</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QTabWidget" name="ui_parserTabs">
+            <property name="currentIndex">
+             <number>-1</number>
             </property>
-            <property name="horizontalSpacing">
-             <number>12</number>
-            </property>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_3">
-              <property name="text">
-               <string>Version:</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLabel" name="ui_parserVersion">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>1</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string notr="true">&lt;parser version&gt;</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_5">
-              <property name="text">
-               <string>Author:</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QLabel" name="ui_parserAuthor">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>1</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string notr="true">&lt;parser author&gt;</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
+           </widget>
           </item>
-          <item>
-           <spacer name="verticalSpacer_4">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
+          <item row="1" column="0">
+           <widget class="QLabel" name="ui_currentParserHint">
+            <property name="text">
+             <string>The current parser in use is market with an asterisk *</string>
             </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
+            <property name="margin">
+             <number>6</number>
             </property>
-           </spacer>
+           </widget>
           </item>
          </layout>
         </widget>

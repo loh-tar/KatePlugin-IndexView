@@ -29,7 +29,9 @@
 
 #include <QPointer>
 #include <QTimer>
-#include <QTreeWidget>
+class QStackedWidget;
+class QTreeWidget;
+class QTreeWidgetItem;
 
 #include <KTextEditor/MainWindow>
 #include <KTextEditor/SessionConfigInterface>
@@ -68,8 +70,8 @@ public:
 public Q_SLOTS:
     void loadViewSettings();
     void saveViewSettings();
-    void docChanged();
-    bool docModeChanged();
+    void viewChanged();
+    void docModeChanged(KTextEditor::Document *doc);
     void docEdited();
     void docSelectionChanged();
     void docCursorPositionChanged();
@@ -77,6 +79,7 @@ public Q_SLOTS:
     void filterTree();
     void showContextMenu(const QPoint&);
     void parseDocument();
+    void parsingDone(Parser *parser);
     void currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void itemClicked(QTreeWidgetItem *);
 
@@ -91,22 +94,19 @@ private:
     KatePluginIndexView        *m_plugin;
     KTextEditor::MainWindow    *m_mainWindow;
     QPointer<Parser>            m_parser;
+    QHash<KTextEditor::Document*, Parser*> m_cache;
 
-    QString                     m_docType;
     QWidget                    *m_toolview;
+    QStackedWidget             *m_treeStack;
     QTreeWidget                *m_indexTree;
     QList<QTreeWidgetItem *>    m_indexList;
 
-    QAction                    *m_viewSort;
-    QAction                    *m_viewTree;
-    QAction                    *m_viewExpanded;
-
     QTimer                      m_parseDelayTimer;
+    QTimer                      m_viewChangedDelayTimer;
     QTimer                      m_updateCurrItemDelayTimer;
 
     FilterBox                  *m_filterBox;
     QTimer                      m_filterDelayTimer;
-    bool                        m_filtered;
 
     bool                        m_cozyClickExpand;
     bool                        m_currentItemChanged;

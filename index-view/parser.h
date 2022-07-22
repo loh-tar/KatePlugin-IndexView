@@ -26,6 +26,7 @@
 #include <QElapsedTimer>
 #include <QMenu>
 #include <QObject>
+#include <QPointer>
 #include <QQueue>
 #include <QString>
 #include <QTreeWidget>
@@ -58,6 +59,10 @@ class KatePluginIndexView;
  * written parser. There are (currently three) derivated master parser available
  * which offer a couple of helpful features.
  * @see DocumentParser, ProgramParser, XmlTypeParser
+ *
+ * The @c Parser class do a little more than only to parse the document, it is
+ * also some kind of data container and care taker to avoid flicker.
+ *
  * @author loh.tar
  */
 class Parser : public QObject
@@ -99,11 +104,12 @@ public:
     static Parser *create(const QString &type, IndexView *view);
 
     /**
-     * This function is used to avoid a parser re-creation when the current
-     * view is changed, like in split views
-     * @return true when @p doc is the same document as already in use, otherwise false
+     * This function returns the document type the parser was created for.
+     * @return document type
      */
-    bool isUsingDocument(KTextEditor::Document *doc) { return doc == p_document; };
+    QString docType() { return p_docType; };
+
+    bool usingThisDoc(KTextEditor::Document *const doc) { return doc == p_document; };
 
     /**
      * This function is used to avoid parsing restart when a parsing is already running.
@@ -112,10 +118,55 @@ public:
     bool isParsing() { return p_parsingIsRunning; };
 
     /**
+     * This function is called by IndexView::docEdited() to hint the parser that
+     * a parsing is needed. Without this call parse() does nothing!
+     */
+    void docNeedParsing() { p_docNeedParsing = true; };
+
+    /**
+     * This function must be used to protect for unneeded parsing, or we are doomed!
+     * HINT: Introduced to never miss an update but also to avoid unneeded parsing after
+     * a document switch.
+     */
+    bool needsUpdate() { return p_docNeedParsing; };
+
+    /**
+     * This function return the last parsed tree.
+     * WARNING: Never burn (delete) this tree, Parser take care of him
+     * @return the last updated index tree
+     */
+    QTreeWidget *indexTree() { return p_indexTree; };
+
+    /**
+     * This function return the old, outdated index tree which is no longer solid.
+     * WARNING: Never burn (delete) this tree, burnDownMustyTree() take care of him
+     * @return the old, outdated index tree
+     */
+    QTreeWidget *mustyTree() { return p_mustyTree; };
+
+    /**
+     * This function is pretty important! Must be called after all updates are done
+     * and will not only remove old wood but also ensure the tree keep the old scroll
+     * position.
+     */
+    void burnDownMustyTree();
+
+    // TODO Are these two needed? The filter stuff works sometimes strange.
+    // But atm I cant say how exact it should behave.
+    bool isTreeFiltered() { return p_filtered; };
+    void treeIsFiltered(bool filtred) { p_filtered = filtred; };
+
+    /**
+     * @return the index list
+     */
+    QList<QTreeWidgetItem *> indexList() { return p_indexList; };
+
+    /**
     * This is the main access function to parse the document. These will call
     * prepareForParse() and parseDocument(). Before and after that will done
-    * some janitor task like clear the tree and update the context menu to hide
-    * unneeded options. Only some master classes may need to implemented an own
+    * some janitor task like update the context menu to hide unneeded options.
+    * NOTE: When prior was not called docNeedParsing() nothing is done.
+    * Only some master classes may need to implemented an own
     * version to init some special variables or to do other special treatment.
     * Ensure in that case to call Parser::parse() at some point.
     */
@@ -125,6 +176,31 @@ public:
      * Get the context menu which hold all view settings.
      */
     QMenu *contextMenu() { return &p_menu; };
+
+    /**
+     * @return true when the view has to be sorted
+     */
+    bool showSorted() { return p_viewSort->isChecked(); }
+
+    /**
+     * @return true when the view has to be expanded
+     */
+    bool showExpanded() { return p_viewExpanded->isChecked(); }
+
+    /**
+     * @return true when the view has to be a tree, not a list
+     */
+    bool showAsTree() { return p_viewTree->isChecked(); }
+
+Q_SIGNALS:
+    /**
+     * Since we parse in time slices, we need to inform the IndexView that we are
+     * done.
+     */
+    void parsingDone(Parser *parser);
+
+protected Q_SLOTS:
+    void menuActionTriggered();
 
 protected:
     /**
@@ -331,11 +407,17 @@ protected:
     QElapsedTimer                   m_runTime;
 
 private:
-    KTextEditor::Document          *p_document; // Always set in parse()
+    KTextEditor::Document          *p_document; // Our doc where we work on, once set in ctor
+    QString                         p_docType;  // The type of p_document, once set in ctor
     bool                            p_parsingIsRunning = false;
+    bool                            p_docNeedParsing = true;
     QTreeWidget                    *p_indexTree = nullptr;
+    QPointer<QTreeWidget>           p_mustyTree;
+    bool                            p_filtered = false;
     IndexView                      *p_view = nullptr;
+    QList<QTreeWidgetItem *>        p_indexList;
     QMenu                           p_menu;
+    QAction                        *p_viewSort = nullptr;
     QAction                        *p_viewTree = nullptr;
     QAction                        *p_addIcons = nullptr;
     QAction                        *p_viewExpanded = nullptr;
@@ -387,7 +469,7 @@ class DummyParser : public Parser
     Q_OBJECT
 
 public:
-    DummyParser(const QString &type, IndexView *view);
+    DummyParser(IndexView *view);
    ~DummyParser();
 
 protected:
@@ -400,8 +482,6 @@ protected:
 
     void parseDocument() override;
     void addNode(const int nodeType, const QString &text);
-
-    QString     m_docType;
 
 };
 

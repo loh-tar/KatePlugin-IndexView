@@ -26,6 +26,7 @@ set(kateindexviewplugin_PART_SRCS
 
 set(kateindexviewplugin_PART_UI
     kate_plugin_index_view_config_page.ui
+    kate_plugin_index_view_config_page_about_parser.ui
 )
 ki18n_wrap_ui(kateindexviewplugin_PART_SRCS ${kateindexviewplugin_PART_UI} )
 
