@@ -347,6 +347,9 @@ void IndexView::filterTree()
         }
 
     } else {
+        // Since we don't update the item on selection, ensure the item fit now that the selection is gone
+        m_updateCurrItemDelayTimer.start(UpdateCurrItemDelay);
+
         pattern = m_filterBox->currentText();
         if (pattern.isEmpty()) {
             restoreTree();
@@ -430,6 +433,11 @@ void IndexView::updateCurrTreeItem()
 
     KTextEditor::View *editView = m_mainWindow->activeView();
     if (!editView) {
+        return;
+    }
+
+    if (editView->selection()) {
+        // When one select some text is an update of the item sometimes annoying
         return;
     }
 
