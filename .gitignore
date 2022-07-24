@@ -21,3 +21,6 @@ build
 
 # from dolphin
 .directory
+
+# from Qt Creator (?)
+*.autosave
