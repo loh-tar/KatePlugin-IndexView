@@ -120,12 +120,19 @@ Parser *Parser::create(const QString &type, IndexView *view)
     // The bad things here are, that you must add here each new parser and recompile
     // at least this plugin
 
+    const QString typeToken = QStringLiteral(";%1;").arg(type);
+    static const QString typeBashParser(QStringLiteral(";Bash;Zsh;"));
+    static const QString typeCppParser(QStringLiteral(";C++;C;ANSI C89;Java;Groovy;"));
+    static const QString typeEcmaParser(QStringLiteral(";ActionScript 2.0;JavaScript;QML;"));
+    static const QString typePlainTextParser(QStringLiteral(";Normal;.desktop;"));
+    static const QString typeXmlTypeParser(QStringLiteral(";DTD;XML;HTML;SGML;xslt;"));
+
     // Ordered by parser class name, except...
-    if (type == QStringLiteral("Bash") || type == QStringLiteral("Zsh"))
+    if (typeBashParser.contains(typeToken))
         return new BashParser(view, type);
-    else if (type == QStringLiteral("C++") || type == QStringLiteral("C") || type == QStringLiteral("ANSI C89") || type == QStringLiteral("Java") || type == QStringLiteral("Groovy"))
+    else if (typeCppParser.contains(typeToken))
         return new CppParser(view, type);
-    else if (type == QStringLiteral("ActionScript 2.0") || type == QStringLiteral("JavaScript") || type == QStringLiteral("QML"))
+    else if (typeEcmaParser.contains(typeToken))
         return new EcmaParser(view, type);
     else if (type.startsWith(QStringLiteral("Fortran")))
         return new FortranParser(view, type);
@@ -135,7 +142,7 @@ Parser *Parser::create(const QString &type, IndexView *view)
         return new PerlParser(view, type);
     else if (type == QStringLiteral("PHP (HTML)"))
         return new PhpParser(view, type);
-    else if (type == QStringLiteral("Normal") || type == QStringLiteral(".desktop"))
+    else if (typePlainTextParser.contains(typeToken))
         return new PlainTextParser(view, type);
     else if (type == QStringLiteral("Python"))
         return new PythonParser(view, type);
@@ -143,7 +150,7 @@ Parser *Parser::create(const QString &type, IndexView *view)
         return new RubyParser(view, type);
     else if (type == QStringLiteral("Tcl/Tk"))
         return new TclParser(view, type);
-    else if (type == QStringLiteral("DTD") || type == QStringLiteral("XML") || type == QStringLiteral("HTML") || type == QStringLiteral("SGML") || type == QStringLiteral("xslt") || type == QStringLiteral("AMPLE"))
+    else if (typeXmlTypeParser.contains(typeToken))
         return new XmlTypeParser(view, type);
 
     // ...the last one, our dummy
