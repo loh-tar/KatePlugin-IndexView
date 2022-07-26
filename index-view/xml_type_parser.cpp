@@ -31,7 +31,7 @@
 
 
 XmlTypeParser::XmlTypeParser(IndexView *view, const QString &docType)
-    : Parser(view)
+    : Parser(view, docType)
 {
     useNestingOptions();
 

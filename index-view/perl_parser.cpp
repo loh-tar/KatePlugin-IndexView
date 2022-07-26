@@ -30,8 +30,8 @@
 #include "perl_parser.h"
 
 
-PerlParser::PerlParser(IndexView *view)
-    : ProgramParser(view)
+PerlParser::PerlParser(IndexView *view, const QString &docType)
+    : ProgramParser(view, docType)
 {
     using namespace IconCollection;
     registerViewOption(UsesNode, UsesIcon, QStringLiteral("Uses"), i18n("Show Uses"));

@@ -38,7 +38,7 @@ class EcmaParser : public ProgramParser
     Q_OBJECT
 
 public:
-    EcmaParser(IndexView *view);
+    EcmaParser(IndexView *view, const QString &docType);
    ~EcmaParser();
 
 protected:

@@ -37,7 +37,7 @@ class FortranParser : public ProgramParser
     Q_OBJECT
 
 public:
-    FortranParser(IndexView *view);
+    FortranParser(IndexView *view, const QString &docType);
    ~FortranParser();
 
 protected:

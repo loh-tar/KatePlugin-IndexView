@@ -29,8 +29,8 @@
 #include "document_parser.h"
 
 
-DocumentParser::DocumentParser(IndexView *view)
-    : Parser(view)
+DocumentParser::DocumentParser(IndexView *view, const QString &docType)
+    : Parser(view, docType)
 {
     useNestingOptions(true/* with adjustment of nesting level*/);
 

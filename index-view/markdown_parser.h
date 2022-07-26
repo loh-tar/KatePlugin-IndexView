@@ -36,7 +36,7 @@ class MarkdownParser : public DocumentParser
     Q_OBJECT
 
 public:
-    MarkdownParser(IndexView *view);
+    MarkdownParser(IndexView *view, const QString &docType);
    ~MarkdownParser();
 
 protected:

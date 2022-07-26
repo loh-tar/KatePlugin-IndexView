@@ -44,7 +44,7 @@ class ProgramParser : public Parser
 {
 
 public:
-    ProgramParser(IndexView *view);
+    ProgramParser(IndexView *view, const QString &docType);
    ~ProgramParser();
 
     virtual void parse() override;

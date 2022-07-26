@@ -36,7 +36,7 @@ class DocumentParser : public Parser
 {
 
 public:
-    DocumentParser(IndexView *view);
+    DocumentParser(IndexView *view, const QString &docType);
    ~DocumentParser();
 
    virtual void parse() override;

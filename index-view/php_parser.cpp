@@ -31,8 +31,8 @@
 #include "php_parser.h"
 
 
-PhpParser::PhpParser(IndexView *view)
-    : ProgramParser(view)
+PhpParser::PhpParser(IndexView *view, const QString &docType)
+    : ProgramParser(view, docType)
 {
     using namespace IconCollection;
     registerViewOption(ClassNode, ClassIcon, QStringLiteral("Classes"), i18n("Show Classes"));

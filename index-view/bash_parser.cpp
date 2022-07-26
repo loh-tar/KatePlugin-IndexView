@@ -29,8 +29,8 @@
 
 #include "bash_parser.h"
 
-BashParser::BashParser(IndexView *view)
-    : ProgramParser(view)
+BashParser::BashParser(IndexView *view, const QString &docType)
+    : ProgramParser(view, docType)
 {
     using namespace IconCollection;
     registerViewOption(FunctionNode, FuncDefIcon, QStringLiteral("Functions"), i18n("Show Functions"));

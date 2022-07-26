@@ -77,7 +77,7 @@ class Parser : public QObject
     friend class XmlTypeParser;
 
 public:
-    Parser(IndexView *view);
+    Parser(IndexView *view, const QString &docType);
    ~Parser();
 
    /**
@@ -469,7 +469,7 @@ class DummyParser : public Parser
     Q_OBJECT
 
 public:
-    DummyParser(IndexView *view);
+    DummyParser(IndexView *view, const QString &docType);
    ~DummyParser();
 
 protected:

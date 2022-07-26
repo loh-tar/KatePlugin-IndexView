@@ -26,8 +26,8 @@
 #include "plaintext_parser.h"
 
 
-PlainTextParser::PlainTextParser(IndexView *view)
-    : DocumentParser(view)
+PlainTextParser::PlainTextParser(IndexView *view, const QString &docType)
+    : DocumentParser(view, docType)
 {
     using namespace IconCollection;
     registerViewOption(ParaNode, ParaIcon, QStringLiteral("Paragraph"), i18n("Show Paragraphs"));

@@ -37,7 +37,7 @@ class TclParser : public ProgramParser
     Q_OBJECT
 
 public:
-    TclParser(IndexView *view);
+    TclParser(IndexView *view, const QString &docType);
    ~TclParser();
 
 protected:

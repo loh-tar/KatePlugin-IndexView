@@ -37,7 +37,7 @@ class RubyParser : public ProgramParser
     Q_OBJECT
 
 public:
-    RubyParser(IndexView *view);
+    RubyParser(IndexView *view, const QString &docType);
    ~RubyParser();
 
 protected:

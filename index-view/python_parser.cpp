@@ -29,8 +29,8 @@
 #include "python_parser.h"
 
 
-PythonParser::PythonParser(IndexView *view)
-    : ProgramParser(view)
+PythonParser::PythonParser(IndexView *view, const QString &docType)
+    : ProgramParser(view, docType)
 {
     using namespace IconCollection;
     registerViewOption(ClassNode, ClassIcon, QStringLiteral("Classes"), i18n("Show Classes"));

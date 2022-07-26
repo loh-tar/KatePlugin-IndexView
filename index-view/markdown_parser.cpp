@@ -26,8 +26,8 @@
 #include "markdown_parser.h"
 
 
-MarkdownParser::MarkdownParser(IndexView *view)
-    : DocumentParser(view)
+MarkdownParser::MarkdownParser(IndexView *view, const QString &docType)
+    : DocumentParser(view, docType)
 {
     using namespace IconCollection;
     registerViewOption(ParaNode, ParaIcon, QStringLiteral("Paragraph"), i18n("Show Paragraphs"));

@@ -30,8 +30,8 @@
 #include "ruby_parser.h"
 
 
-RubyParser::RubyParser(IndexView *view)
-    : ProgramParser(view)
+RubyParser::RubyParser(IndexView *view, const QString &docType)
+    : ProgramParser(view, docType)
 {
     using namespace IconCollection;
     registerViewOption(ClassNode, ClassIcon, QStringLiteral("Classes"), i18n("Show Classes"));

@@ -37,7 +37,7 @@ class PythonParser : public ProgramParser
     Q_OBJECT
 
 public:
-    PythonParser(IndexView *view);
+    PythonParser(IndexView *view, const QString &docType);
    ~PythonParser();
 
 protected:

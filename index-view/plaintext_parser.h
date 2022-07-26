@@ -34,7 +34,7 @@ class PlainTextParser : public DocumentParser
     Q_OBJECT
 
 public:
-    PlainTextParser(IndexView *view);
+    PlainTextParser(IndexView *view, const QString &docType);
    ~PlainTextParser();
 
 protected:

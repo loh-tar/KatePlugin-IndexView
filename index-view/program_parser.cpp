@@ -28,8 +28,8 @@
 #include "program_parser.h"
 
 
-ProgramParser::ProgramParser(IndexView *view)
-    : Parser(view)
+ProgramParser::ProgramParser(IndexView *view, const QString &docType)
+    : Parser(view, docType)
 {
     // Because it's not a full tree with one single common root, let's rename it slightly
     p_viewTree->setText(i18n("Structure View"));

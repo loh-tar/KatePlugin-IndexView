@@ -30,8 +30,8 @@
 #include "fortran_parser.h"
 
 
-FortranParser::FortranParser(IndexView *view)
-    : ProgramParser(view)
+FortranParser::FortranParser(IndexView *view, const QString &docType)
+    : ProgramParser(view, docType)
 {
     using namespace IconCollection;
     registerViewOption(TypeNode, TypeIcon, QStringLiteral("Types"), i18n("Show Types"));

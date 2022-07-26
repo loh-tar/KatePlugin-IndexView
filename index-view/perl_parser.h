@@ -37,7 +37,7 @@ class PerlParser : public ProgramParser
     Q_OBJECT
 
 public:
-    PerlParser(IndexView *view);
+    PerlParser(IndexView *view, const QString &docType);
    ~PerlParser();
 
 protected:

@@ -45,8 +45,8 @@
 #include "parser.h"
 
 
-DummyParser::DummyParser(IndexView *view)
-    : Parser(view)
+DummyParser::DummyParser(IndexView *view, const QString &docType)
+    : Parser(view, docType)
 {
     using namespace IconCollection;
     registerViewOption(InfoNode, Red1Icon, QStringLiteral("Info"), i18n("Show Info"));
@@ -90,10 +90,10 @@ void DummyParser::parseDocument()
 }
 
 
-Parser::Parser(IndexView *view)
+Parser::Parser(IndexView *view, const QString &docType)
     : QObject(view)
     , p_document(view->m_mainWindow->activeView()->document())
-    , p_docType(p_document->mode())
+    , p_docType(docType)
     , p_indexTree(new QTreeWidget())
     , p_view(view)
 {
@@ -122,32 +122,32 @@ Parser *Parser::create(const QString &type, IndexView *view)
 
     // Ordered by parser class name, except...
     if (type == QStringLiteral("Bash") || type == QStringLiteral("Zsh"))
-        return new BashParser(view);
+        return new BashParser(view, type);
     else if (type == QStringLiteral("C++") || type == QStringLiteral("C") || type == QStringLiteral("ANSI C89") || type == QStringLiteral("Java") || type == QStringLiteral("Groovy"))
-        return new CppParser(view);
+        return new CppParser(view, type);
     else if (type == QStringLiteral("ActionScript 2.0") || type == QStringLiteral("JavaScript") || type == QStringLiteral("QML"))
-        return new EcmaParser(view);
+        return new EcmaParser(view, type);
     else if (type.startsWith(QStringLiteral("Fortran")))
-        return new FortranParser(view);
+        return new FortranParser(view, type);
     else if (type == QStringLiteral("Markdown"))
-        return new MarkdownParser(view);
+        return new MarkdownParser(view, type);
     else if (type == QStringLiteral("Perl"))
-        return new PerlParser(view);
+        return new PerlParser(view, type);
     else if (type == QStringLiteral("PHP (HTML)"))
-        return new PhpParser(view);
+        return new PhpParser(view, type);
     else if (type == QStringLiteral("Normal") || type == QStringLiteral(".desktop"))
-        return new PlainTextParser(view);
+        return new PlainTextParser(view, type);
     else if (type == QStringLiteral("Python"))
-        return new PythonParser(view);
+        return new PythonParser(view, type);
     else if (type == QStringLiteral("Ruby"))
-        return new RubyParser(view);
+        return new RubyParser(view, type);
     else if (type == QStringLiteral("Tcl/Tk"))
-        return new TclParser(view);
+        return new TclParser(view, type);
     else if (type == QStringLiteral("DTD") || type == QStringLiteral("XML") || type == QStringLiteral("HTML") || type == QStringLiteral("SGML") || type == QStringLiteral("xslt") || type == QStringLiteral("AMPLE"))
         return new XmlTypeParser(view, type);
 
     // ...the last one, our dummy
-    return new DummyParser(view);
+    return new DummyParser(view, type);
 
 }
 

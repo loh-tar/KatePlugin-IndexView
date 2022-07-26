@@ -29,8 +29,8 @@
 #include "ecma_parser.h"
 
 
-EcmaParser::EcmaParser(IndexView *view)
-    : ProgramParser(view)
+EcmaParser::EcmaParser(IndexView *view, const QString &docType)
+    : ProgramParser(view, docType)
 {
     using namespace IconCollection;
     // FIXME Give all these "Functions" more fitting names

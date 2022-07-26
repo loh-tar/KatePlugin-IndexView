@@ -37,7 +37,7 @@ class BashParser : public ProgramParser
     Q_OBJECT
 
 public:
-    BashParser(IndexView *view);
+    BashParser(IndexView *view, const QString &docType);
    ~BashParser();
 
 protected:
