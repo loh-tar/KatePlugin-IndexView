@@ -265,7 +265,14 @@ void IndexView::docModeChanged(KTextEditor::Document *doc)
         return;
     }
 
-    const QString newDocType = doc->mode();
+    // We prefer to use the highlighting mode, in the hope we can this way avoid a couple of issues
+    // - The highlighting mode is remembered by Kate when manually changed
+    // - The file type often don't fit the file when the highlighting works
+    QString newDocType = doc->highlightingMode();
+    if (QLatin1String("None") == newDocType) {
+        newDocType = doc->mode();
+    }
+
     auto parser = m_cache.value(doc);
 
     if (parser) {
@@ -297,6 +304,7 @@ void IndexView::docModeChanged(KTextEditor::Document *doc)
     connect(view, &KTextEditor::View::cursorPositionChanged, this, &IndexView::docCursorPositionChanged, Qt::UniqueConnection);
     connect(view, &KTextEditor::View::selectionChanged, this, &IndexView::docSelectionChanged, Qt::UniqueConnection);
     connect(doc, &KTextEditor::Document::modeChanged, this, &IndexView::docModeChanged);
+    connect(doc, &KTextEditor::Document::highlightingModeChanged, this, &IndexView::docModeChanged);
     connect(doc, &KTextEditor::Document::textChanged, this, &IndexView::docEdited);
     connect(m_parser, &Parser::parsingDone, this, &IndexView::parsingDone);
 
