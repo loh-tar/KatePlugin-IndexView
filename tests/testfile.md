@@ -36,7 +36,7 @@ Some paragraph
 Some more paragraph
 
 ####### More sharps than six are not treated as header, therefore is this a
-paragraph, which conforms to Kate's syntax highliter.
+paragraph, which conforms to Kate's syntax highlighter.
 
 This is a H1 heading
 ====================
@@ -44,8 +44,8 @@ This is a H1 heading
 This is a H2 heading
 --------------------
 
-On the day of writing this testfile are these Setext-style headers not highlited
-by Kate's syntax highliter, but they are allowed by [Gruber][1].
+On the day of writing this test file are these Setext-style headers not
+highlighted by Kate's syntax highlighter, but they are allowed by [Gruber][1].
 
 # TODO
 
