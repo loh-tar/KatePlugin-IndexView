@@ -241,4 +241,75 @@ QTreeWidgetItem *IniFileParser::addNodeToParent(int nodeType, QTreeWidgetItem *p
     return lastNode();
 }
 
+
+DiffFileParser::DiffFileParser(IndexView *view, const QString &docType)
+    : DocumentParser(view, docType)
+{
+    using namespace IconCollection;
+    setNodeTypeIcon(Section1Node, Head1Icon);
+    setNodeTypeIcon(Section2Node, Head2Icon);
+    setNodeTypeIcon(Section3Node, Head3Icon);
+    setNodeTypeIcon(Section4Node, Head4Icon);
+    setNodeTypeIcon(Section5Node, Head5Icon);
+    setNodeTypeIcon(Section6Node, Head6Icon);
+    setNodeTypeIcon(ChunkNode, ParaIcon);
+
+    m_noNumberAsChunk = addViewOption(QStringLiteral("NoNumberAsChunk"), i18n("Avoid line number as chunk"));
+
+    // Ignore empty lines in general
+    m_rxIgnoreLine = QRegularExpression(QStringLiteral(R"(^\s*$)"));
+}
+
+
+DiffFileParser::~DiffFileParser()
+{
+}
+
+
+void DiffFileParser::parseDocument()
+{
+    // Match: diff --xyz a/index-view/plaintext_parser.cpp b/index-view/plaintext_parser.cpp
+    //    or: diff ----- a/index-view/plaintext_parser.cpp b/index-view/plaintext_parser.cpp
+    static const QRegularExpression rxUrl1(QStringLiteral(R"(^diff\ [-]+\w*\ a(.+)\ b(.+))"));
+    // Match: diff --xyz index-view/parser.cpp
+    // Match: diff ----- index-view/parser.cpp
+    static const QRegularExpression rxUrl2(QStringLiteral(R"(^diff\ [-]+\w*\ (.+))"));
+    static const QRegularExpression rxChunks(QStringLiteral(R"(^@@(.*)@@(.*))"));
+
+    QRegularExpressionMatch rxMatch;
+    QStringList m_inputPath;
+    QTreeWidgetItem *fileNode = nullptr;
+
+    while (nextLine()) {
+        // Let's start the investigation
+        if (m_line.contains(rxUrl1, &rxMatch)) {
+            m_inputPath = rxMatch.captured(1).split(QLatin1Char('/'), Qt::SkipEmptyParts);
+            if (!fileNode || fileNode->text(0) != m_inputPath.at(m_inputPath.size()-1)) {
+                fileNode =  addLimbToNode(Section1Node, Section6Node, m_inputPath);
+            }
+
+        } else if (m_line.contains(rxUrl2, &rxMatch)) {
+            m_inputPath = rxMatch.captured(1).split(QLatin1Char('/'), Qt::SkipEmptyParts);
+            if (!fileNode || fileNode->text(0) != m_inputPath.at(m_inputPath.size()-1)) {
+                fileNode =  addLimbToNode(Section1Node, Section6Node, m_inputPath);
+            }
+
+        } else if (m_line.contains(rxChunks, &rxMatch)) {
+            if (m_noNumberAsChunk->isChecked()) {
+                if (rxMatch.captured(2).isEmpty()) {
+                    int lineNo = lineNumber();
+                    nextLine();
+                    addNodeToParent(ChunkNode, fileNode, m_line.simplified());
+                    lastNode()->setData(0, NodeData::Line, lineNo);
+                } else {
+                    addNodeToParent(ChunkNode, fileNode, rxMatch.captured(2).simplified());
+                }
+            } else {
+                addNodeToParent(ChunkNode, fileNode, rxMatch.captured(1));
+            }
+        }
+    }
+}
+
+
 // kate: space-indent on; indent-width 4; replace-tabs on;

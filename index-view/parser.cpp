@@ -134,6 +134,8 @@ Parser *Parser::create(const QString &type, IndexView *view)
         return new BashParser(view, type);
     else if (typeCppParser.contains(typeToken))
         return new CppParser(view, type);
+    else if (type == QStringLiteral("Diff"))
+        return new DiffFileParser(view, type);
     else if (typeEcmaParser.contains(typeToken))
         return new EcmaParser(view, type);
     else if (type.startsWith(QStringLiteral("Fortran")))

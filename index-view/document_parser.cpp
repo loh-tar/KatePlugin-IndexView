@@ -173,6 +173,61 @@ void DocumentParser::addNode(const int nodeType, const QString &text, const int 
 }
 
 
+QTreeWidgetItem *DocumentParser::addLimbToNode(int firstNodeType, int lastNodeType, const QStringList &nodeList, QTreeWidgetItem *branchNode/* = nullptr*/)
+{
+    if (!branchNode) {
+        branchNode = rootNode(RootNode);
+    }
+
+//     auto addNodeToParent = [this](int nodeType, QTreeWidgetItem *parentNode, const QString &text) {
+//         QTreeWidgetItem *node = new QTreeWidgetItem(parentNode, nodeType);
+//         setNodeProperties(node, nodeType, text, lineNumber());
+//         return lastNode();
+//     };
+
+    QTreeWidgetItem *node = branchNode;
+    int i = 0;
+    bool sectionExist = false;
+    while (i < nodeList.size()) {
+        for (int j = 0; j < node->childCount(); ++j) {
+            //                 qDebug() << "COMPARE" << i << j << node->child(j)->text(0) << nodeList.at(i);
+            if (node->child(j)->text(0) == nodeList.at(i)) {
+                node = node->child(j);
+                sectionExist = true;
+                break;
+            }
+        }
+        if (!sectionExist) {
+            lastNode()->setData(0, NodeData::EndLine, lineNumber() - 1);
+            int nodeType = firstNodeType;
+            for (int k = i; k < nodeList.size(); ++k) {
+                node = addNodeToParent(k+1, node, nodeList.at(k));
+                nodeType = qMin(nodeType + 1, lastNodeType);
+            }
+            break;
+        }
+        sectionExist = false;
+        ++i;
+    }
+
+    return lastNode();
+}
+
+QTreeWidgetItem *DocumentParser::addNodeToParent(int nodeType, QTreeWidgetItem *parentNode, const QString &text)
+{
+    if (!parentNode) {
+        qDebug() << "DocumentParser::addNodeToParent FATAL parent is nullptr" << text << "type" << nodeType;
+//     } else {
+//         qDebug() << "ADD " << text << "type" << nodeType << "TO" << parentNode->text(0);
+    }
+
+    QTreeWidgetItem *node = new QTreeWidgetItem(parentNode, nodeType);
+    setNodeProperties(node, nodeType, text, lineNumber());
+
+    return lastNode();
+}
+
+
 void DocumentParser::initHistory(int size /*= -1*/)
 {
     if (size > -1) {

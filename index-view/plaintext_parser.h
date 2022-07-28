@@ -92,6 +92,39 @@ protected:
     QStringList m_sections; // Collect all sub sections, like a path
 };
 
+/**
+ * The \p DiffFileParser provide a table of contents
+ *
+ * @author loh.tar
+ */
+class DiffFileParser : public DocumentParser
+{
+    Q_OBJECT
+
+public:
+    DiffFileParser(IndexView *view, const QString &docType);
+    ~DiffFileParser();
+
+protected:
+    enum NodeType {
+        Section1Node = FirstCustomNodeType,
+        Section2Node,
+        Section3Node,
+        Section4Node,
+        Section5Node,
+        Section6Node,
+        ChunkNode,
+        LastNodeType  // Keep it at the end
+    };
+
+    QString version() override { return QStringLiteral("0.5, Jul 2022"); } ;
+    QString author() override { return QStringLiteral("2022 loh.tar\n\nATM is only the normal git diff format supported"); } ;
+
+    void parseDocument() override;
+
+    QAction *m_noNumberAsChunk;
+};
+
 #endif
 
 // kate: space-indent on; indent-width 4; replace-tabs on;

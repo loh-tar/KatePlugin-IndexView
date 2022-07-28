@@ -88,17 +88,17 @@ protected:
     virtual void prepareForParse() override;
 
     /**
-    * Initialize the history of already read lines, which effective fill the
+    * Initialize @c m_lineHistory of already read lines, which effective fill the
     * history with empty lines. This function is typically called at the begin of
     * parsing with a suitable @p size but you may also call it depended on the
-    * current parsend line in which case you can omit @p size to keep the buffer
+    * current parsed line in which case you can omit @p size to keep the buffer
     * size unchanged.
     * @param size is the number of lines to keep in the history
     */
     void initHistory(int size = -1);
 
     /**
-    * Add a new line to the history and kept the history limited to the size
+    * Add a new line to @c m_lineHistory and kept the history limited to the size
     * given in initHistory().
     * @param lineType the type of the new line to add, should be enum LineType
     * @param line the new line to add as your needs
@@ -114,6 +114,21 @@ protected:
 private:
     int                      p_historySize;
 
+protected:
+
+    /**
+     * Add the given @p nodeList of nodes to the tree, when they not already exist. The used
+     * node types starts with @p firstNodeType and is incremented until @p lastNodeType is
+     * reached. Each further node uses @p lastNodeType too.
+     * @return the last added node from the list, or even the found one in the tree
+     */
+    QTreeWidgetItem *addLimbToNode(int firstNodeType, int lastNodeType, const QStringList &nodeList, QTreeWidgetItem *branchNode= nullptr);
+
+    /**
+     * Add a new node @p text to the tree below @p parentNode as @p nodeType.
+     * @return the new added node
+     */
+    QTreeWidgetItem *addNodeToParent(int nodeType, QTreeWidgetItem *parentNode, const QString &text);
 };
 
 #endif
