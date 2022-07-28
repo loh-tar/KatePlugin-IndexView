@@ -1,30 +1,52 @@
 ## KatePlugin-IndexView
 
 This is a fork from Kate's plugin *SymbolViewer* with a couple of improvements.
-See release notes of the very first version at the bottom of this file for a
-list of fixed and new features.
+
+  - Support for text files like Markdown
+  - Support for XML files like HTML or DocBook
+  - Show *FIXME/TODO/BEGIN* notes found in the current file
+  - Has a *filter field* to filter the tree by pattern and currently selected text
+  - Save settings individual for each file type
+  - Keep the editing responsive when the file is large
 
 In July 2018 I started to hack on these plugin and got some of may changes
-upstream which was a very cool experience, but not without some hassle.
+upstream which was a very cool experience, but not without some hassle. Lastly I
+was tired to fight for each small change and saw no chance to get forward this
+way. So I decide to duck away and do it silently, which took longer as I
+thought.
 
-Lastly I was tired to fight for each small change and saw no chance to get
-forward this way. So I decide to duck away and do it silently, which take longer
-as I thought. I'm sure it was the right decision, because freed from
-considerations there was so many and large changes, with some Try & Error, that
-it had wouldn't make sense with upstream patches.
+Now, 2022, Kate has the LSP plugin and the new *urlbar* which offer a similar
+view like this plugin, or even the *SymbolViewer*, which make this kind of
+plugin somehow obsolete ... as long as you like the new fancy stuff and have a
+fitting LSP server installed for your file in use.
 
-Now, I offer it as an independent plugin. We will see if it find a way into the
-official Kate version.
+The last two points and the fact that I got used to work with my plugin, made me
+spend time again to ensure it will work in the future too. Well, there is more
+to do to make it ready for the future but some steps are done.
 
 
 ### Last version is 0.9, Jul 2022
 
-  - Prepare for Qt6, Required Qt version is now 5.15
+  - Prepare for Qt6 and port away from QRegExp, Required Qt version is now 5.15
+  - Some parser have now less options to show/hide some kind of node type, but
+    new options to limit the shown nesting
+  - New parser master class XmlTypeParser which can support any kind of XML file
+    with very less extra effort. Replaces the old XsltParser and support atm
+    additional HTML, SGML/Docbook, XML and DTD. All in different
+    states of usefulness/completeness
+  - New support for INI and Diff files
+  - CppParser: Don't group name spaces/structs below one such root node but
+    create a root node with the name space name
   - Parser: Keep the editing responsive when the file is large
   - Parser: Use BashParser for "Zsh" files
   - Replace the cute good old xmp icons with own auto generated icons
+  - IndexView: Try to optimize item update to reduce pointless changes, but it
+    works some times unexpected/not optimal, sorry
+  - Cache for each doc the tree and parser. This makes doc switching delay free
+    and avoid as best as possible any unpleasant flickering when editing
   - Add "Outline" to the plugin description to accommodate the apparently
     established terms
+  - Many more small fixes and bigger changes, see commit log for detailed list
 
 Older release notes can you find below.
 
