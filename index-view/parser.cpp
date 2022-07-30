@@ -406,8 +406,10 @@ void Parser::burnDownMustyTree()
         return;
     }
 
-    // Restore scroll position from old tree to avoid flicker
+    // Restore scroll position from old tree to avoid flicker...
     p_indexTree->verticalScrollBar()->setSliderPosition(p_mustyTree->verticalScrollBar()->sliderPosition());
+    // ...but ensure current item is visible
+    p_indexTree->scrollToItem(p_indexTree->currentItem());
 
     delete p_mustyTree;
     p_parsingIsRunning = false;
