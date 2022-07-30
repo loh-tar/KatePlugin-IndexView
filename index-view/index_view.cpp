@@ -109,13 +109,12 @@ IndexView::IndexView(KatePluginIndexView *plugin, KTextEditor::MainWindow *mw)
     });
 
     m_plugin->m_views.insert(this);
+    loadViewSettings();
 }
 
 
 IndexView::~IndexView()
 {
-    saveViewSettings();
-
     m_mainWindow->guiFactory()->removeClient(this);
 
     for (auto parser : m_cache) {
@@ -169,16 +168,30 @@ void IndexView::updateFilterBoxPosition(int pos)
 
 void IndexView::loadViewSettings()
 {
-    if (!m_parser) {
-        return;
-    }
     KConfigGroup mainGroup(KSharedConfig::openConfig(), QStringLiteral("PluginIndexView"));
     m_cozyClickExpand = mainGroup.readEntry(QStringLiteral("CozyClickExpand"), false);
     m_parseDelay = mainGroup.readEntry(QStringLiteral("ParseDelay"), 1000);
+}
 
-    KConfigGroup config(&mainGroup, m_parser->docType());
+
+void IndexView::saveViewSettings()
+{
+    KConfigGroup mainGroup(KSharedConfig::openConfig(), QStringLiteral("PluginIndexView"));
+    mainGroup.writeEntry(QStringLiteral("CozyClickExpand"), m_cozyClickExpand);
+    mainGroup.writeEntry(QStringLiteral("ParseDelay"), m_parseDelay);
+}
+
+
+void IndexView::loadParserSettings(Parser *parser)
+{
+    if (!parser) {
+        return;
+    }
+
+    KConfigGroup mainGroup(KSharedConfig::openConfig(), QStringLiteral("PluginIndexView"));
+    KConfigGroup config(&mainGroup, parser->docType());
     // Sub-Menus are not supported here, if needed see https://stackoverflow.com/a/38429982
-    for (QAction *action : m_parser->contextMenu()->actions()) {
+    for (QAction *action : parser->contextMenu()->actions()) {
         if (action->isSeparator()) {
             continue;
         }
@@ -187,11 +200,11 @@ void IndexView::loadViewSettings()
             // SortIndex setting need sadly a lot of special treatment
             if (config.readEntry(action->objectName(), false)) {
                 action->setChecked(true);
-                m_indexTree->setSortingEnabled(true);
-                m_indexTree->sortItems(0, static_cast<Qt::SortOrder>(config.readEntry(QStringLiteral("SortIndexOrder"), 0/*Qt::AscendingOrder*/)));
+                parser->indexTree()->setSortingEnabled(true);
+                parser->indexTree()->sortItems(0, static_cast<Qt::SortOrder>(config.readEntry(QStringLiteral("SortIndexOrder"), 0/*Qt::AscendingOrder*/)));
             } else {
                 action->setChecked(false);
-                m_indexTree->setSortingEnabled(false);
+                parser->indexTree()->setSortingEnabled(false);
             }
         } else {
             action->setChecked(config.readEntry(action->objectName(), true));
@@ -201,17 +214,15 @@ void IndexView::loadViewSettings()
 }
 
 
-void IndexView::saveViewSettings()
+void IndexView::saveParserSettings(Parser *parser)
 {
-    if (!m_parser) {
+    if (!parser) {
         return;
     }
-    KConfigGroup mainGroup(KSharedConfig::openConfig(), QStringLiteral("PluginIndexView"));
-    mainGroup.writeEntry(QStringLiteral("CozyClickExpand"), m_cozyClickExpand);
-    mainGroup.writeEntry(QStringLiteral("ParseDelay"), m_parseDelay);
 
-    KConfigGroup config(&mainGroup, m_parser->docType());
-    for (QAction *action : m_parser->contextMenu()->actions()) {
+    KConfigGroup mainGroup(KSharedConfig::openConfig(), QStringLiteral("PluginIndexView"));
+    KConfigGroup config(&mainGroup, parser->docType());
+    for (QAction *action : parser->contextMenu()->actions()) {
         if (action->isSeparator()) {
             continue;
         }
@@ -219,7 +230,7 @@ void IndexView::saveViewSettings()
     }
 
     // SortIndex setting need special treatment
-    config.writeEntry(QStringLiteral("SortIndexOrder"), static_cast<int>(m_indexTree->header()->sortIndicatorOrder()));
+    config.writeEntry(QStringLiteral("SortIndexOrder"), static_cast<int>(parser->indexTree()->header()->sortIndicatorOrder()));
 }
 
 
@@ -279,7 +290,6 @@ void IndexView::docModeChanged(KTextEditor::Document *doc)
         if (newDocType == parser->docType()) {
             return;
         }
-        saveViewSettings();
 
         m_cache.remove(doc);
         m_treeStack->removeWidget(parser->indexTree());
@@ -299,7 +309,7 @@ void IndexView::docModeChanged(KTextEditor::Document *doc)
 
     m_cache.insert(doc, m_parser);
 
-    loadViewSettings();
+    loadParserSettings(m_parser);
 
     connect(view, &KTextEditor::View::cursorPositionChanged, this, &IndexView::docCursorPositionChanged, Qt::UniqueConnection);
     connect(view, &KTextEditor::View::selectionChanged, this, &IndexView::docSelectionChanged, Qt::UniqueConnection);

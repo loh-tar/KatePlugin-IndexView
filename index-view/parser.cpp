@@ -110,6 +110,11 @@ Parser::Parser(IndexView *view, const QString &docType)
 
 Parser::~Parser()
 {
+    if (p_viewOptionsChanged) {
+    // While this is here very handy placed, I'm not sure if it is good style
+        p_view->saveParserSettings(this);
+    }
+
     delete p_indexTree;
 }
 
@@ -465,6 +470,7 @@ void Parser:: menuActionTriggered()
 {
     docNeedParsing();
     p_view->parseDocument();
+    p_viewOptionsChanged = true;
 }
 
 

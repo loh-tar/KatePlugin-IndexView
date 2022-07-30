@@ -421,6 +421,7 @@ private:
     QAction                        *p_viewTree = nullptr;
     QAction                        *p_addIcons = nullptr;
     QAction                        *p_viewExpanded = nullptr;
+    bool                            p_viewOptionsChanged = false;
 
     struct NodeTypeStruct {
         NodeTypeStruct() {};

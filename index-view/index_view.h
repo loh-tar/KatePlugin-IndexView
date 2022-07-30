@@ -67,9 +67,12 @@ public:
     void readSessionConfig(const KConfigGroup &config) override;
     void writeSessionConfig(KConfigGroup &config) override;
 
-public Q_SLOTS:
     void loadViewSettings();
     void saveViewSettings();
+    void loadParserSettings(Parser *parser);
+    void saveParserSettings(Parser *parser);
+
+public Q_SLOTS:
     void viewChanged();
     void docModeChanged(KTextEditor::Document *doc);
     void docEdited();
