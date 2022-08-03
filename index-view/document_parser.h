@@ -88,6 +88,13 @@ protected:
     virtual void prepareForParse() override;
 
     /**
+     * Call this function at the of parseDocument() to ensure in a true tree all
+     * parent nodes have a proper EndLine set.
+     * FIXME Not sure if here best placed, better in Parser? Better Name?
+     */
+    void fnishEndlines();
+
+    /**
     * Initialize @c m_lineHistory of already read lines, which effective fill the
     * history with empty lines. This function is typically called at the begin of
     * parsing with a suitable @p size but you may also call it depended on the

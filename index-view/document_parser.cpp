@@ -144,6 +144,17 @@ void DocumentParser::prepareForParse()
 }
 
 
+void DocumentParser::fnishEndlines()
+{
+    QTreeWidgetItem *node = lastNode();
+    while (node) {
+        //qDebug() << "fnishEndlines UPDATE EndLine" << node->text(0) << "from" << node->data(0, NodeData::EndLine).toInt() << "to" << lineNumber() -1;
+        node->setData(0, NodeData::EndLine, lineNumber() - 1);
+        node = node->parent();
+    }
+}
+
+
 void DocumentParser::addNode(const int nodeType, const QString &text, const int lineNumber)
 {
     QTreeWidgetItem *node = nullptr;

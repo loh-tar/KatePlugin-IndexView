@@ -125,6 +125,8 @@ void PlainTextParser::parseDocument()
             addNode(SectNode, m_lineHistory.at(1), lineNumber() - 1);
         }
     }
+
+    fnishEndlines();
 }
 
 
