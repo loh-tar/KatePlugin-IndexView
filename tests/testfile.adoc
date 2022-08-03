@@ -1,0 +1,127 @@
+= Some AsciiDoc Article
+
+Taken from https://en.wikipedia.org/wiki/AsciiDoc and a little modified.
+J. Smith
+
+https://wikipedia.org[Wikipedia] is an
+on-line encyclopaedia, available in
+English and *many* other languages.
+
+== Software
+
+You can install 'package-name' using
+the `gem` command:
+
+ gem install package-name
+
+== Hardware
+
+=== Metals commonly used
+
+* copper
+* tin
+* lead
+
+
+
+
+Below follow parts of the README from Asciidoctor. I have no idea what parts may
+of interest for a testfile.adoc. So I've been cutting or keeping parts more by
+accident or gut feeling.
+
+= Asciidoctor
+Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Sarah White <https://github.com/graphitefriction[@graphitefriction]>
+// settings:
+:idprefix:
+:idseparator: -
+:source-language: ruby
+
+{url-project}[Asciidoctor] is a fast, open source, Ruby-based text processor for parsing AsciiDoc(R) into a document model and converting it to output formats such as HTML 5, DocBook 5, manual pages, PDF, EPUB 3, and other formats.
+
+Asciidoctor also has an ecosystem of extensions, converters, build plugins, and tools to help you author and publish content written in {url-what-is-asciidoc}[AsciiDoc].
+You can find the documentation for these projects at {url-docs}.
+
+In addition to running on Ruby, Asciidoctor can be executed on a JVM using {url-asciidoctorj}[AsciidoctorJ] or in any JavaScript environment using {url-asciidoctorjs}[Asciidoctor.js].
+
+ifndef::env-site,env-yard[]
+This document is also available in the following languages: +
+{url-rel-file-base}README-zh_CN.adoc[简体中文]
+|
+{url-rel-file-base}README-de.adoc[Deutsch]
+|
+{url-rel-file-base}README-fr.adoc[Français]
+|
+{url-rel-file-base}README-jp.adoc[日本語]
+endif::[]
+
+.Key documentation
+[.compact]
+* {url-docs}/asciidoctor/latest/[Asciidoctor Documentation]
+* {url-docs}/asciidoc/latest/[AsciiDoc Language Documentation]
+* {url-docs}/asciidoc/latest/syntax-quick-reference/[AsciiDoc Syntax Quick Reference]
+
+ifdef::status[]
+image:https://img.shields.io/gem/v/asciidoctor.svg[Latest Release, link={url-rubygem}]
+image:https://img.shields.io/badge/rubydoc.info-{release-version}-blue.svg[library (API) docs,link=https://www.rubydoc.info/gems/asciidoctor/{release-version}]
+image:https://github.com/asciidoctor/asciidoctor/workflows/CI/badge.svg[Build Status (GitHub Actions),link={url-repo}/actions]
+image:https://img.shields.io/badge/zulip-join_chat-brightgreen.svg[Project Chat (Zulip),link={url-chat}]
+endif::[]
+
+== AsciiDoc Processing and Built-in Converters
+
+AsciiDoc is the language. +
+Asciidoctor is the processor.
+
+Asciidoctor reads the AsciiDoc source, as shown in the panel on the left in the image below, and converts it to publishable formats, such as HTML 5, as shown rendered in the panel on the right.
+
+image::{image-url-screenshot}[Preview of AsciiDoc source and corresponding rendered HTML]
+
+Asciidoctor provides built-in {url-docs}/asciidoctor/latest/converters/[converters] for three output formats by default: {url-docs}/asciidoctor/latest/html-backend/[HTML 5], {url-docs}/asciidoctor/latest/docbook-backend/[DocBook 5], and {url-docs}/asciidoctor/latest/manpage-backend/[man page] (short for manual page).
+Additional converters, such as PDF and EPUB 3, are provided by separate gems.
+Asciidoctor also provides an out-of-the-box HTML experience complete with a {url-docs}/asciidoctor/latest/html-backend/default-stylesheet/[default stylesheet] and built-in integrations like Font Awesome (for icons), highlight.js, Rouge, and Pygments (for source highlighting), and MathJax (for STEM processing).
+
+== Asciidoctor Ecosystem
+
+== Requirements
+
+Asciidoctor works on Linux, macOS and Windows and requires one of the following implementations of {url-ruby}[Ruby]:
+
+* CRuby (aka MRI) 2.3 - 3.0
+* JRuby 9.1 - 9.2
+* TruffleRuby (GraalVM)
+
+[CAUTION]
+====
+If you're using a non-English Windows environment, you may bump into an `Encoding::UndefinedConversionError` when invoking Asciidoctor.
+To solve this issue, we recommend changing the active code page in your console to UTF-8:
+
+ chcp 65001
+
+Once you make this change, all your Unicode headaches will be behind you.
+If you're using an IDE like Eclipse, make sure you set the encoding to UTF-8 there as well.
+Asciidoctor works best when you use UTF-8 everywhere.
+====
+
+
+=== Bundler
+
+. Create a Gemfile in the root folder of your project (or the current directory)
+. Add the `asciidoctor` gem to your Gemfile as follows:
++
+[subs=attributes+]
+----
+source 'https://rubygems.org'
+gem 'asciidoctor'
+# or specify the version explicitly
+# gem 'asciidoctor', '{release-version}'
+----
+
+. Save the Gemfile
+. Open a terminal and install the gem using:
+
+ $ bundle
+
+To upgrade the gem, specify the new version in the Gemfile and run `bundle` again.
+Using `bundle update` (without specifying a gem) is *not* recommended as it will also update other gems, which may not be the desired result.
+
+

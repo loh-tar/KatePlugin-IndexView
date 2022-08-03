@@ -135,7 +135,9 @@ Parser *Parser::create(const QString &type, IndexView *view)
     static const QString typeXmlTypeParser(QStringLiteral(";DTD;XML;HTML;SGML;xslt;"));
 
     // Ordered by parser class name, except...
-    if (typeBashParser.contains(typeToken))
+    if (type == QStringLiteral("AsciiDoc"))
+        return new AsciiDocParser(view, type);
+    else if (typeBashParser.contains(typeToken))
         return new BashParser(view, type);
     else if (typeCppParser.contains(typeToken))
         return new CppParser(view, type);

@@ -64,6 +64,46 @@ protected:
 
 };
 
+/**
+ * The \p AsciiDocParser provide something like a table of contents.
+ * You will find more information about supported, or not (yet) supported,
+ * features in testfile.adoc.
+ *
+ * @author loh.tar
+ */
+class AsciiDocParser : public DocumentParser
+{
+    Q_OBJECT
+
+public:
+    AsciiDocParser(IndexView *view, const QString &docType);
+   ~AsciiDocParser();
+
+protected:
+    enum NodeType {
+        Head1Node = FirstCustomNodeType,
+        Head2Node,
+        Head3Node,
+        Head4Node,
+        Head5Node,
+        Head6Node,
+        ParaNode
+    };
+
+    enum LineType {
+        NormalLine = FirstCustomLineType,
+        HeaderLine,
+        EqualLine,
+        DashLine
+    };
+
+    QString version() override { return QStringLiteral("0.5 Aug 2022"); } ;
+    QString author() override { return QStringLiteral("2022 loh.tar"); } ;
+
+    void parseDocument() override;
+
+};
+
 #endif
 
 // kate: space-indent on; indent-width 4; replace-tabs on;
