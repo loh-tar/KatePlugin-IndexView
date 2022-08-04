@@ -109,7 +109,7 @@ public:
      */
     QString docType() { return p_docType; };
 
-    bool usingThisDoc(KTextEditor::Document *const doc) { return doc == p_document; };
+    KTextEditor::Document * document() { return p_document; };
 
     /**
      * This function is used to avoid parsing restart when a parsing is already running.

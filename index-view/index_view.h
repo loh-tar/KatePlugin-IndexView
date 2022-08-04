@@ -75,7 +75,7 @@ public:
 public Q_SLOTS:
     void viewChanged();
     void docModeChanged(KTextEditor::Document *doc);
-    void docEdited();
+    void docEdited(KTextEditor::Document *doc);
     void docSelectionChanged();
     void docCursorPositionChanged();
     void updateCurrTreeItem();

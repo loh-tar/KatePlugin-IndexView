@@ -246,7 +246,7 @@ void IndexView::viewChanged()
         return;
     }
 
-    if (m_parser && m_parser->usingThisDoc(doc)) {
+    if (m_parser && m_parser->document() == doc) {
         connect(view, &KTextEditor::View::cursorPositionChanged, this, &IndexView::docCursorPositionChanged, Qt::UniqueConnection);
         connect(view, &KTextEditor::View::selectionChanged, this, &IndexView::docSelectionChanged, Qt::UniqueConnection);
         m_updateCurrItemDelayTimer.start(0);
@@ -323,11 +323,24 @@ void IndexView::docModeChanged(KTextEditor::Document *doc)
 }
 
 
-void IndexView::docEdited()
+void IndexView::docEdited(KTextEditor::Document *doc)
 {
-    if (m_parser) {
-        m_parser->docNeedParsing();
+    if (!doc) {
+        return;
     }
+
+    auto parser = m_cache.value(doc);
+
+    if (parser) {
+        parser->docNeedParsing();
+    }
+
+    KTextEditor::View *view = m_mainWindow->activeView();
+    if (view && view->document() != doc) {
+        // Some doc not of our current interest has been edited
+        return;
+    }
+
 
     if (!m_toolview->isVisible()) {
         return;
@@ -587,7 +600,7 @@ void IndexView::parseDocument()
 
     if (m_parser->isParsing()) {
         // Parse is already running, do it later
-        docEdited();
+        docEdited(m_parser->document());
         return;
     }
 
