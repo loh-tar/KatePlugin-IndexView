@@ -633,6 +633,7 @@ void IndexView::parsingDone(Parser *parser)
 
     // Don't use timer here, we must do it all in one rush
     filterTree();
+    m_updateCurrItemDelayTimer.stop(); // Started in filterTree(), but we don't need/want that now
     updateCurrTreeItem();
 
     // All updates are done, switch to the new tree now...
