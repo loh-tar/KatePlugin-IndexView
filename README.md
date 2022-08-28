@@ -25,28 +25,10 @@ spend time again to ensure it will work in the future too. Well, there is more
 to do to make it ready for the future but some steps are done.
 
 
-### Last version is 0.9, Jul 2022
+### Last version is 0.9.1, Aug 2022
 
-  - Prepare for Qt6 and port away from QRegExp, Required Qt version is now 5.15
-  - Some parser have now less options to show/hide some kind of node type, but
-    new options to limit the shown nesting
-  - New parser master class XmlTypeParser which can support any kind of XML file
-    with very less extra effort. Replaces the old XsltParser and support atm
-    additional HTML, SGML/Docbook, XML and DTD. All in different
-    states of usefulness/completeness
-  - New support for INI and Diff files
-  - CppParser: Don't group name spaces/structs below one such root node but
-    create a root node with the name space name
-  - Parser: Keep the editing responsive when the file is large
-  - Parser: Use BashParser for "Zsh" files
-  - Replace the cute good old xmp icons with own auto generated icons
-  - IndexView: Try to optimize item update to reduce pointless changes, but it
-    works some times unexpected/not optimal, sorry
-  - Cache for each doc the tree and parser. This makes doc switching delay free
-    and avoid as best as possible any unpleasant flickering when editing
-  - Add "Outline" to the plugin description to accommodate the apparently
-    established terms
-  - Many more small fixes and bigger changes, see commit log for detailed list
+  - Add AsciiDocParser with minimal support, but can be improved if needed
+  - Fix flicker when edit at the end of a (e.g. Markdown) document
 
 Older release notes can you find below.
 
@@ -121,6 +103,30 @@ and probably many more I didn't have knowledge from. Thanks to all!
 
 
 ## Release History
+
+### 0.9, Jul 2022
+
+  - Prepare for Qt6 and port away from QRegExp, Required Qt version is now 5.15
+  - Some parser have now less options to show/hide some kind of node type, but
+    new options to limit the shown nesting
+  - New parser master class XmlTypeParser which can support any kind of XML file
+    with very less extra effort. Replaces the old XsltParser and support atm
+    additional HTML, SGML/Docbook, XML and DTD. All in different
+    states of usefulness/completeness
+  - New support for INI and Diff files
+  - CppParser: Don't group name spaces/structs below one such root node but
+    create a root node with the name space name
+  - Parser: Keep the editing responsive when the file is large
+  - Parser: Use BashParser for "Zsh" files
+  - Replace the cute good old xmp icons with own auto generated icons
+  - IndexView: Try to optimize item update to reduce pointless changes, but it
+    works some times unexpected/not optimal, sorry
+  - Cache for each doc the tree and parser. This makes doc switching delay free
+    and avoid as best as possible any unpleasant flickering when editing
+  - Add "Outline" to the plugin description to accommodate the apparently
+    established terms
+  - Many more small fixes and bigger changes, see commit log for detailed list
+
 
 ### 0.8.4, May 2019
 
