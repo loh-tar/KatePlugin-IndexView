@@ -1,8 +1,0 @@
-[Desktop Entry]
-Type=Service
-ServiceTypes=KTextEditor/Plugin
-X-KDE-Library=kateindexviewplugin
-Name=Index View
-Name[de]=Stichwortansicht
-Comment=Shows an dynamic index of the document (Outline)
-Comment[de]=Zeigt ein dynamisches Stichwortverzeichnis des Dokumentes (Outline)

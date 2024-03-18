@@ -6,8 +6,8 @@
 project(kate-plugin-index-view)
 
 cmake_minimum_required(VERSION 3.16.0 FATAL_ERROR)
-set(QT_MIN_VERSION "5.15.0")
-set(KF5_DEP_VERSION "5.13.0")
+set(QT_MIN_VERSION "6.2.0")
+set(KF6_DEP_VERSION "6.0.0")
 
 # Prepare for Qt6 https://doc.qt.io/qt-6/portingguide.html
 add_compile_definitions(QT_DISABLE_DEPRECATED_BEFORE=0x050F00)
@@ -15,9 +15,9 @@ add_compile_definitions(QT_DISABLE_DEPRECATED_BEFORE=0x050F00)
 find_package(ECM 1.1.0 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
-find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED Core Widgets)
-# find_package(KF5TextEditor NO_MODULE)
-find_package(KF5 "${KF5_DEP_VERSION}" REQUIRED COMPONENTS
+find_package(Qt6 ${QT_MIN_VERSION} CONFIG REQUIRED Core Widgets)
+# find_package(KF6TextEditor NO_MODULE)
+find_package(KF6 "${KF6_DEP_VERSION}" REQUIRED COMPONENTS
 # Not sure if something is missed or could be removed
     Config
     I18n

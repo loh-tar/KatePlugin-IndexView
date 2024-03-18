@@ -31,15 +31,13 @@ set(kateindexviewplugin_PART_UI
 ki18n_wrap_ui(kateindexviewplugin_PART_SRCS ${kateindexviewplugin_PART_UI} )
 
 # resource for ui file and stuff
-qt5_add_resources(kateindexviewplugin_PART_SRCS plugin.qrc)
+qt6_add_resources(kateindexviewplugin_PART_SRCS plugin.qrc)
 
 add_library(kateindexviewplugin MODULE ${kateindexviewplugin_PART_SRCS})
 
-kcoreaddons_desktop_to_json (kateindexviewplugin kateindexviewplugin.desktop)
-
 target_link_libraries(kateindexviewplugin
-    KF5::TextEditor
-    KF5::I18n
+    KF6::TextEditor
+    KF6::I18n
 )
 
 install(TARGETS kateindexviewplugin DESTINATION ${PLUGIN_INSTALL_DIR}/ktexteditor)

@@ -1,0 +1,11 @@
+{
+    "KPlugin": {
+        "Description": "Shows an dynamic index of the document (Outline)",
+        "Description[de]": "Zeigt ein dynamisches Stichwortverzeichnis des Dokumentes (Outline)",
+        "Name": "Index View",
+        "Name[de]": "Stichwortansicht",
+        "ServiceTypes": [
+            "KTextEditor/Plugin"
+        ]
+    }
+}
