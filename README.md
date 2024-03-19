@@ -1,6 +1,7 @@
 ## KatePlugin-IndexView
 
-This is a fork from Kate's plugin *SymbolViewer* with a couple of improvements.
+This is a fork from Kate's plugin *SymbolViewer* done 2018 with a couple of
+modifications.
 
   - Support for text files like Markdown
   - Support for XML files like HTML or DocBook
@@ -15,10 +16,10 @@ was tired to fight for each small change and saw no chance to get forward this
 way. So I decide to duck away and do it silently, which took longer as I
 thought.
 
-Now, 2022, Kate has the LSP plugin and the new *urlbar* which offer a similar
-view like this plugin, or even the *SymbolViewer*, which make this kind of
-plugin somehow obsolete ... as long as you like the new fancy stuff and have a
-fitting LSP server installed for your file in use.
+Now, 2022, Kate has the LSP plugin which offer a similar view like this plugin,
+or even the *SymbolViewer*, which make this kind of plugin somehow obsolete ...
+as long as you like the new fancy stuff and have a fitting LSP server installed
+for your file in use.
 
 The last two points and the fact that I got used to work with my plugin, made me
 spend time again to ensure it will work in the future too. Well, there is more
