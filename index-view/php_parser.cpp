@@ -76,7 +76,7 @@ void PhpParser::parseDocument()
             addNode(NamespaceNode, rxMatch.captured(1), m_lineNumber);
 
         } else if (m_line.contains(QStringLiteral("define(,);"))) {
-            m_niceLine.contains(m_rxDefine, &rxMatch);
+            std::ignore = m_niceLine.contains(m_rxDefine, &rxMatch);
             addNode(ConstantNode, rxMatch.captured(1), m_lineNumber);
 
         } else if (m_line.contains(m_rxConst, &rxMatch)) {
