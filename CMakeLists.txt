@@ -15,6 +15,7 @@ set(KF6_DEP_VERSION "6.0.0")
 # Prepare for Qt6 https://doc.qt.io/qt-6/portingguide.html
 add_compile_definitions(QT_DISABLE_DEPRECATED_BEFORE=0x050F00)
 
+set(KDE_SKIP_RPATH_SETTINGS TRUE)
 find_package(ECM 1.1.0 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
@@ -33,7 +34,7 @@ feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
 
 include(ECMOptionalAddSubdirectory)
 include(KDECompilerSettings NO_POLICY_SCOPE)
-include(KDEInstallDirs)
+# include(KDEInstallDirs) # cause error about unknown option --query
 include(KDECMakeSettings)
 include(FeatureSummary)
 
