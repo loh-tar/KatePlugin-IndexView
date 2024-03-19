@@ -2,6 +2,8 @@
 # from 2004, https://kate-editor.org/2004/01/06/writing-a-kate-plugin/
 # I like to thank Tatsh, https://github.com/Tatsh/kate-wakatime, where I could
 # crib what to remove from the orig Kate main CMake file
+# March 2024: While porting to Qt6/KF6 I found this "new" example, sadly
+# not up to date  https://develop.kde.org/docs/apps/kate/plugin/ showing Qt5/KF5
 
 cmake_minimum_required(VERSION 3.16.0 FATAL_ERROR)
 
