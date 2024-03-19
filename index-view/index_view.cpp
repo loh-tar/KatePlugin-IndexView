@@ -420,7 +420,7 @@ void IndexView::filterTree()
 
     // Test if something match...
     bool hit = false;
-    for (QTreeWidgetItem *item : qAsConst(m_indexList)) {
+    for (QTreeWidgetItem *item : std::as_const(m_indexList)) {
         if (item->text(0).contains(pattern, Qt::CaseInsensitive)) {
             hit = true;
             break;
@@ -437,7 +437,7 @@ void IndexView::filterTree()
     m_filterBox->indicateMatch(FilterBox::Match);
     m_parser->treeIsFiltered(true);
 
-    for (QTreeWidgetItem *item : qAsConst(m_indexList)) {
+    for (QTreeWidgetItem *item : std::as_const(m_indexList)) {
         if (item->text(0).contains(pattern, Qt::CaseInsensitive)) {
             while (item) {
                 m_indexTree->expandItem(item);
@@ -467,7 +467,7 @@ void IndexView::restoreTree()
         }
     }
 
-    for (QTreeWidgetItem *item : qAsConst(m_indexList)) {
+    for (QTreeWidgetItem *item : std::as_const(m_indexList)) {
         item->setHidden(false);
         item->setExpanded(m_parser->showExpanded());
     }

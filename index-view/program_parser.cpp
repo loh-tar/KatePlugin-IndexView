@@ -291,7 +291,7 @@ void ProgramParser::removeHereDoc()
     // in p_hereDocRxList and choose the right most hit.
         int lastIndexIn = -1;
         int indexIn = -1;
-        for (QRegularExpression rx : qAsConst(p_hereDocRxList)) {
+        for (QRegularExpression rx : std::as_const(p_hereDocRxList)) {
             indexIn = m_niceLine.indexOf(rx);
             if (indexIn < 0) {
                 continue;
