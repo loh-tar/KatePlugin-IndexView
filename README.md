@@ -36,6 +36,11 @@ Older release notes can you find below.
 
 ## Installation
 
+### Packages
+
+Arch Linux has an AUR, search for *kate-indexview-plugin*.
+
+
 ### From Source
 
 In any doubt or error message while you try to compile this plugin, it may help
@@ -68,11 +73,6 @@ If it's not shown in Kate's Plugin Manager look where it is gone...
 ...and move it to the right place.
 
 Non Unices user has do something similar.
-
-
-### Packages
-
-Arch Linux has an AUR, search for *kate-indexview-plugin*.
 
 
 ## Post Install Task
