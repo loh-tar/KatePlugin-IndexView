@@ -68,7 +68,6 @@ void PerlParser::parseDocument()
             addNode(UsesNode, rxMatch.captured(1), m_lineNumber);
 
         } else if (m_line.contains(m_rxPragma, &rxMatch)) {
-            m_niceLine.contains(m_rxPragma);
             addNode(PragmaNode, rxMatch.captured(1), m_lineNumber);
 
         } else if (m_line.contains(m_rxSubroutine, &rxMatch)) {
