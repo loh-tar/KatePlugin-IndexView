@@ -94,7 +94,7 @@ KatePlugin-IndexView is licensed under LGPL2. See COPYING for the full license.
 
 <!-- CAUTION! Trailing two spaces are there to have a line break without new paragraph -->
 KatePlugin-IndexView  
-Copyright (C) 2018, 2019, 2022 loh.tar@googlemail.com
+Copyright (C) 2018, 2019, 2022, 2024 loh.tar@googlemail.com
 
 Because KatePlugin-IndexView is a fork there are rights from pervious main
 developers:
