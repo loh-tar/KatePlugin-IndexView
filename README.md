@@ -26,10 +26,11 @@ spend time again to ensure it will work in the future too. Well, there is more
 to do to make it ready for the future but some steps are done.
 
 
-### Last version is 0.9.1, Aug 2022
+### Last version is 0.9.2, Mar 2024
 
-  - Add AsciiDocParser with minimal support, but can be improved if needed
-  - Fix flicker when edit at the end of a (e.g. Markdown) document
+  - Keep it working with recent Kate version 24.02
+  - CMake changes to compile with Qt6/KF6, sadly not perfect
+  - Code requires now Qt 6.6
 
 Older release notes can you find below.
 
@@ -43,10 +44,13 @@ Arch Linux has an AUR, search for *kate-indexview-plugin*.
 
 ### From Source
 
-> [!NOTE] The build/cmake system is currently in bad condition, any help is welcome!
-> To install use instead something like this, and not "make install"
+> [!NOTE]
+> The build/cmake system is currently in bad condition, any help is welcome!
+> To install use instead something like this...
 >
-> $ sudo install -Dm755  index-view/kateindexviewplugin.so /usr/lib/qt6/plugins/kf6/ktexteditor/
+>     $ sudo install -Dm755  index-view/kateindexviewplugin.so /usr/lib/qt6/plugins/kf6/ktexteditor/
+>
+> ...and not "make install" as mentioned below.
 
 In any doubt or error message while you try to compile this plugin, it may help
 to look at Kate's home and there [build instructions](https://kate-editor.org/build-it/).
@@ -109,6 +113,12 @@ and probably many more I didn't have knowledge from. Thanks to all!
 
 
 ## Release History
+
+### 0.9.1, Aug 2022
+
+  - Add AsciiDocParser with minimal support, but can be improved if needed
+  - Fix flicker when edit at the end of a (e.g. Markdown) document
+
 
 ### 0.9, Jul 2022
 
