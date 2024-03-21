@@ -54,8 +54,13 @@ FilterBox::~FilterBox()
 
 void FilterBox::focusInEvent(QFocusEvent *e)
 {
+    KTextEditor::View *view = m_view->m_mainWindow->activeView();
+    if (!view) {
+        return;
+    }
+
     // Remove any selection so that IndexView::filterTree() will not use it
-    m_view->m_mainWindow->activeView()->setSelection(KTextEditor::Range());
+    view->setSelection(KTextEditor::Range());
     QComboBox::focusInEvent(e);
 };
 
