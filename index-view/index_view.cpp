@@ -297,7 +297,11 @@ void IndexView::docModeChanged(KTextEditor::Document *doc)
     }
 
     KTextEditor::View *view = m_mainWindow->activeView();
-    if (view && view->document() != doc) {
+    if (!view) {
+        return;
+    }
+
+    if (view->document() != doc) {
         // Some doc not of our current interest changed
         return;
     }
