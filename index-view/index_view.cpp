@@ -563,11 +563,13 @@ void IndexView::updateCurrTreeItem()
 
 bool IndexView::eventFilter(QObject *obj, QEvent *event)
 {
-    if (obj == m_toolview) { // Meh, we filter no other ATM but anyway
+    KTextEditor::View *view = m_mainWindow->activeView();
+
+    if (view && obj == m_toolview) { // Meh, we filter no other ATM but anyway
         if (event->type() == QEvent::KeyPress) {
             QKeyEvent *ke = static_cast<QKeyEvent*>(event);
             if ((ke->key() == Qt::Key_Escape)) {
-                m_mainWindow->activeView()->setFocus();
+                view->setFocus();
                 event->accept();
                 return true;
             }
