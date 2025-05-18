@@ -40,7 +40,6 @@ target_link_libraries(kateindexviewplugin
     KF6::I18n
 )
 
-install(TARGETS kateindexviewplugin DESTINATION ${PLUGIN_INSTALL_DIR}/ktexteditor)
-
+install(TARGETS kateindexviewplugin DESTINATION ${KDE_INSTALL_PLUGINDIR}/kf6/ktexteditor)
 
 # kate: space-indent on; indent-width 4; replace-tabs on;

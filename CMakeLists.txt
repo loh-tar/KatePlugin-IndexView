@@ -5,6 +5,14 @@
 # March 2024: While porting to Qt6/KF6 I found this "new" example, sadly
 # not up to date  https://develop.kde.org/docs/apps/kate/plugin/ showing Qt5/KF5
 
+# FIXME KDE has a lot of changes in there CMake stuff, no idea how important are
+# these and if it may stop working here at some sudden point
+# Here some links
+# https://develop.kde.org/docs/apps/kate/plugin/   # looks also a little outdated with KF5 var-names
+# https://invent.kde.org/utilities/kate/-/blob/master/CMakeLists.txt
+# https://invent.kde.org/utilities/kate/-/blob/master/addons/CMakeLists.txt
+# https://invent.kde.org/utilities/kate/-/blob/master/addons/symbolviewer/CMakeLists.txt
+
 cmake_minimum_required(VERSION 3.16.0 FATAL_ERROR)
 
 project(kate-plugin-index-view)
@@ -36,7 +44,7 @@ feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
 
 include(ECMOptionalAddSubdirectory)
 include(KDECompilerSettings NO_POLICY_SCOPE)
-# include(KDEInstallDirs) # cause error about unknown option --query
+include(KDEInstallDirs)
 include(KDECMakeSettings)
 include(FeatureSummary)
 

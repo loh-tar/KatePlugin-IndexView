@@ -44,14 +44,6 @@ Arch Linux has an AUR, search for *kate-indexview-plugin*.
 
 ### From Source
 
-> [!NOTE]
-> The build/cmake system is currently in bad condition, any help is welcome!
-> To install use instead something like this...
->
->     $ sudo install -Dm755  index-view/kateindexviewplugin.so /usr/lib/qt6/plugins/kf6/ktexteditor/
->
-> ...and not "make install" as mentioned below.
-
 In any doubt or error message while you try to compile this plugin, it may help
 to look at Kate's home and there [build instructions](https://kate-editor.org/build-it/).
 There is listed which package you may need.
