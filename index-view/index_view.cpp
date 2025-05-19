@@ -110,6 +110,7 @@ IndexView::IndexView(KatePluginIndexView *plugin, KTextEditor::MainWindow *mw)
 
     m_plugin->m_views.insert(this);
     loadViewSettings();
+    m_viewChangedDelayTimer.start(10);
 }
 
 
