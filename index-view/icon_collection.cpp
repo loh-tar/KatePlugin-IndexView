@@ -36,15 +36,16 @@
 
 namespace IconCollection {
 
-QIcon getIcon(const int size/* = -1 */, const int qtGlobalColorEnum/* = -1 */)
+QIcon getIcon(const int size/* = -1 */, const int qtGlobalColorEnum/* = -1 */, const qreal scale/* = 1.0*/)
 {
     static int autoColor = 0;
     const static QList<int> autoColors = { Qt::blue, Qt::red, Qt::green, Qt::cyan, Qt::magenta, Qt::yellow, Qt::gray };
 
-    const qreal pixmapSize = 24.0;
+    const qreal pixmapSize = 24.0 * scale;
     const qreal pixmapHalf = pixmapSize / 2.0;
     const qreal penWidth = 1.0;
     const qreal circleSize = pixmapSize / 4.0 - penWidth;
+    const qreal bigCircleSize = (pixmapSize / 4.0) * 1.2 - penWidth;
     //const qreal circleHalf = circleSize / 2.0;
 
     QPixmap pixmap(pixmapSize,pixmapSize);
@@ -67,20 +68,20 @@ QIcon getIcon(const int size/* = -1 */, const int qtGlobalColorEnum/* = -1 */)
     }
 
     QPainter painter(&pixmap);
+    painter.setRenderHint(QPainter::Antialiasing);
     QPen pen = painter.pen();
     pen.setWidthF(penWidth);
     painter.setPen(pen);
-
     QBrush brush(color);
 
     if (size == 3) {
         brush.setColor(color.darker(150));
         painter.setBrush(brush);
-        painter.drawEllipse(QPointF(pixmapHalf - circleSize, pixmapHalf - circleSize), circleSize * 1.2, circleSize * 1.2);
+        painter.drawEllipse(QRectF(penWidth, penWidth, bigCircleSize * 2.0, bigCircleSize * 2.0));
 
         brush.setColor(color);
         painter.setBrush(brush);
-        painter.drawEllipse(QPointF(pixmapHalf + circleSize, pixmapHalf), circleSize * 1.2, circleSize * 1.2);
+        painter.drawEllipse(QPointF(pixmapSize - bigCircleSize - penWidth, pixmapHalf), bigCircleSize, bigCircleSize);
 
         brush.setColor(color.lighter(150));
         painter.setBrush(brush);
@@ -89,15 +90,15 @@ QIcon getIcon(const int size/* = -1 */, const int qtGlobalColorEnum/* = -1 */)
     } else if (size == 2) {
         brush.setColor(color.lighter(150));
         painter.setBrush(brush);
-        painter.drawEllipse(QPointF(pixmapHalf - circleSize, pixmapHalf - circleSize), circleSize * 1.2, circleSize * 1.2);
+        painter.drawEllipse(QPointF(pixmapHalf - circleSize, pixmapHalf - circleSize), bigCircleSize, bigCircleSize);
 
         brush.setColor(color);
         painter.setBrush(brush);
-        painter.drawEllipse(QPointF(pixmapHalf + circleSize, pixmapHalf + circleSize), circleSize * 1.2, circleSize * 1.2);
+        painter.drawEllipse(QPointF(pixmapHalf + circleSize, pixmapHalf + circleSize), bigCircleSize, bigCircleSize);
 
     } else {
         painter.setBrush(brush);
-        painter.drawEllipse(QPointF(pixmapHalf/* + circleSize*/, pixmapHalf), circleSize * 1.2, circleSize * 1.2);
+        painter.drawEllipse(QPointF(pixmapHalf/* + circleSize*/, pixmapHalf), bigCircleSize, bigCircleSize);
     }
 
     return QIcon(pixmap);
@@ -139,6 +140,28 @@ QIcon getIcon(IconType type)
         // Just to satisfy the compiler
         default:
             qDebug() << "FATAL getIcon not in case handled" << type;
+            return getIcon(3, Qt::blue); break;
+    }
+}
+
+
+QIcon getPluginIcon()
+{
+    // Looks a little strange, but this way we could make the icon configurable in the future more easily
+    const qreal scale = 3.0; // In /usr/share/icons/breeze exist @2 and @3 variants see https://doc.qt.io/qt-6/qicon.html#high-dpi-icons
+                             // FIXME Is there a way to check which scale factor may best? Or what size has the user set in Kate?
+    switch (ThisPluginIcon) {
+        case Blue3Icon:      return getIcon(3, Qt::blue, scale); break;
+        case Red3Icon:       return getIcon(3, Qt::red, scale); break;
+        case Green3Icon:     return getIcon(3, Qt::green, scale); break;
+        case Cyan3Icon:      return getIcon(3, Qt::cyan, scale); break;
+        case Magenta3Icon:   return getIcon(3, Qt::magenta, scale); break;
+        case Yellow3Icon:    return getIcon(3, Qt::yellow, scale); break;
+        case Gray3Icon:      return getIcon(3, Qt::gray, scale); break;
+
+        // Just to satisfy the compiler
+        default:
+            qDebug() << "FATAL getPluginIcon not in case handled" << ThisPluginIcon;
             return getIcon(3, Qt::blue); break;
     }
 }

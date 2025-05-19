@@ -50,7 +50,6 @@ enum IconType {
     Red3Icon,
         UsesIcon = Red3Icon, // Perl
     Green3Icon,
-        ThisPluginIcon = Green3Icon,
         DocumentRootIcon = Green3Icon,
         InterfaceIcon = Green3Icon, // PHP
         SubroutineIcon = Green3Icon, // Fortran
@@ -60,6 +59,7 @@ enum IconType {
         Head4Icon = Magenta3Icon,
     Yellow3Icon,
     Gray3Icon,
+        ThisPluginIcon = Gray3Icon,
 
     // Two 2 Dot Icons
     Blue2Icon,
@@ -98,6 +98,7 @@ enum IconType {
         CommentIcon = Gray1Icon,
 };
 
+QIcon getPluginIcon();
 QIcon getIcon(IconType type);
 
 /**
@@ -107,8 +108,9 @@ QIcon getIcon(IconType type);
  * new color is available the frst known color is used again.
  * @parm size How many circle to use 1-3 or -1 to reset auto color counter
  * @parm qtGlobalColorEnum A color from Qt::GlobalColor or -1 for auto color
+ * @parm scale A factor to adjust the dimension of the icon, only used for plugin icon
  */
-QIcon getIcon(const int size = AutoColorReset, const int qtGlobalColorEnum = AutoColor);
+QIcon getIcon(const int size = AutoColorReset, const int qtGlobalColorEnum = AutoColor, const qreal scale = 1.0);
 
 }
 
