@@ -615,11 +615,6 @@ void IndexView::parseDocument()
         return;
     }
 
-    if (!m_mainWindow->activeView()) {
-        m_indexTree->clear();
-        return;
-    }
-
     m_parser->parse();
 }
 
