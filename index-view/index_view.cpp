@@ -237,19 +237,19 @@ void IndexView::saveParserSettings(Parser *parser)
 
 void IndexView::viewChanged()
 {
-    KTextEditor::View *view = m_mainWindow->activeView();
-    if (!view) {
+    KTextEditor::View *docView = m_mainWindow->activeView();
+    if (!docView) {
         return;
     }
 
-    KTextEditor::Document* doc = view->document();
+    KTextEditor::Document* doc = docView->document();
     if (!doc) {
         return;
     }
 
     if (m_parser && m_parser->document() == doc) {
-        connect(view, &KTextEditor::View::cursorPositionChanged, this, &IndexView::docCursorPositionChanged, Qt::UniqueConnection);
-        connect(view, &KTextEditor::View::selectionChanged, this, &IndexView::docSelectionChanged, Qt::UniqueConnection);
+        connect(docView, &KTextEditor::View::cursorPositionChanged, this, &IndexView::docCursorPositionChanged, Qt::UniqueConnection);
+        connect(docView, &KTextEditor::View::selectionChanged, this, &IndexView::docSelectionChanged, Qt::UniqueConnection);
         m_updateCurrItemDelayTimer.start(0);
         return;
     }
@@ -297,12 +297,12 @@ void IndexView::docModeChanged(KTextEditor::Document *doc)
         delete parser;
     }
 
-    KTextEditor::View *view = m_mainWindow->activeView();
-    if (!view) {
+    KTextEditor::View *docView = m_mainWindow->activeView();
+    if (!docView) {
         return;
     }
 
-    if (view->document() != doc) {
+    if (docView->document() != doc) {
         // Some doc not of our current interest changed
         return;
     }
@@ -316,8 +316,8 @@ void IndexView::docModeChanged(KTextEditor::Document *doc)
 
     loadParserSettings(m_parser);
 
-    connect(view, &KTextEditor::View::cursorPositionChanged, this, &IndexView::docCursorPositionChanged, Qt::UniqueConnection);
-    connect(view, &KTextEditor::View::selectionChanged, this, &IndexView::docSelectionChanged, Qt::UniqueConnection);
+    connect(docView, &KTextEditor::View::cursorPositionChanged, this, &IndexView::docCursorPositionChanged, Qt::UniqueConnection);
+    connect(docView, &KTextEditor::View::selectionChanged, this, &IndexView::docSelectionChanged, Qt::UniqueConnection);
     connect(doc, &KTextEditor::Document::modeChanged, this, &IndexView::docModeChanged);
     connect(doc, &KTextEditor::Document::highlightingModeChanged, this, &IndexView::docModeChanged);
     connect(doc, &KTextEditor::Document::textChanged, this, &IndexView::docEdited);
@@ -340,8 +340,8 @@ void IndexView::docEdited(KTextEditor::Document *doc)
         parser->docNeedParsing();
     }
 
-    KTextEditor::View *view = m_mainWindow->activeView();
-    if (view && view->document() != doc) {
+    KTextEditor::View *docView = m_mainWindow->activeView();
+    if (docView && docView->document() != doc) {
         // Some doc not of our current interest has been edited
         return;
     }
@@ -392,8 +392,8 @@ void IndexView::filterTree()
         return;
     }
 
-    KTextEditor::View *view = m_mainWindow->activeView();
-    if (!view) {
+    KTextEditor::View *docView = m_mainWindow->activeView();
+    if (!docView) {
         return;
     }
 
@@ -404,8 +404,8 @@ void IndexView::filterTree()
     // Only pattern without space and at least three char long
     static const QRegularExpression rx(QStringLiteral("^\\S{3,}$"));
     QString pattern;
-    if (view->selection()) {
-        pattern = view->selectionText();
+    if (docView->selection()) {
+        pattern = docView->selectionText();
         if (!pattern.contains(rx)) {
             // Without a reasonable pattern ensure the tree is shown unfiltered
             restoreTree();
@@ -497,17 +497,17 @@ void IndexView::updateCurrTreeItem()
         return;
     }
 
-    KTextEditor::View *editView = m_mainWindow->activeView();
-    if (!editView) {
+    KTextEditor::View *docView = m_mainWindow->activeView();
+    if (!docView) {
         return;
     }
 
-    if (editView->selection()) {
+    if (docView->selection()) {
         // When one select some text is an update of the item sometimes annoying
         return;
     }
 
-    KTextEditor::Cursor cursorPos = editView->cursorPositionVirtual();
+    KTextEditor::Cursor cursorPos = docView->cursorPositionVirtual();
     QTreeWidgetItem *currItem = m_indexTree->currentItem();
     if (currItem) {
         if (currItem->data(0, NodeData::Line).toInt() == cursorPos.line() && currItem->data(0, NodeData::Column).toInt() <= cursorPos.column()) {
@@ -568,13 +568,13 @@ void IndexView::updateCurrTreeItem()
 
 bool IndexView::eventFilter(QObject *obj, QEvent *event)
 {
-    KTextEditor::View *view = m_mainWindow->activeView();
+    KTextEditor::View *docView = m_mainWindow->activeView();
 
-    if (view && obj == m_toolview) { // Meh, we filter no other ATM but anyway
+    if (docView && obj == m_toolview) { // Meh, we filter no other ATM but anyway
         if (event->type() == QEvent::KeyPress) {
             QKeyEvent *ke = static_cast<QKeyEvent*>(event);
             if ((ke->key() == Qt::Key_Escape)) {
-                view->setFocus();
+                docView->setFocus();
                 event->accept();
                 return true;
             }
@@ -655,16 +655,16 @@ void IndexView::currentItemChanged(QTreeWidgetItem */*current*/, QTreeWidgetItem
 
 void IndexView::itemClicked(QTreeWidgetItem *it)
 {
-    KTextEditor::View *kv = m_mainWindow->activeView();
+    KTextEditor::View *docView = m_mainWindow->activeView();
 
-    // be sure we really have a view !
-    if (!kv)
+    // be sure we really have a docView !
+    if (!docView)
         return;
 
     int line   = it->data(0, NodeData::Line).toInt();
     int column = it->data(0, NodeData::Column).toInt();
 
-    kv->setCursorPosition(KTextEditor::Cursor(line, column));
+    docView->setCursorPosition(KTextEditor::Cursor(line, column));
     m_updateCurrItemDelayTimer.stop(); // Avoid unneeded update, yeah, strange but works because signal/slots are running immediately
 
     if (m_currentItemChanged) {
