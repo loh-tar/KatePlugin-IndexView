@@ -102,7 +102,7 @@ private:
     QWidget                    *m_toolview;
     QStackedWidget             *m_treeStack;
     QTreeWidget                *m_indexTree;
-    QList<QTreeWidgetItem *>    m_indexList;
+    QList<QTreeWidgetItem *>   *m_indexList;
 
     QTimer                      m_parseDelayTimer;
     QTimer                      m_viewChangedDelayTimer;

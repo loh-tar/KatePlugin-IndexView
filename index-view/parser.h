@@ -159,7 +159,7 @@ public:
     /**
      * @return the index list
      */
-    QList<QTreeWidgetItem *> indexList() { return p_indexList; };
+    QList<QTreeWidgetItem *> *indexList() { return &p_indexList; };
 
     /**
     * This is the main access function to parse the document. These will call
