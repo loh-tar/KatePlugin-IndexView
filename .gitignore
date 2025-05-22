@@ -12,6 +12,7 @@ build
 .cache
 # kate build plugin (?)
 compile_commands.json
+.kateproject.build
 
 # kdevelop
 *.kdev4
