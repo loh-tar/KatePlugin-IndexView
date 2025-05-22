@@ -262,7 +262,7 @@ void IndexView::viewChanged()
     }
 
     m_indexTree = m_parser->indexTree();
-    m_indexList = m_parser->indexList();
+
     if (m_parser->needsUpdate()) {
         m_parseDelayTimer.start(0);
     } else {
@@ -309,7 +309,6 @@ void IndexView::docModeChanged(KTextEditor::Document *doc)
 
     m_parser = Parser::create(newDocType, this);
     m_indexTree = m_parser->indexTree();
-    m_indexList = m_parser->indexList();
     m_treeStack->addWidget(m_indexTree);
 
     m_cache.insert(doc, m_parser);
@@ -425,7 +424,7 @@ void IndexView::filterTree()
 
     // Test if something match...
     bool hit = false;
-    for (QTreeWidgetItem *item : std::as_const(*m_indexList)) {
+    for (QTreeWidgetItem *item : std::as_const(*m_parser->indexList())) {
         if (item->text(0).contains(pattern, Qt::CaseInsensitive)) {
             hit = true;
             break;
@@ -442,7 +441,7 @@ void IndexView::filterTree()
     m_filterBox->indicateMatch(FilterBox::Match);
     m_parser->treeIsFiltered(true);
 
-    for (QTreeWidgetItem *item : std::as_const(*m_indexList)) {
+    for (QTreeWidgetItem *item : std::as_const(*m_parser->indexList())) {
         if (item->text(0).contains(pattern, Qt::CaseInsensitive)) {
             while (item) {
                 m_indexTree->expandItem(item);
@@ -472,7 +471,7 @@ void IndexView::restoreTree()
         }
     }
 
-    for (QTreeWidgetItem *item : std::as_const(*m_indexList)) {
+    for (QTreeWidgetItem *item : std::as_const(*m_parser->indexList())) {
         item->setHidden(false);
         item->setExpanded(m_parser->showExpanded());
     }
@@ -490,10 +489,6 @@ void IndexView::restoreTree()
 void IndexView::updateCurrTreeItem()
 {
     if (!m_toolview->isVisible()) {
-        return;
-    }
-
-    if (!m_indexList->size()) {
         return;
     }
 
@@ -517,8 +512,8 @@ void IndexView::updateCurrTreeItem()
 
     bool newItemIsFuzzy = true;
     QTreeWidgetItem *newItem = nullptr;
-    for (int i = 0; i < m_indexList->size(); ++i) {
-        currItem = m_indexList->at(i);
+    for (int i = 0; i < m_parser->indexList()->size(); ++i) {
+        currItem = m_parser->indexList()->at(i);
         const int beginLine = currItem->data(0, NodeData::Line).toInt();
         const int beginColumn = currItem->data(0, NodeData::Column).toInt();
         // FIXME Some parser don't set the end line in some cases, as work around we use here begin line
@@ -631,7 +626,6 @@ void IndexView::parsingDone(Parser *parser)
     }
 
     m_indexTree = m_parser->indexTree();
-    m_indexList = m_parser->indexList();
 
     // Don't use timer here, we must do it all in one rush
     filterTree();

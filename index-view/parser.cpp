@@ -337,7 +337,7 @@ void Parser::parse()
     if (!p_viewTree->isChecked()) {
         // To offer a plain list of our hard-raised tree, we must hack him in pieces again :-(
         // We do it this way because the tree help us to decide what todo while parsing. And because
-        // we have already a list of our nodes of interest (m_indexList), we use this list to decide
+        // we have already a list of our nodes of interest (p_indexList), we use this list to decide
         // how to process with each node, keep or delete.
 
         // We cut each "main" limb off the tree until he is empty..
