@@ -307,7 +307,7 @@ void IndexView::docModeChanged(KTextEditor::Document *doc)
         return;
     }
 
-    m_parser = Parser::create(newDocType, this);
+    m_parser = Parser::create(doc, newDocType, this);
     m_indexTree = m_parser->indexTree();
     m_treeStack->addWidget(m_indexTree);
 
@@ -616,16 +616,22 @@ void IndexView::parseDocument()
 
 void IndexView::parsingDone(Parser *parser)
 {
+    auto indexTree = parser->indexTree();
+    connect(indexTree, &QTreeWidget::currentItemChanged, this, &IndexView::currentItemChanged);
+    connect(indexTree, &QTreeWidget::itemClicked, this, &IndexView::itemClicked);
+    connect(indexTree, &QTreeWidget::customContextMenuRequested, this, &IndexView::showContextMenu);
+
+    m_treeStack->addWidget(indexTree);
+
     if (parser != m_parser) {
         // View/Doc has changed in the meanwhile
         // Remove the old stuff
-        m_treeStack->addWidget(parser->indexTree());
         m_treeStack->removeWidget(parser->mustyTree());
         parser->burnDownMustyTree();
         return;
     }
 
-    m_indexTree = m_parser->indexTree();
+    m_indexTree = indexTree;
 
     // Don't use timer here, we must do it all in one rush
     filterTree();
@@ -633,7 +639,6 @@ void IndexView::parsingDone(Parser *parser)
     updateCurrTreeItem();
 
     // All updates are done, switch to the new tree now...
-    m_treeStack->addWidget(m_indexTree);
     m_treeStack->setCurrentWidget(m_indexTree);
     m_treeStack->removeWidget(m_parser->mustyTree());
     // ...and Parser take care to restore scroll position, so we have no flicker

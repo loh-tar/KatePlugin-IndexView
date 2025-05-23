@@ -27,7 +27,6 @@
 #include <KLocalizedString>
 
 #include "icon_collection.h"
-#include "index_view.h"
 
 #include "bash_parser.h"
 #include "cpp_parser.h"
@@ -45,8 +44,8 @@
 #include "parser.h"
 
 
-DummyParser::DummyParser(IndexView *view, const QString &docType)
-    : Parser(view, docType)
+DummyParser::DummyParser(QObject *view, const QString &docType, KTextEditor::Document *doc)
+    : Parser(view, docType, doc)
 {
     using namespace IconCollection;
     registerViewOption(InfoNode, Red1Icon, QStringLiteral("Info"), i18n("Show Info"));
@@ -90,12 +89,11 @@ void DummyParser::parseDocument()
 }
 
 
-Parser::Parser(IndexView *view, const QString &docType)
+Parser::Parser(QObject *view, const QString &docType, KTextEditor::Document *doc)
     : QObject(view)
-    , p_document(view->m_mainWindow->activeView()->document())
+    , p_document(doc)
     , p_docType(docType)
     , p_indexTree(new QTreeWidget())
-    , p_view(view)
 {
     p_viewSort     = addViewOption(QStringLiteral("SortIndex"), i18n("Show Sorted"));
     p_viewTree     = addViewOption(QStringLiteral("TreeView"), i18n("Tree View"));
@@ -110,16 +108,16 @@ Parser::Parser(IndexView *view, const QString &docType)
 
 Parser::~Parser()
 {
-    if (p_viewOptionsChanged) {
-    // While this is here very handy placed, I'm not sure if it is good style
-        p_view->saveParserSettings(this);
-    }
+    // if (p_viewOptionsChanged) {
+    // // While this is here very handy placed, I'm not sure if it is good style
+    //     p_view->saveParserSettings(this);
+    // }
 
     delete p_indexTree;
 }
 
 
-Parser *Parser::create(const QString &type, IndexView *view)
+Parser *Parser::create(KTextEditor::Document *doc, const QString &type, QObject *view)
 {
     // FIXME Do you know some more elegant way to achieve the desired result?
     // The bad things here are, that you must add here each new parser and recompile
@@ -136,38 +134,38 @@ Parser *Parser::create(const QString &type, IndexView *view)
 
     // Ordered by parser class name, except...
     if (type == QStringLiteral("AsciiDoc"))
-        return new AsciiDocParser(view, type);
+        return new AsciiDocParser(view, type, doc);
     else if (typeBashParser.contains(typeToken))
-        return new BashParser(view, type);
+        return new BashParser(view, type, doc);
     else if (typeCppParser.contains(typeToken))
-        return new CppParser(view, type);
+        return new CppParser(view, type, doc);
     else if (type == QStringLiteral("Diff"))
-        return new DiffFileParser(view, type);
+        return new DiffFileParser(view, type, doc);
     else if (typeEcmaParser.contains(typeToken))
-        return new EcmaParser(view, type);
+        return new EcmaParser(view, type, doc);
     else if (type.startsWith(QStringLiteral("Fortran")))
-        return new FortranParser(view, type);
+        return new FortranParser(view, type, doc);
     else if (typeIniFileParser.contains(typeToken))
-        return new IniFileParser(view, type);
+        return new IniFileParser(view, type, doc);
     else if (type == QStringLiteral("Markdown"))
-        return new MarkdownParser(view, type);
+        return new MarkdownParser(view, type, doc);
     else if (type == QStringLiteral("Perl"))
-        return new PerlParser(view, type);
+        return new PerlParser(view, type, doc);
     else if (type == QStringLiteral("PHP (HTML)"))
-        return new PhpParser(view, type);
+        return new PhpParser(view, type, doc);
     else if (typePlainTextParser.contains(typeToken))
-        return new PlainTextParser(view, type);
+        return new PlainTextParser(view, type, doc);
     else if (type == QStringLiteral("Python"))
-        return new PythonParser(view, type);
+        return new PythonParser(view, type, doc);
     else if (type == QStringLiteral("Ruby"))
-        return new RubyParser(view, type);
+        return new RubyParser(view, type, doc);
     else if (type == QStringLiteral("Tcl/Tk"))
-        return new TclParser(view, type);
+        return new TclParser(view, type, doc);
     else if (typeXmlTypeParser.contains(typeToken))
-        return new XmlTypeParser(view, type);
+        return new XmlTypeParser(view, type, doc);
 
     // ...the last one, our dummy
-    return new DummyParser(view, type);
+    return new DummyParser(view, type, doc);
 
 }
 
@@ -388,9 +386,6 @@ void Parser::parse()
     p_indexTree->setHeaderLabels({i18nc("@title:column", "Index")});
     p_indexTree->setContextMenuPolicy(Qt::CustomContextMenu);
     p_indexTree->setIndentation(10);
-    connect(p_indexTree, &QTreeWidget::currentItemChanged, p_view, &IndexView::currentItemChanged);
-    connect(p_indexTree, &QTreeWidget::itemClicked, p_view, &IndexView::itemClicked);
-    connect(p_indexTree, &QTreeWidget::customContextMenuRequested, p_view, &IndexView::showContextMenu);
 
     if (showSorted()) {
         p_indexTree->setSortingEnabled(true);
@@ -473,7 +468,7 @@ void Parser::setNodeProperties(QTreeWidgetItem *const node, const int nodeType, 
 void Parser:: menuActionTriggered()
 {
     docNeedParsing();
-    p_view->parseDocument();
+    // p_view->parseDocument();
     p_viewOptionsChanged = true;
 }
 

@@ -36,7 +36,7 @@ class DocumentParser : public Parser
 {
 
 public:
-    DocumentParser(IndexView *view, const QString &docType);
+    DocumentParser(QObject *view, const QString &docType, KTextEditor::Document *doc);
    ~DocumentParser();
 
    virtual void parse() override;

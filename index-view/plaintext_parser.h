@@ -34,7 +34,7 @@ class PlainTextParser : public DocumentParser
     Q_OBJECT
 
 public:
-    PlainTextParser(IndexView *view, const QString &docType);
+    PlainTextParser(QObject *view, const QString &docType, KTextEditor::Document *doc);
    ~PlainTextParser();
 
 protected:
@@ -67,7 +67,7 @@ class IniFileParser : public DocumentParser
     Q_OBJECT
 
 public:
-    IniFileParser(IndexView *view, const QString &docType);
+    IniFileParser(QObject *view, const QString &docType, KTextEditor::Document *doc);
     ~IniFileParser();
 
 protected:
@@ -102,7 +102,7 @@ class DiffFileParser : public DocumentParser
     Q_OBJECT
 
 public:
-    DiffFileParser(IndexView *view, const QString &docType);
+    DiffFileParser(QObject *view, const QString &docType, KTextEditor::Document *doc);
     ~DiffFileParser();
 
 protected:

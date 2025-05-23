@@ -27,8 +27,8 @@
 #include "plaintext_parser.h"
 
 
-PlainTextParser::PlainTextParser(IndexView *view, const QString &docType)
-    : DocumentParser(view, docType)
+PlainTextParser::PlainTextParser(QObject *view, const QString &docType, KTextEditor::Document *doc)
+    : DocumentParser(view, docType, doc)
 {
     using namespace IconCollection;
     registerViewOption(ParaNode, ParaIcon, QStringLiteral("Paragraph"), i18n("Show Paragraphs"));
@@ -130,8 +130,8 @@ void PlainTextParser::parseDocument()
 }
 
 
-IniFileParser::IniFileParser(IndexView *view, const QString &docType)
-    : DocumentParser(view, docType)
+IniFileParser::IniFileParser(QObject *view, const QString &docType, KTextEditor::Document *doc)
+    : DocumentParser(view, docType, doc)
 {
     using namespace IconCollection;
     registerViewOption(Section1Node, Head1Icon, QStringLiteral("Header1"), i18n("Show Header 1"));
@@ -244,8 +244,8 @@ QTreeWidgetItem *IniFileParser::addNodeToParent(int nodeType, QTreeWidgetItem *p
 }
 
 
-DiffFileParser::DiffFileParser(IndexView *view, const QString &docType)
-    : DocumentParser(view, docType)
+DiffFileParser::DiffFileParser(QObject *view, const QString &docType, KTextEditor::Document *doc)
+    : DocumentParser(view, docType, doc)
 {
     using namespace IconCollection;
     setNodeTypeIcon(Section1Node, Head1Icon);

@@ -30,8 +30,8 @@
 #include "cpp_parser.h"
 
 
-CppParser::CppParser(IndexView *view, const QString &docType)
-    : ProgramParser(view, docType)
+CppParser::CppParser(QObject *view, const QString &docType, KTextEditor::Document *doc)
+    : ProgramParser(view, docType, doc)
 {
     using namespace IconCollection;
     registerViewOption(MacroNode, MacroIcon, QStringLiteral("Macros"), i18n("Show Macros"));

@@ -44,7 +44,7 @@ class ProgramParser : public Parser
 {
 
 public:
-    ProgramParser(IndexView *view, const QString &docType);
+    ProgramParser(QObject *view, const QString &docType, KTextEditor::Document *doc);
    ~ProgramParser();
 
     virtual void parse() override;

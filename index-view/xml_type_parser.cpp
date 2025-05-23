@@ -30,8 +30,8 @@
 #include "xml_type_parser.h"
 
 
-XmlTypeParser::XmlTypeParser(IndexView *view, const QString &docType)
-    : Parser(view, docType)
+XmlTypeParser::XmlTypeParser(QObject *view, const QString &docType, KTextEditor::Document *doc)
+    : Parser(view, docType, doc)
 {
     useNestingOptions();
 

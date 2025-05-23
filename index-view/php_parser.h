@@ -38,7 +38,7 @@ class PhpParser : public ProgramParser
     Q_OBJECT
 
 public:
-    PhpParser(IndexView *view, const QString &docType);
+    PhpParser(QObject *view, const QString &docType, KTextEditor::Document *doc);
    ~PhpParser();
 
 protected:

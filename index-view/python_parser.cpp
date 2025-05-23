@@ -29,8 +29,8 @@
 #include "python_parser.h"
 
 
-PythonParser::PythonParser(IndexView *view, const QString &docType)
-    : ProgramParser(view, docType)
+PythonParser::PythonParser(QObject *view, const QString &docType, KTextEditor::Document *doc)
+    : ProgramParser(view, docType, doc)
 {
     using namespace IconCollection;
     registerViewOption(ClassNode, ClassIcon, QStringLiteral("Classes"), i18n("Show Classes"));

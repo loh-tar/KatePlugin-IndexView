@@ -49,8 +49,12 @@
 // #define Me_At_Work QLatin1String(__FUNCSIG__)
 // #endif
 
+enum NodeData {
+    Line = Qt::UserRole, // Where the pattern is located
+    Column,              // Where the pattern is located
+    EndLine              // Line number for which the item is still relevant/responsible
+};
 
-class IndexView;
 class KatePluginIndexView;
 
 /**
@@ -77,7 +81,7 @@ class Parser : public QObject
     friend class XmlTypeParser;
 
 public:
-    Parser(IndexView *view, const QString &docType);
+    Parser(QObject *view, const QString &docType, KTextEditor::Document *doc);
    ~Parser();
 
    /**
@@ -101,7 +105,7 @@ public:
     * @return nullptr when @p type is not supported
     * @see create(), parse()
     */
-    static Parser *create(const QString &type, IndexView *view);
+    static Parser *create(KTextEditor::Document *doc, const QString &type, QObject *view);
 
     /**
      * This function returns the document type the parser was created for.
@@ -414,7 +418,6 @@ private:
     QTreeWidget                    *p_indexTree = nullptr;
     QPointer<QTreeWidget>           p_mustyTree;
     bool                            p_filtered = false;
-    IndexView                      *p_view = nullptr;
     QList<QTreeWidgetItem *>        p_indexList;
     QMenu                           p_menu;
     QAction                        *p_viewSort = nullptr;
@@ -470,7 +473,7 @@ class DummyParser : public Parser
     Q_OBJECT
 
 public:
-    DummyParser(IndexView *view, const QString &docType);
+    DummyParser(QObject *view, const QString &docType, KTextEditor::Document *doc);
    ~DummyParser();
 
 protected:
