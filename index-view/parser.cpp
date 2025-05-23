@@ -520,7 +520,8 @@ void Parser::setNodeProperties(QTreeWidgetItem *const node, const int nodeType, 
 void Parser:: menuActionTriggered()
 {
     docNeedParsing();
-    // p_view->parseDocument();
+    // This call may a little fishy, hm...proper may to emit a signal that we need an update
+    parse();
     p_viewOptionsChanged = true;
 }
 
