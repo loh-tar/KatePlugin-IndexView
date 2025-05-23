@@ -26,11 +26,14 @@ spend time again to ensure it will work in the future too. Well, there is more
 to do to make it ready for the future but some steps are done.
 
 
-### Last version is 0.9.2, Mar 2024
+### Last version is 0.9.3, May 2025
 
-  - Keep it working with recent Kate version 24.02
-  - CMake changes to compile with Qt6/KF6, sadly not perfect
-  - Code requires now Qt 6.6
+  - Don't crash in a couple of cases
+  - Make the plugin icon less pixelated and less colorful
+  - Ensure plugin shows something after first activation
+  - Fix cmake in a not so perfect way
+  - Many poorly tested code restructurings that hopefully won't
+    cause new crashes or other trouble
 
 Older release notes can you find below.
 
@@ -105,6 +108,13 @@ and probably many more I didn't have knowledge from. Thanks to all!
 
 
 ## Release History
+
+### 0.9.2, Mar 2024
+
+  - Keep it working with recent Kate version 24.02
+  - CMake changes to compile with Qt6/KF6, sadly not perfect
+  - Code requires now Qt 6.6
+
 
 ### 0.9.1, Aug 2022
 
