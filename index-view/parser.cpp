@@ -314,10 +314,13 @@ bool Parser::appendNextLine()
 
 void Parser::parse()
 {
-    if (!p_docNeedParsing) {
-        // Well, yes, we could go ahead, parse, and all will be fine, but nope!
+    if (!needsUpdate()) {
         // I'm stubborn and don't want unneeded CPU waste
-        qDebug() << "Parser::parse FATAL - We will crash! You need to protect this call by Parser::needsUpdate()";
+        return;
+    }
+
+    if (isParsing()) {
+        // Don't do stupid stuff! We may crash!
         return;
     }
 
