@@ -16,14 +16,15 @@ was tired to fight for each small change and saw no chance to get forward this
 way. So I decide to duck away and do it silently, which took longer as I
 thought.
 
-Since 2022 has Kate the LSP plugin which offer a similar view like this plugin,
-or even the *SymbolViewer*, which make this kind of plugin somehow obsolete ...
-as long as you like the new fancy stuff and have a fitting LSP server installed
-for your file in use.
+Since around 2022 has Kate the LSP plugin, which offer a similar view like this
+plugin with even more functionality, which make this kind of plugin somehow
+obsolete ... as long as you like the new fancy stuff and have a fitting LSP
+server installed for your file in use.
 
 The last two points and the fact that I got used to work with my plugin, made me
-spend time again to ensure it will work in the future too. Well, there is more
-to do to make it ready for the future but some steps are done.
+spend time every now and then to keep it working or make improvements. Well,
+there is still more to do to make it fit for the future, but some steps have been
+taken.
 
 
 ### Last version is 0.9.3, May 2025
