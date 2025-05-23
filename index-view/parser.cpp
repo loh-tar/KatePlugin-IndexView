@@ -24,7 +24,9 @@
 #include <QHeaderView>
 #include <QScrollBar>
 
+#include <KConfigGroup>
 #include <KLocalizedString>
+#include <KSharedConfig>
 
 #include "icon_collection.h"
 
@@ -108,10 +110,7 @@ Parser::Parser(QObject *view, const QString &docType, KTextEditor::Document *doc
 
 Parser::~Parser()
 {
-    // if (p_viewOptionsChanged) {
-    // // While this is here very handy placed, I'm not sure if it is good style
-    //     p_view->saveParserSettings(this);
-    // }
+    saveSettings();
 
     delete p_indexTree;
 }
@@ -167,6 +166,56 @@ Parser *Parser::create(KTextEditor::Document *doc, const QString &type, QObject 
     // ...the last one, our dummy
     return new DummyParser(view, type, doc);
 
+}
+
+
+void Parser::loadSettings()
+{
+    KConfigGroup mainGroup(KSharedConfig::openConfig(), QStringLiteral("PluginIndexView"));
+    KConfigGroup config(&mainGroup, docType());
+    // Sub-Menus are not supported here, if needed see https://stackoverflow.com/a/38429982
+    for (QAction *action : contextMenu()->actions()) {
+        if (action->isSeparator()) {
+            continue;
+        }
+        action->blockSignals(true);
+        if (action->objectName() == QStringLiteral("SortIndex")) {
+            // SortIndex setting need sadly a lot of special treatment
+            if (config.readEntry(action->objectName(), false)) {
+                action->setChecked(true);
+                indexTree()->setSortingEnabled(true);
+                indexTree()->sortItems(0, static_cast<Qt::SortOrder>(config.readEntry(QStringLiteral("SortIndexOrder"), 0/*Qt::AscendingOrder*/)));
+            } else {
+                action->setChecked(false);
+                indexTree()->setSortingEnabled(false);
+            }
+        } else {
+            action->setChecked(config.readEntry(action->objectName(), true));
+        }
+        action->blockSignals(false);
+    }
+}
+
+
+void Parser::saveSettings()
+{
+    if (!p_viewOptionsChanged) {
+        return;
+    }
+
+    p_viewOptionsChanged = false; // Well, not really needed, we will die now, but anyway
+
+    KConfigGroup mainGroup(KSharedConfig::openConfig(), QStringLiteral("PluginIndexView"));
+    KConfigGroup config(&mainGroup, docType());
+    for (QAction *action : contextMenu()->actions()) {
+        if (action->isSeparator()) {
+            continue;
+        }
+        config.writeEntry(action->objectName(), action->isChecked());
+    }
+
+    // SortIndex setting need special treatment
+    config.writeEntry(QStringLiteral("SortIndexOrder"), static_cast<int>(indexTree()->header()->sortIndicatorOrder()));
 }
 
 

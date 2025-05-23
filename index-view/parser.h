@@ -108,6 +108,16 @@ public:
     static Parser *create(KTextEditor::Document *doc, const QString &type, QObject *view);
 
     /**
+     * Load user configured individual preferences
+     */
+    void loadSettings();
+
+    /**
+     * Save user configured individual preferences
+     */
+    void saveSettings();
+
+    /**
      * This function returns the document type the parser was created for.
      * @return document type
      */

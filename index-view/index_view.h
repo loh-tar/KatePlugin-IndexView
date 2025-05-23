@@ -63,8 +63,6 @@ public:
 
     void loadViewSettings();
     void saveViewSettings();
-    void loadParserSettings(Parser *parser);
-    void saveParserSettings(Parser *parser);
 
 public Q_SLOTS:
     void viewChanged();
