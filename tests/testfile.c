@@ -141,14 +141,14 @@ typedef struct {
 }
 range;
 
-typedef int int_t;
 typedef struct tnode tnode;
-typedef struct { double hi, lo; } range;
+typedef struct { double hi, lo; } range2;
+typedef int int_t;
 // FIXME These three are not properly handled...
 typedef int arr_t[3];
 typedef arr_t* (*fp)(void);
 // ...and this is bad style for my taste
-typedef char char_t, *char_p, (*fp)(void);
+typedef char char_t, *char_p, (*fp2)(void);
 
 // https://en.cppreference.com/w/cpp/language/enum
 enum Color1 { red, green, blue };

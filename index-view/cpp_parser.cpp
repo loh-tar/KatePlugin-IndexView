@@ -72,7 +72,7 @@ CppParser::CppParser(QObject *view, const QString &docType, KTextEditor::Documen
 //     m_rxFuncDec.setMinimal(true);
 
     // https://en.cppreference.com/w/c/language/typedef
-    m_rxTypedef = QRegularExpression(QStringLiteral("\\btypedef\\b(.*)\\b(\\S+);"));
+    m_rxTypedef = QRegularExpression(QStringLiteral("\\btypedef\\s(\\w+)\\b(.+);"));
 
     m_rxMarcro = QRegularExpression(QStringLiteral("^#define (\\w+)"));
 
@@ -150,7 +150,14 @@ void CppParser::parseDocument()
                 lastNode()->setData(0, NodeData::EndLine, m_lineNumber);
 
         } else if (m_line.contains(m_rxTypedef, &rxMatch)) {
-            addNode(TypedefNode, rxMatch.captured(2), m_lineNumber);
+            static const QRegularExpression rxAlias(QStringLiteral("([a-zA-Z_][\\w]*)"));
+            // Assume such case from cppreference.com
+            //   typedef char char_t, *char_p, (*fp)(void);
+            for (const QRegularExpressionMatch &match : rxAlias.globalMatch(rxMatch.captured(2))) {
+                // FIXME I'm too stupid to exclude "void" already with the rxAlias
+                if (match.captured(1) == QStringLiteral("void")) continue;
+                addNode(TypedefNode, match.captured(1), m_lineNumber);
+            }
 
         }
     }
