@@ -62,10 +62,11 @@ protected:
     };
 
     /**
-    * This function iterate with each call over the document and append as long
-    * lineIsGood() not returns "true" lines to @c m_line and set @c m_lineNumber
-    * to the first non empty line read. To do so is Parser::appendNextLine()
-    * called.
+    * This function iterate with each call over the document until no more data is left.
+    * As long as lineIsGood() not returns "true" will lines to @c m_line appended
+    * and @c m_lineNumber set. To do so is Parser::appendNextLine() called.
+    * @warning This function clears @c m_line before doing its job
+    * @returns true when successfull read, and false when no more data found
     */
     virtual bool nextInstruction();
 

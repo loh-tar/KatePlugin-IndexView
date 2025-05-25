@@ -140,12 +140,14 @@ void CppParser::parseDocument()
                     if (!appendNextLine()) {
                         break;
                     }
-                    stripLine();
                 }
+                m_lineNumber = Parser::lineNumber();
+                stripLine();
                 endOfBlock();
                 m_line = m_line.section(QLatin1Char('}'), -1, -1);
                 m_line.chop(1);
                 addNode(TypedefNode, m_line, lineNumber);
+                lastNode()->setData(0, NodeData::EndLine, m_lineNumber);
 
         } else if (m_line.contains(m_rxTypedef, &rxMatch)) {
             addNode(TypedefNode, rxMatch.captured(2), m_lineNumber);
