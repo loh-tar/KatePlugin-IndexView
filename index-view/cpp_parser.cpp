@@ -101,6 +101,7 @@ CppParser::~CppParser()
 void CppParser::parseDocument()
 {
     static const QRegularExpression typeDefStruct(QStringLiteral("\\btypedef struct( \\w+)?\\{"));
+    static const QRegularExpression typeDefStructA(QStringLiteral("\\btypedef struct (\\w+) (\\w+)"));
     QRegularExpressionMatch rxMatch;
 
     while (nextInstruction()) {
@@ -149,6 +150,11 @@ void CppParser::parseDocument()
                 addNode(TypedefNode, m_line, lineNumber);
                 lastNode()->setData(0, NodeData::EndLine, m_lineNumber);
 
+        } else if (m_line.contains(typeDefStructA, &rxMatch)) {
+            // FIXME Urgs... Any idea to get rid of this extra special handling?
+            // typedef struct tnode tnode; // tnode in ordinary name space is an alias to tnode in tag name space
+            addNode(TypedefNode, rxMatch.captured(2), m_lineNumber);
+
         } else if (m_line.contains(m_rxTypedef, &rxMatch)) {
             static const QRegularExpression rxAlias(QStringLiteral("([a-zA-Z_][\\w]*)"));
             // Assume such case from cppreference.com
@@ -159,6 +165,8 @@ void CppParser::parseDocument()
                 addNode(TypedefNode, match.captured(1), m_lineNumber);
             }
 
+        // } else {
+        //     qDebug() << "NOPE" << m_lineNumber << m_line;
         }
     }
 }
