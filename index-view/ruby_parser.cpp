@@ -30,8 +30,8 @@
 #include "ruby_parser.h"
 
 
-RubyParser::RubyParser(QObject *view, const QString &docType, KTextEditor::Document *doc)
-    : ProgramParser(view, docType, doc)
+RubyParser::RubyParser(QObject *view, KTextEditor::Document *doc)
+    : ProgramParser(view, doc)
 {
     using namespace IconCollection;
     registerViewOption(ClassNode, ClassIcon, QStringLiteral("Classes"), i18n("Show Classes"));

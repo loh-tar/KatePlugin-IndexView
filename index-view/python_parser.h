@@ -37,7 +37,7 @@ class PythonParser : public ProgramParser
     Q_OBJECT
 
 public:
-    PythonParser(QObject *view, const QString &docType, KTextEditor::Document *doc);
+    PythonParser(QObject *view, KTextEditor::Document *doc);
    ~PythonParser();
 
 protected:

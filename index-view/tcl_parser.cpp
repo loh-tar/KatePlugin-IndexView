@@ -30,8 +30,8 @@
 #include "tcl_parser.h"
 
 
-TclParser::TclParser(QObject *view, const QString &docType, KTextEditor::Document *doc)
-    : ProgramParser(view, docType, doc)
+TclParser::TclParser(QObject *view, KTextEditor::Document *doc)
+    : ProgramParser(view, doc)
 {
     using namespace IconCollection;
     registerViewOption(VariableNode, VariableIcon, QStringLiteral("Variables"), i18n("Show Variables"));

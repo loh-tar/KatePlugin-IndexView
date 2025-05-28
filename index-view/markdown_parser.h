@@ -36,7 +36,7 @@ class MarkdownParser : public DocumentParser
     Q_OBJECT
 
 public:
-    MarkdownParser(QObject *view, const QString &docType, KTextEditor::Document *doc);
+    MarkdownParser(QObject *view, KTextEditor::Document *doc);
    ~MarkdownParser();
 
 protected:
@@ -76,7 +76,7 @@ class AsciiDocParser : public DocumentParser
     Q_OBJECT
 
 public:
-    AsciiDocParser(QObject *view, const QString &docType, KTextEditor::Document *doc);
+    AsciiDocParser(QObject *view, KTextEditor::Document *doc);
    ~AsciiDocParser();
 
 protected:

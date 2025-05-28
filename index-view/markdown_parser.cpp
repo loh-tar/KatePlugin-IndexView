@@ -26,8 +26,8 @@
 #include "markdown_parser.h"
 
 
-MarkdownParser::MarkdownParser(QObject *view, const QString &docType, KTextEditor::Document *doc)
-    : DocumentParser(view, docType, doc)
+MarkdownParser::MarkdownParser(QObject *view, KTextEditor::Document *doc)
+    : DocumentParser(view, doc)
 {
     using namespace IconCollection;
     registerViewOption(ParaNode, ParaIcon, QStringLiteral("Paragraph"), i18n("Show Paragraphs"));
@@ -142,8 +142,8 @@ void MarkdownParser::parseDocument()
 }
 
 
-AsciiDocParser::AsciiDocParser(QObject *view, const QString &docType, KTextEditor::Document *doc)
-    : DocumentParser(view, docType, doc)
+AsciiDocParser::AsciiDocParser(QObject *view, KTextEditor::Document *doc)
+    : DocumentParser(view, doc)
 {
     using namespace IconCollection;
     registerViewOption(ParaNode, ParaIcon, QStringLiteral("Paragraph"), i18n("Show Paragraphs"));

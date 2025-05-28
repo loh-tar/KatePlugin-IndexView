@@ -37,7 +37,7 @@ class TclParser : public ProgramParser
     Q_OBJECT
 
 public:
-    TclParser(QObject *view, const QString &docType, KTextEditor::Document *doc);
+    TclParser(QObject *view, KTextEditor::Document *doc);
    ~TclParser();
 
 protected:

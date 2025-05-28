@@ -38,7 +38,7 @@ class EcmaParser : public ProgramParser
     Q_OBJECT
 
 public:
-    EcmaParser(QObject *view, const QString &docType, KTextEditor::Document *doc);
+    EcmaParser(QObject *view, KTextEditor::Document *doc);
    ~EcmaParser();
 
 protected:

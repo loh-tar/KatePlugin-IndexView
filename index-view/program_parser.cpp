@@ -28,8 +28,8 @@
 #include "program_parser.h"
 
 
-ProgramParser::ProgramParser(QObject *view, const QString &docType, KTextEditor::Document *doc)
-    : Parser(view, docType, doc)
+ProgramParser::ProgramParser(QObject *view, KTextEditor::Document *doc)
+    : Parser(view, doc)
 {
     // Because it's not a full tree with one single common root, let's rename it slightly
     p_viewTree->setText(i18n("Structure View"));

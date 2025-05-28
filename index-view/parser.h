@@ -81,7 +81,7 @@ class Parser : public QObject
     friend class XmlTypeParser;
 
 public:
-    Parser(QObject *view, const QString &docType, KTextEditor::Document *doc);
+    Parser(QObject *view, KTextEditor::Document *doc);
    ~Parser();
 
    /**
@@ -421,6 +421,7 @@ protected:
     QElapsedTimer                   m_runTime;
 
 private:
+    void setDocType(const QString &docType) { p_docType = docType; }
     KTextEditor::Document          *p_document; // Our doc where we work on, once set in ctor
     QString                         p_docType;  // The type of p_document, once set in ctor
     bool                            p_parsingIsRunning = false;
@@ -483,7 +484,7 @@ class DummyParser : public Parser
     Q_OBJECT
 
 public:
-    DummyParser(QObject *view, const QString &docType, KTextEditor::Document *doc);
+    DummyParser(QObject *view, KTextEditor::Document *doc);
    ~DummyParser();
 
 protected:

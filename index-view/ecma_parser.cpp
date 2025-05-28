@@ -29,8 +29,8 @@
 #include "ecma_parser.h"
 
 
-EcmaParser::EcmaParser(QObject *view, const QString &docType, KTextEditor::Document *doc)
-    : ProgramParser(view, docType, doc)
+EcmaParser::EcmaParser(QObject *view, KTextEditor::Document *doc)
+    : ProgramParser(view, doc)
 {
     using namespace IconCollection;
     // FIXME Give all these "Functions" more fitting names

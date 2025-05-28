@@ -30,8 +30,8 @@
 #include "fortran_parser.h"
 
 
-FortranParser::FortranParser(QObject *view, const QString &docType, KTextEditor::Document *doc)
-    : ProgramParser(view, docType, doc)
+FortranParser::FortranParser(QObject *view, KTextEditor::Document *doc)
+    : ProgramParser(view, doc)
 {
     using namespace IconCollection;
     registerViewOption(TypeNode, TypeIcon, QStringLiteral("Types"), i18n("Show Types"));

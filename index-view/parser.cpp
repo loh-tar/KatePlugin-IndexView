@@ -46,8 +46,8 @@
 #include "parser.h"
 
 
-DummyParser::DummyParser(QObject *view, const QString &docType, KTextEditor::Document *doc)
-    : Parser(view, docType, doc)
+DummyParser::DummyParser(QObject *view, KTextEditor::Document *doc)
+    : Parser(view, doc)
 {
     using namespace IconCollection;
     registerViewOption(InfoNode, Red1Icon, QStringLiteral("Info"), i18n("Show Info"));
@@ -91,10 +91,9 @@ void DummyParser::parseDocument()
 }
 
 
-Parser::Parser(QObject *view, const QString &docType, KTextEditor::Document *doc)
+Parser::Parser(QObject *view, KTextEditor::Document *doc)
     : QObject(view)
     , p_document(doc)
-    , p_docType(docType)
     , p_indexTree(new QTreeWidget())
 {
     p_viewSort     = addViewOption(QStringLiteral("SortIndex"), i18n("Show Sorted"));
@@ -123,7 +122,7 @@ Parser *Parser::create(KTextEditor::Document *doc, const QString &type, QObject 
     // at least this plugin
 
     const QString typeToken = QStringLiteral(";%1;").arg(type);
-    // Ordered by parser class name, except
+    // Ordered by parser class name
     static const QString typeBashParser(QStringLiteral(";Bash;Zsh;"));
     static const QString typeCppParser(QStringLiteral(";C++;C;ANSI C89;Java;Groovy;"));
     static const QString typeEcmaParser(QStringLiteral(";ActionScript 2.0;JavaScript;QML;"));
@@ -131,41 +130,46 @@ Parser *Parser::create(KTextEditor::Document *doc, const QString &type, QObject 
     static const QString typePlainTextParser(QStringLiteral(";Normal;.desktop;")); // This .desktop is now only some placeholder, remove it!
     static const QString typeXmlTypeParser(QStringLiteral(";DTD;XML;HTML;SGML;xslt;"));
 
+    Parser *newParser;
+
     // Ordered by parser class name, except...
     if (type == QStringLiteral("AsciiDoc"))
-        return new AsciiDocParser(view, type, doc);
+        newParser = new AsciiDocParser(view, doc);
     else if (typeBashParser.contains(typeToken))
-        return new BashParser(view, type, doc);
+        newParser = new BashParser(view, doc);
     else if (typeCppParser.contains(typeToken))
-        return new CppParser(view, type, doc);
+        newParser = new CppParser(view, doc);
     else if (type == QStringLiteral("Diff"))
-        return new DiffFileParser(view, type, doc);
+        newParser = new DiffFileParser(view, doc);
     else if (typeEcmaParser.contains(typeToken))
-        return new EcmaParser(view, type, doc);
+        newParser = new EcmaParser(view, doc);
     else if (type.startsWith(QStringLiteral("Fortran")))
-        return new FortranParser(view, type, doc);
+        newParser = new FortranParser(view, doc);
     else if (typeIniFileParser.contains(typeToken))
-        return new IniFileParser(view, type, doc);
+        newParser = new IniFileParser(view, doc);
     else if (type == QStringLiteral("Markdown"))
-        return new MarkdownParser(view, type, doc);
+        newParser = new MarkdownParser(view, doc);
     else if (type == QStringLiteral("Perl"))
-        return new PerlParser(view, type, doc);
+        newParser = new PerlParser(view, doc);
     else if (type == QStringLiteral("PHP (HTML)"))
-        return new PhpParser(view, type, doc);
+        newParser = new PhpParser(view, doc);
     else if (typePlainTextParser.contains(typeToken))
-        return new PlainTextParser(view, type, doc);
+        newParser = new PlainTextParser(view, doc);
     else if (type == QStringLiteral("Python"))
-        return new PythonParser(view, type, doc);
+        newParser = new PythonParser(view, doc);
     else if (type == QStringLiteral("Ruby"))
-        return new RubyParser(view, type, doc);
+        newParser = new RubyParser(view, doc);
     else if (type == QStringLiteral("Tcl/Tk"))
-        return new TclParser(view, type, doc);
+        newParser = new TclParser(view, doc);
     else if (typeXmlTypeParser.contains(typeToken))
-        return new XmlTypeParser(view, type, doc);
+        newParser = new XmlTypeParser(view, doc);
 
     // ...the last one, our dummy
-    return new DummyParser(view, type, doc);
+    else newParser = new DummyParser(view, doc);
 
+    newParser->setDocType(type);
+
+    return newParser;
 }
 
 

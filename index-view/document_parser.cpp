@@ -29,8 +29,8 @@
 #include "document_parser.h"
 
 
-DocumentParser::DocumentParser(QObject *view, const QString &docType, KTextEditor::Document *doc)
-    : Parser(view, docType, doc)
+DocumentParser::DocumentParser(QObject *view, KTextEditor::Document *doc)
+    : Parser(view, doc)
 {
     useNestingOptions(true/* with adjustment of nesting level*/);
 

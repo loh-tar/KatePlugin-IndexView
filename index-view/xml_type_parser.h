@@ -72,7 +72,7 @@ class XmlTypeParser : public Parser
     Q_OBJECT
 
 public:
-    XmlTypeParser(QObject *view, const QString &docType, KTextEditor::Document *doc);
+    XmlTypeParser(QObject *view, KTextEditor::Document *doc);
    ~XmlTypeParser();
 
 protected:

@@ -37,7 +37,7 @@ class BashParser : public ProgramParser
     Q_OBJECT
 
 public:
-    BashParser(QObject *view, const QString &docType, KTextEditor::Document *doc);
+    BashParser(QObject *view, KTextEditor::Document *doc);
    ~BashParser();
 
 protected:

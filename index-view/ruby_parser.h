@@ -37,7 +37,7 @@ class RubyParser : public ProgramParser
     Q_OBJECT
 
 public:
-    RubyParser(QObject *view, const QString &docType, KTextEditor::Document *doc);
+    RubyParser(QObject *view, KTextEditor::Document *doc);
    ~RubyParser();
 
 protected:

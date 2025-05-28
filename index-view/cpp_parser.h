@@ -37,7 +37,7 @@ class CppParser : public ProgramParser
     Q_OBJECT
 
 public:
-    CppParser(QObject *view, const QString &docType, KTextEditor::Document *doc);
+    CppParser(QObject *view, KTextEditor::Document *doc);
    ~CppParser();
 
 protected:

@@ -30,8 +30,8 @@
 #include "xml_type_parser.h"
 
 
-XmlTypeParser::XmlTypeParser(QObject *view, const QString &docType, KTextEditor::Document *doc)
-    : Parser(view, docType, doc)
+XmlTypeParser::XmlTypeParser(QObject *view, KTextEditor::Document *doc)
+    : Parser(view, doc)
 {
     useNestingOptions();
 
@@ -45,8 +45,6 @@ XmlTypeParser::XmlTypeParser(QObject *view, const QString &docType, KTextEditor:
     m_detachedNodeTypes << FixmeTodoNode << BeginNode;
 
     setNodeTypeIcon(RootNode, DocumentRootIcon);
-
-    detectDocType({docType});
 }
 
 
@@ -57,6 +55,10 @@ XmlTypeParser::~XmlTypeParser()
 
 void XmlTypeParser::prepareForParse()
 {
+    if (p_loadedDocType.isEmpty()) {
+        detectDocType({docType()});
+    }
+
     m_line.clear();
     p_currCharIndex = 0;
 
@@ -649,8 +651,7 @@ void XmlTypeParser::detectDocType(const QStringList &docType)
         loadDocType(DocType::Menu);
 
     } else {
-        // Guess we was called from ctor, so we keep that as Dummy string hm...
-        p_loadedDocType = docType.at(0);
+        loadDocType(DocType::Dummy);
     }
 }
 

@@ -37,7 +37,7 @@ class PerlParser : public ProgramParser
     Q_OBJECT
 
 public:
-    PerlParser(QObject *view, const QString &docType, KTextEditor::Document *doc);
+    PerlParser(QObject *view, KTextEditor::Document *doc);
    ~PerlParser();
 
 protected:
