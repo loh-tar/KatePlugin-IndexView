@@ -558,6 +558,9 @@ void IndexView::parseDocument()
         return;
     }
 
+    // The ultimate-special-final-director-cut flicker-avoidance :-/ Part A
+    m_treeStack->setUpdatesEnabled(false);
+
     m_parser->parse();
 }
 
@@ -591,6 +594,12 @@ void IndexView::parsingDone(Parser *parser)
     m_treeStack->removeWidget(m_parser->mustyTree());
     // ...and Parser take care to restore scroll position, so we have no flicker
     m_parser->burnDownMustyTree();
+
+    // The ultimate-special-final-director-cut flicker-avoidance :-/ Part B
+    // Why 300 is needed, who knows? 200 works almost but not full
+    QTimer::singleShot(300, this, [this]() {
+        m_treeStack->setUpdatesEnabled(true);
+    });
 }
 
 
