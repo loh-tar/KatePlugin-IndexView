@@ -379,8 +379,7 @@ protected:
 
     /**
     * Call this function at the end of addNode() to set the data of the new node.
-    * This function ensures not only to expand the node dependent on @c p_viewExpanded
-    * but also independent of @c p_viewExpanded that the probably current node will expand.
+    * This function ensures also to expand the nodes dependent on @c p_viewExpanded.
     * @param node the new added node
     * @param nodeType the type of the new node, like header or paragraph
     * @param text the caption of the new node, visible in the view
