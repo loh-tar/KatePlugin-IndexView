@@ -167,9 +167,19 @@ Parser *Parser::create(KTextEditor::Document *doc, const QString &type, QObject 
     // ...the last one, our dummy
     else newParser = new DummyParser(view, doc);
 
-    newParser->setDocType(type);
+    newParser->finalizeSetup(type);
 
     return newParser;
+}
+
+
+void Parser::finalizeSetup(const QString &docType)
+{
+    p_docType = docType;
+
+    QAction *menuHeading = new QAction(QLatin1String(metaObject()->className()));
+    menuHeading->setSeparator(true);
+    contextMenu()->insertAction(contextMenu()->actions().at(0), menuHeading);
 }
 
 

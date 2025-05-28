@@ -421,7 +421,11 @@ protected:
     QElapsedTimer                   m_runTime;
 
 private:
-    void setDocType(const QString &docType) { p_docType = docType; }
+    /**
+     * This function is only called by Parser::create
+     */
+    void finalizeSetup(const QString &docType);
+
     KTextEditor::Document          *p_document; // Our doc where we work on, once set in ctor
     QString                         p_docType;  // The type of p_document, once set in ctor
     bool                            p_parsingIsRunning = false;
