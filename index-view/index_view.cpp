@@ -198,7 +198,7 @@ void IndexView::viewChanged()
     if (m_parser && m_parser->document() == doc) {
         connect(docView, &KTextEditor::View::cursorPositionChanged, this, &IndexView::docCursorPositionChanged, Qt::UniqueConnection);
         connect(docView, &KTextEditor::View::selectionChanged, this, &IndexView::docSelectionChanged, Qt::UniqueConnection);
-        m_updateCurrItemDelayTimer.start(0);
+        filterTree();
         return;
     }
 
@@ -214,7 +214,7 @@ void IndexView::viewChanged()
     if (m_parser->needsUpdate()) {
         m_parseDelayTimer.start(0);
     } else {
-        m_updateCurrItemDelayTimer.start(0);
+        filterTree();
     }
 }
 
@@ -324,11 +324,6 @@ void IndexView::docCursorPositionChanged()
         return;
     }
 
-    if (m_updateCurrItemDelayTimer.remainingTime() == 0) {
-        // Timer was very likely started with zero time e.g. after view change, don't restart now!
-        return;
-    }
-
     m_updateCurrItemDelayTimer.start(UpdateCurrItemDelay);
 }
 
@@ -350,24 +345,17 @@ void IndexView::filterTree()
 
     // Only pattern without space and at least three char long
     static const QRegularExpression rx(QStringLiteral("^\\S{3,}$"));
-    QString pattern;
+    QString pattern = m_filterBox->currentText();
     if (docView->selection()) {
         pattern = docView->selectionText();
         if (!pattern.contains(rx)) {
-            // Without a reasonable pattern ensure the tree is shown unfiltered
-            restoreTree();
-            return;
+            pattern = m_filterBox->currentText();
         }
+    }
 
-    } else {
-        // Since we don't update the item on selection, ensure the item fit now that the selection is gone
-        m_updateCurrItemDelayTimer.start(UpdateCurrItemDelay);
-
-        pattern = m_filterBox->currentText();
-        if (pattern.isEmpty()) {
-            restoreTree();
-            return;
-        }
+    if (pattern.isEmpty()) {
+        restoreTree();
+        return;
     }
 
     // Test if something match...
@@ -379,8 +367,8 @@ void IndexView::filterTree()
         }
     }
 
-
     if (!hit) {
+        m_updateCurrItemDelayTimer.start(10);
         restoreTree();
         m_filterBox->indicateMatch(FilterBox::NoMatch);
         return;
@@ -400,6 +388,8 @@ void IndexView::filterTree()
             item->setHidden(true);
         }
     }
+
+    m_updateCurrItemDelayTimer.start(10);
 }
 
 
@@ -408,6 +398,7 @@ void IndexView::restoreTree()
     m_filterBox->indicateMatch(FilterBox::Neutral);
 
     if (!m_parser->isTreeFiltered()) {
+        m_updateCurrItemDelayTimer.start(10);
         return;
     }
 
@@ -430,7 +421,7 @@ void IndexView::restoreTree()
         node = node->parent();
     }
 
-    m_indexTree->scrollToItem(m_indexTree->currentItem());
+    m_updateCurrItemDelayTimer.start(10);
 }
 
 
