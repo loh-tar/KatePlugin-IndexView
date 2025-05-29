@@ -56,7 +56,7 @@ protected:
     * @see Parser::NodeType
     */
     enum NodeType {
-        FixmeTodoNode,
+        FixmeTodoNode = ZeroNodeType,
         BeginNode,      // Nope, nothing "begin" in our context, it's for //BEGIN tag
         FirstNodeType   // Ensure to keep it here at the last place
     };

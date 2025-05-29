@@ -197,6 +197,8 @@ void XmlTypeParser::parseDocument()
         }
     }
 
+    if (p_gitConflict) return;
+
     // It could be that now is some text pending, use it
     updateTextOnLastNode();
     // Ensure our root node got EndLine set

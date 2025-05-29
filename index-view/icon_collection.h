@@ -83,6 +83,7 @@ enum IconType {
     Blue1Icon,
         Head3Icon = Blue1Icon,
     Red1Icon,
+        GitConflictIcon = Red1Icon,
     Green1Icon,
         MacroIcon = Green1Icon,
     Cyan1Icon,

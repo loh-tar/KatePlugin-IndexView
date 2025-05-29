@@ -85,11 +85,11 @@ protected:
     * @see Parser::NodeType
     */
     enum NodeType {
-        FixmeTodoNode,  // For  FIXME/TODO bookmarking
-        BeginNode,      // For BEGIN bookmarking
-        CommentNode,    // Yes, we collect comments like FIXME/TODO/BEGIN bookmarking
-        RootNode,       // The root of our tree when..in tree view mode
-        FirstNodeType   // Ensure to keep it here at the last place
+        FixmeTodoNode = ZeroNodeType,  // For  FIXME/TODO bookmarking
+        BeginNode,                     // For BEGIN bookmarking
+        CommentNode,                   // Yes, we collect comments like FIXME/TODO/BEGIN bookmarking
+        RootNode,                      // The root of our tree when..in tree view mode
+        FirstNodeType                  // Ensure to keep it here at the last place
     };
 
     // FIXME Not (really) used, guess no need for this

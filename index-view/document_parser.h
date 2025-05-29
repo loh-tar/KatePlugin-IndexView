@@ -49,7 +49,7 @@ protected:
     * @see Parser::NodeType for more hints
     */
     enum NodeType {
-        RootNode,
+        RootNode = ZeroNodeType,
         FirstCustomNodeType
     };
 

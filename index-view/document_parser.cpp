@@ -71,7 +71,7 @@ bool DocumentParser::nextLine()
 
         // ...to ensure a last paragraph is added properly...
         if (p_lineNumber < p_document->lines()) {
-            m_line = p_document->line(p_lineNumber++);
+            m_line = nextLineOrBust();
             m_line = m_line.trimmed();
             m_line = m_line.simplified();
             m_line.truncate(80); // Limit the size to some acceptable length

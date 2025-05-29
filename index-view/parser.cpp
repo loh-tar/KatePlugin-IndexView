@@ -103,6 +103,11 @@ Parser::Parser(QObject *view, KTextEditor::Document *doc)
 
     addViewOptionSeparator();
 
+    using namespace IconCollection;
+    // setNodeTypeIcon(GitConflictNode, GitConflictIcon);
+    p_nodeTypes.insert(GitConflictNode, NodeTypeStruct(QStringLiteral("* GIT CONFLICT *"), IconCollection::getIcon(GitConflictIcon)));
+    m_detachedNodeTypes << GitConflictNode;
+
     p_modifierOptions.append(DependencyPair(p_viewExpanded, p_viewTree));
 }
 
@@ -297,6 +302,68 @@ QString Parser::rawLine(int offset /*= 0*/) const
 }
 
 
+QString Parser::nextLineOrBust()
+{
+    static const QString headTag(QStringLiteral("<<<<<<< HEAD"));
+    static const QString equalsTag(QStringLiteral("======="));
+    static const QRegularExpression rxShaTag(QStringLiteral(R"(^>>>>>>> (\w+) \((.+)\))"));
+
+    QString newline = p_document->line(p_lineNumber++);
+    if (!newline.startsWith(headTag)) {
+        return newline;
+    }
+
+    int conflictLineNumber = p_lineNumber - 1;
+
+    // To avoid a false detection, we make a book keeping about found "tags"
+    // <<<<<<< HEAD                          was already found, next must be
+    // =======                               and equalsTag and the last
+    // >>>>>>> 24175c8 (bla, blub, text)     something like this
+    int state = 1; // 0 = no tag, 1 = HEAD tag, 2 = equals tag, 3 = sha tag
+    bool ok = true;
+    QRegularExpressionMatch rxMatch;
+
+    for (int ln = p_lineNumber; ln < p_document->lines(); ++ln) {
+        newline = p_document->line(ln);
+
+        if (newline.startsWith(headTag)) {
+            conflictLineNumber = ln;
+            ok = (state == 0);
+            state = ok ? 1 : 0;
+        } else if (newline.startsWith(equalsTag)) {
+            ok = (state == 1);
+            state = ok ? 2 : 0;
+        } else if (newline.contains(rxShaTag, &rxMatch)) {
+            ok = (state == 2);
+            state = ok ? 3 : 0;
+        }
+
+        if (state == 3 && ok) {
+            if (!p_gitConflict) {
+                p_gitConflict = true;
+                p_lastNode = nullptr;
+                p_rootNodes.clear();
+                p_indexList.clear();
+                p_indexTree->clear();
+            }
+            QTreeWidgetItem *node = new QTreeWidgetItem(p_indexTree, GitConflictNode);
+            setNodeProperties(node, GitConflictNode, rxMatch.captured(2), conflictLineNumber);
+            node->setData(0, NodeData::EndLine, ln);
+            state = 0;
+        }
+    }
+
+    if (!p_gitConflict) {
+        // False detection and no other full block found
+        return p_document->line(p_lineNumber);
+    }
+
+    p_lineNumber = p_document->lines();
+
+    return QString();
+}
+
+
 bool Parser::appendNextLine()
 {
 //     bool debugA = m_line.isEmpty();
@@ -315,7 +382,7 @@ bool Parser::appendNextLine()
         m_line.append(QLatin1Char(' '));
     }
 
-    m_line.append(p_document->line(p_lineNumber++));
+    m_line.append(nextLineOrBust());
 
 //     if (debugA)
 //         qDebug() << "A " << p_lineNumber << m_line.left(35);
@@ -341,6 +408,7 @@ void Parser::parse()
     p_docNeedParsing = false;
     p_parsingIsRunning = true;
 
+    p_gitConflict = false;
     p_mustyTree = p_indexTree;
     p_indexTree = new QTreeWidget();
     p_indexList.clear();
@@ -373,6 +441,17 @@ void Parser::parse()
     prepareForParse();
     m_runTime.start();
     parseDocument();
+
+    if (p_gitConflict) {
+        p_indexTree->setFocusPolicy(Qt::NoFocus);
+        p_indexTree->setLayoutDirection(Qt::LeftToRight);
+        p_indexTree->setHeaderLabel(i18nc("@title:column", ">>>  GIT CONFLICT  <<<"));
+        p_indexTree->setContextMenuPolicy(Qt::NoContextMenu);
+        p_indexTree->setIndentation(10);
+        p_indexTree->setRootIsDecorated(0);
+        Q_EMIT parsingDone(this);
+        return;
+    }
 
     // Keep the context menu free from useless options
     for (auto it = p_nodeTypes.constBegin(); it != p_nodeTypes.constEnd(); ++it) {

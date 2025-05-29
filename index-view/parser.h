@@ -224,12 +224,13 @@ protected Q_SLOTS:
 
 protected:
     /**
-    * Overwrite these enum with an enhanced version in a sub class and use them
-    * in every function call where a @c nodeType as parameter is needed to keep
-    * the code good readable.
-    */
+     * Overwrite these enum with an enhanced version in a sub class and ensure
+     * to start with "FooNode = ZeroNodeType,". Use them in every function call
+     * where a @c nodeType as parameter is needed to keep the code good readable.
+     */
     enum NodeType {
-        DummyNode
+        GitConflictNode,
+        ZeroNodeType
     };
 
     /**
@@ -431,12 +432,24 @@ private:
      */
     void finalizeSetup(const QString &docType);
 
+    /**
+     * This function should be called in a master class function like Parser::appendNextLine()
+     * to fetch the next line of the document and increment @c p_lineNumber. If one occurrence
+     * of a git conflict block is found will something like a reset performed and the rest of
+     * the document parsed. Furthermore will @c p_gitConflict set to true, which may a master class
+     * check to avoid some crash.
+     * @warning There is no check of @c p_lineNumber done in normal operation
+     * @return the next line of the document or empty string
+     */
+    QString nextLineOrBust();
+
     KTextEditor::Document          *p_document; // Our doc where we work on, once set in ctor
     QString                         p_docType;  // The type of p_document, once set in ctor
     bool                            p_parsingIsRunning = false;
     bool                            p_docNeedParsing = true;
     QTreeWidget                    *p_indexTree = nullptr;
     QPointer<QTreeWidget>           p_mustyTree;
+    bool                            p_gitConflict = false;
     bool                            p_filtered = false;
     QList<QTreeWidgetItem *>        p_indexList;
     QMenu                           p_menu;
