@@ -99,10 +99,10 @@ public:
    virtual QString author() = 0;
 
     /**
-    * Create a new parser object fitting to given @p type.
+    * Create a new parser.
     * @param type the document type, e.g. "C++"
     * @param view the related index view
-    * @return nullptr when @p type is not supported
+    * @return Parser object fitting to given @p type or DummyParser when @p type is not supported
     * @see create(), parse()
     */
     static Parser *create(KTextEditor::Document *doc, const QString &type, QObject *view);
