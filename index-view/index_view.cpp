@@ -375,7 +375,7 @@ void IndexView::filterTree()
     }
 
     m_filterBox->indicateMatch(FilterBox::Match);
-    m_parser->treeIsFiltered(true);
+    m_parser->setTreeFiltered(true);
 
     for (QTreeWidgetItem *item : std::as_const(*m_parser->indexList())) {
         if (item->text(0).contains(pattern, Qt::CaseInsensitive)) {
@@ -397,12 +397,12 @@ void IndexView::restoreTree()
 {
     m_filterBox->indicateMatch(FilterBox::Neutral);
 
-    if (!m_parser->isTreeFiltered()) {
+    if (!m_parser->treeIsFiltered()) {
         m_updateCurrItemDelayTimer.start(10);
         return;
     }
 
-    m_parser->treeIsFiltered(false);
+    m_parser->setTreeFiltered(false);
 
     if (m_parser->showAsTree()) {
         for (int i = 0; i < m_indexTree->topLevelItemCount(); i++) {

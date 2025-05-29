@@ -165,10 +165,16 @@ public:
      */
     void burnDownMustyTree();
 
-    // TODO Are these two needed? The filter stuff works sometimes strange.
-    // But atm I cant say how exact it should behave.
-    bool isTreeFiltered() { return p_filtered; };
-    void treeIsFiltered(bool filtred) { p_filtered = filtred; };
+    /**
+     * @return Filter state of the tree
+     */
+    bool treeIsFiltered() { return p_filtered; };
+
+    /**
+     * Set the filter state of the tree
+     * @param filtered true if the tree is filtered
+     */
+    void setTreeFiltered(bool filtered) { p_filtered = filtered; };
 
     /**
      * @return the index list
