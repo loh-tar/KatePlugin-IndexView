@@ -1,14 +1,10 @@
 ## KatePlugin-IndexView
 
-This is a fork from Kate's plugin *SymbolViewer* done 2018 with a couple of
-modifications. I was told I should have better called it *Outline*.
+I was told I should have better called it *Outline*.
 
-  - Support for text files like Markdown
-  - Support for XML files like HTML or DocBook
-  - Show *FIXME/TODO/BEGIN* notes found in the current file
-  - Has a *filter field* to filter the tree by pattern and currently selected text
-  - Save settings individual for each file type
-  - Keep the editing responsive when the file is large
+This is a fork from Kate's plugin *SymbolViewer* done 2018 with a couple of
+[modifications](#noteworthy-changes-over-the-course-of-time). Some of these
+improvements may have got *SymbolViewer* in the meantime too.
 
 In July 2018 I started to hack on these plugin and got some of may changes
 upstream which was a very cool experience, but not without some hassle. Lastly I
@@ -36,14 +32,34 @@ taken.
   - Many poorly tested code restructurings that hopefully won't
     cause new crashes or other trouble
 
-Older release notes can you find below.
+Older release notes can you find [below](#release-history).
+
+
+### Noteworthy Changes Over The Course Of Time
+
+  - Avoid annoying flicker
+  - Show *BEGIN/FIXME/TODO* tags noted in comments
+  - Add a *filter field* to filter the tree by pattern and currently selected text
+  - Improve/Fix existing parser due to complete rewrite
+  - Add parser master classes which allow to add new parser more easily
+  - Mostly is now the "view parameters" option gone because I'm not full convinced of
+    this feature
+  - Allow individual options in the context menu for each parser
+  - Remove dynamically useless options from the context menu
+  - Save settings individual for each parser
+  - Add global option to expand a node by cozy click
+  - Add PlainText-Parser
+  - Add Markdown-Parser
+  - Add AsciiDocParser with minimal support, but can be improved if needed
+  - Add support for INI and Diff files
+  - Add XmlTypeParser which can support any kind of XML file, but need more love
 
 
 ## Installation
 
 ### Packages
 
-Arch Linux has an AUR, search for *kate-indexview-plugin*.
+Arch Linux has an [AUR](https://aur.archlinux.org/packages/kate-indexview-plugin)
 
 
 ### From Source
