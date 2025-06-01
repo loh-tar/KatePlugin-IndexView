@@ -32,6 +32,7 @@
 class QStackedWidget;
 class QTreeWidget;
 class QTreeWidgetItem;
+class QVBoxLayout;
 
 #include <KTextEditor/MainWindow>
 #include <KTextEditor/SessionConfigInterface>
@@ -94,6 +95,7 @@ private:
     QWidget                    *m_toolview;
     QStackedWidget             *m_treeStack;
     QTreeWidget                *m_indexTree;
+    QVBoxLayout                *m_mainLayout;
 
     QTimer                      m_parseDelayTimer;
     QTimer                      m_viewChangedDelayTimer;

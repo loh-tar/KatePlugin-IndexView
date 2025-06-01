@@ -81,13 +81,12 @@ IndexView::IndexView(KatePluginIndexView *plugin, KTextEditor::MainWindow *mw)
                                             , plugin->icon(), plugin->name());
 
     QWidget *container = new QWidget(m_toolview);
-    QVBoxLayout *layout = new QVBoxLayout(container);
     m_treeStack = new QStackedWidget();
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-    layout->addWidget(m_filterBox);
-    layout->addWidget(m_treeStack, 1);
-
+    m_mainLayout = new QVBoxLayout(container);
+    m_mainLayout->setContentsMargins(0, 0, 0, 0);
+    m_mainLayout->setSpacing(0);
+    m_mainLayout->addWidget(m_filterBox, 1);
+    m_mainLayout->addWidget(m_treeStack, 1);
     m_toolview->installEventFilter(this);
 
     // We protect with these timer/slot combinations against a mass of doc change signals when a split view is closed
@@ -150,20 +149,14 @@ void IndexView::writeSessionConfig(KConfigGroup &config)
 
 int IndexView::filterBoxPosition()
 {
-    return qobject_cast<QVBoxLayout*>(m_filterBox->parentWidget()->layout())->indexOf(m_filterBox);
+    return m_mainLayout->direction();
 }
 
 
 void IndexView::updateFilterBoxPosition(int pos)
 {
-    if (filterBoxPosition() == pos) {
-        return;
-    }
-
-    // Thanks to https://stackoverflow.com/a/22012253
-    QVBoxLayout *lo = qobject_cast<QVBoxLayout*>(m_filterBox->parentWidget()->layout());
-    lo->removeWidget(m_filterBox);
-    lo->insertWidget(pos, m_filterBox);
+    pos = (pos < 2 || pos > 3) ? 2 : pos;
+    m_mainLayout->setDirection(static_cast<QBoxLayout::Direction>(pos));
 }
 
 

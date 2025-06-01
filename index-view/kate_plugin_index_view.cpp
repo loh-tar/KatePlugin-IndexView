@@ -135,7 +135,7 @@ KTextEditor::ConfigPage *KatePluginIndexView::configPage(int number, QWidget *pa
             // No need to load/set for each view
             loaded = true;
             view->loadViewSettings();
-            p->ui_filterBoxOnTop->setChecked(view->filterBoxPosition() == 0);
+            p->ui_filterBoxOnTop->setChecked(view->filterBoxPosition() == 2);
             p->ui_cozyClickExpand->setChecked(view->m_cozyClickExpand);
             p->ui_parseDelay->setValue(view->m_parseDelay);
         }
@@ -190,7 +190,7 @@ void KatePluginIndexView::applyConfig(KatePluginIndexViewConfigPage *p)
 {
     bool saved = false;
     for (auto view : m_views) {
-        int pos = p->ui_filterBoxOnTop->isChecked() ? 0 : 1;
+        int pos = p->ui_filterBoxOnTop->isChecked() ? 2 : 3;
         view->updateFilterBoxPosition(pos);
 
         view->m_cozyClickExpand = p->ui_cozyClickExpand->isChecked();
