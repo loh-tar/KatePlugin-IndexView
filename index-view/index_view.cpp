@@ -557,12 +557,11 @@ void IndexView::parsingDone(Parser *parser)
     connect(indexTree, &QTreeWidget::customContextMenuRequested, this, &IndexView::showContextMenu);
 
     m_treeStack->addWidget(indexTree);
+    m_treeStack->removeWidget(parser->mustyTree());
+    parser->burnDownMustyTree();
 
     if (parser != m_parser) {
         // View/Doc has changed in the meanwhile
-        // Remove the old stuff
-        m_treeStack->removeWidget(parser->mustyTree());
-        parser->burnDownMustyTree();
         return;
     }
 
@@ -573,11 +572,8 @@ void IndexView::parsingDone(Parser *parser)
     m_updateCurrItemDelayTimer.stop(); // Started in filterTree(), but we don't need/want that now
     updateCurrTreeItem();
 
-    // All updates are done, switch to the new tree now...
+    // All updates are done, switch to the new tree now
     m_treeStack->setCurrentWidget(m_indexTree);
-    m_treeStack->removeWidget(m_parser->mustyTree());
-    // ...and Parser take care to restore scroll position, so we have no flicker
-    m_parser->burnDownMustyTree();
 
     // The ultimate-special-final-director-cut flicker-avoidance :-/ Part B
     // Why 300 is needed, who knows? 200 works almost but not full
