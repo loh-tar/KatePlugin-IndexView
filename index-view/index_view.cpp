@@ -26,6 +26,7 @@
 #include <QEvent>
 #include <QHeaderView>
 #include <QKeyEvent>
+#include <QToolButton>
 #include <QStackedWidget>
 #include <QVBoxLayout>
 
@@ -80,12 +81,33 @@ IndexView::IndexView(KatePluginIndexView *plugin, KTextEditor::MainWindow *mw)
                                             , KTextEditor::MainWindow::Left
                                             , plugin->icon(), plugin->name());
 
-    QWidget *container = new QWidget(m_toolview);
+    m_lookupTree = new QTreeWidget();
+    m_lookupTree->setFocusPolicy(Qt::NoFocus);
+    m_lookupTree->setLayoutDirection(Qt::LeftToRight);
+    m_lookupTree->setHeaderLabel(i18nc("@title:column", "***  LOOKUP  ***"));
+    m_lookupTree->setContextMenuPolicy(Qt::NoContextMenu);
+    m_lookupTree->setIndentation(10);
+    m_lookupTree->setRootIsDecorated(0);
+    connect(m_lookupTree, &QTreeWidget::itemClicked, this, &IndexView::lookupItemClicked);
+
     m_treeStack = new QStackedWidget();
+    m_treeStack->addWidget(m_lookupTree);
+
+    QWidget *container = new QWidget(m_toolview);
     m_mainLayout = new QVBoxLayout(container);
     m_mainLayout->setContentsMargins(0, 0, 0, 0);
     m_mainLayout->setSpacing(0);
-    m_mainLayout->addWidget(m_filterBox, 1);
+    QAction *act = new QAction();
+    connect(act, &QAction::triggered, this, &IndexView::lookupIndex);
+    act->setIcon(QIcon::fromTheme(QStringLiteral("edit-find")));
+    QToolButton *button = new QToolButton();
+    button->setDefaultAction(act);
+    QHBoxLayout *lo = new QHBoxLayout();
+    lo->setContentsMargins(0, 0, 0, 0);
+    lo->setSpacing(0);
+    lo->addWidget(m_filterBox, 1);
+    lo->addWidget(button);
+    m_mainLayout->addLayout(lo);
     m_mainLayout->addWidget(m_treeStack, 1);
     m_toolview->installEventFilter(this);
 
@@ -318,6 +340,92 @@ void IndexView::docCursorPositionChanged()
     }
 
     m_updateCurrItemDelayTimer.start(UpdateCurrItemDelay);
+}
+
+
+void IndexView::lookupIndex()
+{
+    KTextEditor::View *docView = m_mainWindow->activeView();
+    if (!docView->selection()) {
+        return;
+    }
+
+    // Only pattern without space and at least three char long
+    static const QRegularExpression rx(QStringLiteral("^\\S{3,}$"));
+
+    QString pattern = docView->selectionText();
+    if (!pattern.contains(rx)) {
+        return;
+    }
+
+    m_lookupTree->clear();
+    QTreeWidgetItem *docNode = nullptr;
+
+    // Iterate over all our parser (aka open/used documents)...
+    for (auto i = m_cache.cbegin(), end = m_cache.cend(); i != end; ++i) {
+        // ...but skip the current one...
+        if (i.value() == m_parser) {
+            continue;
+        }
+
+        // ...and search in their index list
+        for (const auto item : std::as_const(*i.value()->indexList())) {
+            if (!item->text(0).contains(pattern, Qt::CaseSensitive)) {
+                continue;
+            }
+
+            if (!docNode) {
+                docNode = new QTreeWidgetItem(m_lookupTree);
+                docNode->setText(0, i.key()->documentName());
+                docNode->setExpanded(true);
+                docNode->setIcon(0, QIcon::fromTheme(QStringLiteral("text-x-generic")));
+            }
+
+            QTreeWidgetItem *node = item->clone();
+            // Storing a pointer in a QVariant need a special treatment
+            node->setData(0, NodeData::EndLine, QVariant::fromValue<KTextEditor::Document*>(i.value()->document()));
+            docNode->addChild(node);
+        }
+
+        docNode = nullptr;
+    }
+
+    if (m_lookupTree->topLevelItemCount() < 1) {
+        m_filterBox->indicateMatch(FilterBox::NoMatch);
+        return;
+    }
+
+    m_treeStack->setCurrentWidget(m_lookupTree);
+}
+
+
+void IndexView::lookupItemClicked(QTreeWidgetItem *it)
+{
+    if (!it) {
+        return;
+    }
+
+    if (m_cozyClickExpand) {
+        it->setExpanded(!it->isExpanded());
+    }
+
+    int line   = it->data(0, NodeData::Line).toInt();
+    int column = it->data(0, NodeData::Column).toInt();
+    // Retrieve a pointer from a QVariant need special treatment
+    KTextEditor::Document* doc = it->data(0, NodeData::EndLine).value<KTextEditor::Document*>();
+
+    if (!doc) {
+        return;
+    }
+
+    m_mainWindow->activateView(doc);
+
+    KTextEditor::View *docView = m_mainWindow->activeView();
+    if (!docView) {
+        return;
+    }
+
+    docView->setCursorPosition(KTextEditor::Cursor(line, column));
 }
 
 
@@ -591,14 +699,18 @@ void IndexView::currentItemChanged(QTreeWidgetItem */*current*/, QTreeWidgetItem
 
 void IndexView::itemClicked(QTreeWidgetItem *it)
 {
-    KTextEditor::View *docView = m_mainWindow->activeView();
-
-    // be sure we really have a docView !
-    if (!docView)
+    if (!it) {
         return;
+    }
 
     int line   = it->data(0, NodeData::Line).toInt();
     int column = it->data(0, NodeData::Column).toInt();
+
+    KTextEditor::View *docView = m_mainWindow->activeView();
+
+    if (!docView) {
+        return;
+    }
 
     docView->setCursorPosition(KTextEditor::Cursor(line, column));
     m_updateCurrItemDelayTimer.stop(); // Avoid unneeded update, yeah, strange but works because signal/slots are running immediately
@@ -613,7 +725,6 @@ void IndexView::itemClicked(QTreeWidgetItem *it)
     if (m_cozyClickExpand) {
         it->setExpanded(!it->isExpanded());
     }
-
 }
 
 // kate: space-indent on; indent-width 4; replace-tabs on;

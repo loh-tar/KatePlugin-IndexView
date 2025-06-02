@@ -72,12 +72,14 @@ public Q_SLOTS:
     void docSelectionChanged();
     void docCursorPositionChanged();
     void updateCurrTreeItem();
+    void lookupIndex();
     void filterTree();
     void showContextMenu(const QPoint&);
     void parseDocument();
     void parsingDone(Parser *parser);
     void currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
-    void itemClicked(QTreeWidgetItem *);
+    void itemClicked(QTreeWidgetItem *it);
+    void lookupItemClicked(QTreeWidgetItem *it);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *ev) override;
@@ -95,6 +97,7 @@ private:
     QWidget                    *m_toolview;
     QStackedWidget             *m_treeStack;
     QTreeWidget                *m_indexTree;
+    QTreeWidget                *m_lookupTree;
     QVBoxLayout                *m_mainLayout;
 
     QTimer                      m_parseDelayTimer;
