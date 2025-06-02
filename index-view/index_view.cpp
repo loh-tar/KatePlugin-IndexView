@@ -660,7 +660,6 @@ void IndexView::parseDocument()
 void IndexView::parsingDone(Parser *parser)
 {
     auto indexTree = parser->indexTree();
-    connect(indexTree, &QTreeWidget::currentItemChanged, this, &IndexView::currentItemChanged);
     connect(indexTree, &QTreeWidget::itemClicked, this, &IndexView::itemClicked);
     connect(indexTree, &QTreeWidget::customContextMenuRequested, this, &IndexView::showContextMenu);
 
@@ -691,12 +690,6 @@ void IndexView::parsingDone(Parser *parser)
 }
 
 
-void IndexView::currentItemChanged(QTreeWidgetItem */*current*/, QTreeWidgetItem */*previous*/)
-{
-    m_currentItemChanged = true;
-}
-
-
 void IndexView::itemClicked(QTreeWidgetItem *it)
 {
     if (!it) {
@@ -706,6 +699,13 @@ void IndexView::itemClicked(QTreeWidgetItem *it)
     int line   = it->data(0, NodeData::Line).toInt();
     int column = it->data(0, NodeData::Column).toInt();
 
+    if (m_cozyClickExpand) {
+        if (m_lastClickedItem == it || (line < 0)) {
+            it->setExpanded(!it->isExpanded());
+        }
+        m_lastClickedItem = it;
+    }
+
     KTextEditor::View *docView = m_mainWindow->activeView();
 
     if (!docView) {
@@ -714,17 +714,6 @@ void IndexView::itemClicked(QTreeWidgetItem *it)
 
     docView->setCursorPosition(KTextEditor::Cursor(line, column));
     m_updateCurrItemDelayTimer.stop(); // Avoid unneeded update, yeah, strange but works because signal/slots are running immediately
-
-    if (m_currentItemChanged) {
-        m_currentItemChanged = false;
-        if (line >= 0) {
-            return;
-        }
-    }
-
-    if (m_cozyClickExpand) {
-        it->setExpanded(!it->isExpanded());
-    }
 }
 
 // kate: space-indent on; indent-width 4; replace-tabs on;

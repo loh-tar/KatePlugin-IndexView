@@ -77,7 +77,6 @@ public Q_SLOTS:
     void showContextMenu(const QPoint&);
     void parseDocument();
     void parsingDone(Parser *parser);
-    void currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void itemClicked(QTreeWidgetItem *it);
     void lookupItemClicked(QTreeWidgetItem *it);
 
@@ -107,8 +106,8 @@ private:
     FilterBox                  *m_filterBox;
     QTimer                      m_filterDelayTimer;
 
+    QTreeWidgetItem            *m_lastClickedItem = nullptr;
     bool                        m_cozyClickExpand;
-    bool                        m_currentItemChanged;
     int                         m_parseDelay;
 
 };
