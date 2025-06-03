@@ -23,14 +23,17 @@ there is still more to do to make it fit for the future, but some steps have bee
 taken.
 
 
-### Last version is 0.9.3, May 2025
+### Last version is 0.9.4, Jun 2025
 
-  - Don't crash in a couple of cases
-  - Make the plugin icon less pixelated and less colorful
-  - Ensure plugin shows something after first activation
-  - Fix cmake in a not so perfect way
-  - Many poorly tested code restructurings that hopefully won't
-    cause new crashes or other trouble
+  - Add a lookup button right from the filter field. This is like "filter on steroids"
+    from our "auto-filter" functionality. There will be performed a search in all
+    cached trees
+  - Add detection of git conflict blocks
+  - Add parser class name to context menu as header
+  - Fix CppParser with some typedef issues
+  - Many more small fixes and bigger changes,
+    see [commit log](https://github.com/loh-tar/KatePlugin-IndexView/commits/master/)
+    for detailed list
 
 Older release notes can you find [below](#release-history).
 
@@ -125,6 +128,16 @@ and probably many more I didn't have knowledge from. Thanks to all!
 
 
 ## Release History
+
+### 0.9.3, May 2025
+
+  - Don't crash in a couple of cases
+  - Make the plugin icon less pixelated and less colorful
+  - Ensure plugin shows something after first activation
+  - Fix cmake in a not so perfect way
+  - Many poorly tested code restructurings that hopefully won't
+    cause new crashes or other trouble
+
 
 ### 0.9.2, Mar 2024
 
