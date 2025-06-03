@@ -37,7 +37,7 @@
 #include "kate_plugin_index_view.h"
 
 
-#define IndexViewVersion QStringLiteral("0.9.3, May 2025")
+#define IndexViewVersion QStringLiteral("0.9.4, Jun 2025")
 
 
 KatePluginIndexViewConfigPage::KatePluginIndexViewConfigPage(KatePluginIndexView *plugin, QWidget *parentWidget /*= 0L*/)
