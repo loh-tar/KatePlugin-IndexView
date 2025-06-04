@@ -346,6 +346,10 @@ void IndexView::docCursorPositionChanged()
 void IndexView::lookupIndex()
 {
     KTextEditor::View *docView = m_mainWindow->activeView();
+    if (!docView) {
+        return;
+    }
+
     if (!docView->selection()) {
         return;
     }
@@ -707,7 +711,6 @@ void IndexView::itemClicked(QTreeWidgetItem *it)
     }
 
     KTextEditor::View *docView = m_mainWindow->activeView();
-
     if (!docView) {
         return;
     }
