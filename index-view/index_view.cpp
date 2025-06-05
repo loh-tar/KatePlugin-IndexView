@@ -206,7 +206,6 @@ void IndexView::saveViewSettings()
 
 void IndexView::viewChanged()
 {
-    qDebug() << "puhh";
     KTextEditor::View *docView = m_mainWindow->activeView();
     if (!docView) {
         return;
