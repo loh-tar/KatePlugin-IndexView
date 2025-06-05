@@ -81,18 +81,6 @@ IndexView::IndexView(KatePluginIndexView *plugin, KTextEditor::MainWindow *mw)
                                             , KTextEditor::MainWindow::Left
                                             , plugin->icon(), plugin->name());
 
-    m_lookupTree = new QTreeWidget();
-    m_lookupTree->setFocusPolicy(Qt::NoFocus);
-    m_lookupTree->setLayoutDirection(Qt::LeftToRight);
-    m_lookupTree->setHeaderLabel(i18nc("@title:column", "***  LOOKUP  ***"));
-    m_lookupTree->setContextMenuPolicy(Qt::NoContextMenu);
-    m_lookupTree->setIndentation(10);
-    m_lookupTree->setRootIsDecorated(0);
-    connect(m_lookupTree, &QTreeWidget::itemClicked, this, &IndexView::lookupItemClicked);
-
-    m_treeStack = new QStackedWidget();
-    m_treeStack->addWidget(m_lookupTree);
-
     QWidget *container = new QWidget(m_toolview);
     m_mainLayout = new QVBoxLayout(container);
     m_mainLayout->setContentsMargins(0, 0, 0, 0);
@@ -108,6 +96,7 @@ IndexView::IndexView(KatePluginIndexView *plugin, KTextEditor::MainWindow *mw)
     lo->addWidget(m_filterBox, 1);
     lo->addWidget(button);
     m_mainLayout->addLayout(lo);
+    m_treeStack = new QStackedWidget();
     m_mainLayout->addWidget(m_treeStack, 1);
     m_toolview->installEventFilter(this);
 
@@ -352,6 +341,18 @@ void IndexView::lookupIndex()
 
     if (!docView->selection()) {
         return;
+    }
+
+    if (!m_lookupTree) {
+        m_lookupTree = new QTreeWidget();
+        m_lookupTree->setFocusPolicy(Qt::NoFocus);
+        m_lookupTree->setLayoutDirection(Qt::LeftToRight);
+        m_lookupTree->setHeaderLabel(i18nc("@title:column", "***  LOOKUP  ***"));
+        m_lookupTree->setContextMenuPolicy(Qt::NoContextMenu);
+        m_lookupTree->setIndentation(10);
+        m_lookupTree->setRootIsDecorated(0);
+        connect(m_lookupTree, &QTreeWidget::itemClicked, this, &IndexView::lookupItemClicked);
+        m_treeStack->addWidget(m_lookupTree);
     }
 
     // Only pattern without space and at least three char long
