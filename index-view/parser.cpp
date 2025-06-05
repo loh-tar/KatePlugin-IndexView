@@ -131,7 +131,7 @@ Parser *Parser::create(KTextEditor::Document *doc, const QString &type, QObject 
     static const QString typeBashParser(QStringLiteral(";Bash;Zsh;"));
     static const QString typeCppParser(QStringLiteral(";C++;C;ANSI C89;Java;Groovy;"));
     static const QString typeEcmaParser(QStringLiteral(";ActionScript 2.0;JavaScript;QML;"));
-    static const QString typeIniFileParser(QStringLiteral(";INI Files;.desktop;"));
+    static const QString typeIniFileParser(QStringLiteral(";INI Files;.desktop;TOML;"));
     static const QString typePlainTextParser(QStringLiteral(";Normal;.desktop;")); // This .desktop is now only some placeholder, remove it!
     static const QString typeXmlTypeParser(QStringLiteral(";DTD;XML;HTML;SGML;xslt;"));
 
