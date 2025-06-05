@@ -97,6 +97,7 @@ private:
     QStackedWidget             *m_treeStack;
     QTreeWidget                *m_indexTree;
     QTreeWidget                *m_lookupTree = nullptr;
+    QTreeWidget                *m_welcomeTree;
     QVBoxLayout                *m_mainLayout;
 
     QTimer                      m_parseDelayTimer;

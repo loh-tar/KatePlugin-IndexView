@@ -96,8 +96,22 @@ IndexView::IndexView(KatePluginIndexView *plugin, KTextEditor::MainWindow *mw)
     lo->addWidget(m_filterBox, 1);
     lo->addWidget(button);
     m_mainLayout->addLayout(lo);
+
     m_treeStack = new QStackedWidget();
+    m_welcomeTree = new QTreeWidget();
+    m_welcomeTree->setFocusPolicy(Qt::NoFocus);
+    m_welcomeTree->setLayoutDirection(Qt::LeftToRight);
+    m_welcomeTree->setHeaderLabel(i18nc("@title:column", "Welcome"));
+    m_welcomeTree->setContextMenuPolicy(Qt::NoContextMenu);
+    m_welcomeTree->setIndentation(10);
+    m_welcomeTree->setRootIsDecorated(0);
+    QTreeWidgetItem *node = nullptr;
+    node = new QTreeWidgetItem(m_welcomeTree);
+    node->setText(0, i18n("This is %1\nVersion %2", m_plugin->name(), m_plugin->version()));
+    node->setExpanded(true);
+    m_treeStack->addWidget(m_welcomeTree);
     m_mainLayout->addWidget(m_treeStack, 1);
+
     m_toolview->installEventFilter(this);
 
     // We protect with these timer/slot combinations against a mass of doc change signals when a split view is closed
@@ -115,6 +129,9 @@ IndexView::IndexView(KatePluginIndexView *plugin, KTextEditor::MainWindow *mw)
         if (parser) {
             m_treeStack->removeWidget(parser->indexTree());
             delete parser;
+        }
+        if (m_cache.isEmpty()) {
+            m_treeStack->setCurrentWidget(m_welcomeTree);
         }
     });
 
@@ -189,6 +206,7 @@ void IndexView::saveViewSettings()
 
 void IndexView::viewChanged()
 {
+    qDebug() << "puhh";
     KTextEditor::View *docView = m_mainWindow->activeView();
     if (!docView) {
         return;

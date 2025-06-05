@@ -104,6 +104,7 @@ public:
     KTextEditor::ConfigPage *configPage(int number = 0, QWidget *parent = nullptr) override;
 
     QString name() const;
+    QString version() const;
     QIcon icon() const;
 
 public Q_SLOTS:

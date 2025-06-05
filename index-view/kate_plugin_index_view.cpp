@@ -106,6 +106,10 @@ QString KatePluginIndexView::name() const
     return i18n("Index View");
 }
 
+QString KatePluginIndexView::version() const
+{
+    return IndexViewVersion;
+}
 
 QIcon KatePluginIndexView::icon() const
 {
