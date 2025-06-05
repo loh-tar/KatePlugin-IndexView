@@ -152,6 +152,8 @@ Parser *Parser::create(KTextEditor::Document *doc, const QString &type, QObject 
         newParser = new FortranParser(view, doc);
     else if (typeIniFileParser.contains(typeToken))
         newParser = new IniFileParser(view, doc);
+    else if (type == QStringLiteral("Makefile"))
+        newParser = new MakefileParser(view, doc);
     else if (type == QStringLiteral("Markdown"))
         newParser = new MarkdownParser(view, doc);
     else if (type == QStringLiteral("Perl"))

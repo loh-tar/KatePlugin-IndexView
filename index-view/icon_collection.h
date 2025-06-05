@@ -82,6 +82,7 @@ enum IconType {
     // One 1 Dot Icons
     Blue1Icon,
         Head3Icon = Blue1Icon,
+        TargetIcon = Blue1Icon, // Makefile
     Red1Icon,
         GitConflictIcon = Red1Icon,
     Green1Icon,

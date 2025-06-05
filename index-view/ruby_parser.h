@@ -57,6 +57,32 @@ protected:
     QAction     *m_showParameters;
 };
 
+
+/**
+ * The \p MakefileParser provide minimal but sufficient support by showing targets
+ *
+ * @author loh.tar
+ */
+class MakefileParser : public ProgramParser
+{
+    Q_OBJECT
+
+public:
+    MakefileParser(QObject *view, KTextEditor::Document *doc);
+    ~MakefileParser();
+
+protected:
+    enum NodeType {
+        TargetNode = FirstNodeType,
+    };
+
+    QString version() override { return QStringLiteral("0.5, Jun 2025"); } ;
+    QString author() override { return QStringLiteral("2025 loh.tar"); } ;
+
+    void parseDocument() override;
+    bool lineIsGood() override { return true; };
+};
+
 #endif
 
 // kate: space-indent on; indent-width 4; replace-tabs on;

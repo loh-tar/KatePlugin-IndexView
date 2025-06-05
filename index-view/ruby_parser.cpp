@@ -91,4 +91,39 @@ void RubyParser::parseDocument()
     }
 }
 
+
+MakefileParser::MakefileParser(QObject *view, KTextEditor::Document *doc)
+: ProgramParser(view, doc)
+{
+    using namespace IconCollection;
+    registerViewOption(TargetNode, TargetIcon, QStringLiteral("Targets"), i18n("Show Targets"));
+
+    m_nonBlockElements << TargetNode;
+}
+
+
+MakefileParser::~MakefileParser()
+{
+}
+
+
+void MakefileParser::parseDocument()
+{
+    // Match "normal" targets like "foo:" "bar.c :" "foo-bar_baz.faz    :"
+    static const QRegularExpression rxTarget(QStringLiteral(R"(^([.\w-]+)\s*:)"));
+    // Match "$(foo_bar):"
+    static const QRegularExpression rxVarTarget(QStringLiteral(R"(^[$]\(([.\w-]+)\)\s*:)"));
+
+    QRegularExpressionMatch rxMatch;
+
+    while (nextInstruction()) {
+        // Let's start the investigation
+        if (m_line.contains(rxTarget, &rxMatch)) {
+            addNode(TargetNode, rxMatch.captured(1), lineNumber());
+        } else if (m_line.contains(rxVarTarget, &rxMatch)) {
+            addNode(TargetNode, rxMatch.captured(1), lineNumber());
+        }
+    }
+}
+
 // kate: space-indent on; indent-width 4; replace-tabs on;
