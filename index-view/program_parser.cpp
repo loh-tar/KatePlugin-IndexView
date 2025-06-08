@@ -274,38 +274,36 @@ void ProgramParser::removeHereDoc()
 {
     // Not all heredoc syntax may could be catch with this approach
     // https://en.wikipedia.org/wiki/Here_document
-    static QString token;
-
-    if (m_funcAtWork.contains(Me_At_Work)) {
-        if (m_line.startsWith(token)) {
-            m_funcAtWork.remove(Me_At_Work);
-// qDebug() << "DONE:" << token;
-        }
-        m_funcAtWork.insert(Line_Is_Good);
-        m_line.clear();
-
-    // Check in two steps to keep the regexp simple
-    } else if (m_line.contains(p_rxHereDocOperator)) {
+    if (!m_line.contains(p_rxHereDocOperator)) {
+        return;
+    }
     // Now we are alomost sure to have a hit, we need to check against m_niceLine
     // Due to Perl's possibility to stack multible here docs we must test all
     // in p_hereDocRxList and choose the right most hit.
-        int lastIndexIn = -1;
-        int indexIn = -1;
-        for (QRegularExpression rx : std::as_const(p_hereDocRxList)) {
-            indexIn = m_niceLine.indexOf(rx);
-            if (indexIn < 0) {
-                continue;
-            }
-            if (indexIn > lastIndexIn) {
-                lastIndexIn = indexIn;
-                QRegularExpressionMatch rxMatch = rx.match(m_niceLine);
-                token = rxMatch.captured(1).trimmed();
-// qDebug() << "TOKEN:" << token << rxMatch.lastCapturedIndex();
-            }
+    int lastIndexIn = -1;
+    int indexIn = -1;
+    for (QRegularExpression rx : std::as_const(p_hereDocRxList)) {
+        indexIn = m_niceLine.indexOf(rx);
+        if (indexIn < 0) {
+            continue;
         }
-        if (lastIndexIn != -1) {
-            m_funcAtWork.insert(Me_At_Work);
-            m_funcAtWork.insert(Line_Is_Good);
+        if (indexIn > lastIndexIn) {
+            lastIndexIn = indexIn;
+            QRegularExpressionMatch rxMatch = rx.match(m_niceLine);
+            QString token = rxMatch.captured(1).trimmed();
+            // qDebug() << "TOKEN:" << token << rxMatch.lastCapturedIndex();
+            m_line.clear();
+            while (appendNextLine()) {
+                // qDebug() << lineNumber() << m_line;
+                m_line = m_line.simplified();
+                if (m_line.startsWith(token)) {
+                    // qDebug() << "DONE:" << token << lineNumber() << m_line;
+                    break;
+                }
+                m_line.clear();
+            }
+            m_line.clear();
+            m_lineNumber = Parser::lineNumber() + 1;
         }
     }
 }

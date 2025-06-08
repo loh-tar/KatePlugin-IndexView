@@ -201,9 +201,25 @@ setter, getter = create_set_and_get  # returns two values
 setter.call(21)
 getter.call      # => 21
 
+# here doc test
+puts <<GROCERY_LIST
+Grocery list
+----
+1. Salad mix.
+2. Strawberries.*
+
+def dont_show_this(closure_value=0)
+[ proc {|x| closure_value = x } , proc { closure_value } ]
+end
+
+3. Cereal.
+4. Milk.*
+
+* Organic
+GROCERY_LIST
+
 # Parameter variables can also be used as a binding for the closure,
 # so the preceding can be rewritten as:
-
 def create_set_and_get(closure_value=0)
   [ proc {|x| closure_value = x } , proc { closure_value } ]
 end

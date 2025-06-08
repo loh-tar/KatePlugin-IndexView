@@ -62,7 +62,7 @@ void PerlParser::parseDocument()
     QRegularExpressionMatch rxMatch;
 
     while (nextInstruction()) {
-
+        // qDebug() << lineNumber() << m_line;
         if (m_line.contains(m_rxUses, &rxMatch)) {
             // http://perldoc.perl.org/functions/use.html
             addNode(UsesNode, rxMatch.captured(1), m_lineNumber);
@@ -80,7 +80,9 @@ void PerlParser::parseDocument()
         } else if (m_line.contains(m_rxVariable2, &rxMatch)) {
             addNode(VariableNode, rxMatch.captured(1), m_lineNumber);
 
-        }
+        } /*else {
+            qDebug() << "NO MATCH" << lineNumber() << m_line;
+        }*/
     }
 }
 

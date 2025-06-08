@@ -88,6 +88,7 @@ protected:
     /**
      * This function will called in nextInstruction() to set @c m_line and @c m_niceLine.
      * To achive this will first removeStrings() and then removeComment() called.
+     * Furthermore will be here the BEGIN/FIXME/TODO tags recognised and add to our tree.
      */
     virtual void stripLine();
 
