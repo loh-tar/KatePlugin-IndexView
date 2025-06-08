@@ -13,6 +13,13 @@ whereby everything which is not a header is treated as paragraph.
 ## The second largest heading H2
 Some paragraph
 
+```foo
+echo Code blocks are ignored in general, therefore
+
+# is this no heading
+
+or anything else shown
+```
 Some more paragraph
 
 ### The third level heading H3
@@ -49,20 +56,14 @@ highlighted by Kate's syntax highlighter, but they are allowed by [Gruber][1].
 
 # TODO
 
-Grabbed from GitHub
+## Grabbed from GitHub
 
-- [ ] Lists, as these are currently listed as paragraph but could
-- [ ] Format code or text into its own distinct block, use triple backticks
-- [ ] Quoting code
-- [ ] Links
-- [ ] Task lists
+- [ ] Lists (with or without Task feature) as these are currently listed as
+      paragraph but could become an own node type
+- [ ] Links could be collected like FIXME/TODO
 
 
-```
-echo Currently is this code block listed as triple backtick paragraph
-```
-
-Grabbed from Gruber
+## Grabbed from Gruber
 
 - [ ] Horizontal Rules
 Images

@@ -135,6 +135,16 @@ void MarkdownParser::parseDocument()
             default: headerType = Head6Node; break;
             }
             addNode(headerType, text, lineNumber());
+
+            // Check for code blocks to be skipped
+        } else if (rawLine().startsWith(QStringLiteral("```"))) {
+            while (nextLine()) {
+                if (!rawLine().startsWith(QStringLiteral("```"))) {
+                    continue;
+                }
+                initHistory();
+                break;
+            }
         }
     }
 
