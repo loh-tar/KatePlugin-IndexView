@@ -15,6 +15,7 @@ set(kateindexviewplugin_PART_SRCS
     cpp_parser.cpp
     ecma_parser.cpp
     fortran_parser.cpp
+    go_parser.cpp
     markdown_parser.cpp
     perl_parser.cpp
     php_parser.cpp

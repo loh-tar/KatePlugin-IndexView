@@ -34,6 +34,7 @@
 #include "cpp_parser.h"
 #include "ecma_parser.h"
 #include "fortran_parser.h"
+#include "go_parser.h"
 #include "markdown_parser.h"
 #include "perl_parser.h"
 #include "php_parser.h"
@@ -150,6 +151,8 @@ Parser *Parser::create(KTextEditor::Document *doc, const QString &type, QObject 
         newParser = new EcmaParser(view, doc);
     else if (type.startsWith(QStringLiteral("Fortran")))
         newParser = new FortranParser(view, doc);
+    else if (type.startsWith(QStringLiteral("Go")))
+        newParser = new GoParser(view, doc);
     else if (typeIniFileParser.contains(typeToken))
         newParser = new IniFileParser(view, doc);
     else if (type == QStringLiteral("Makefile"))

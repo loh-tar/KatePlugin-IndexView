@@ -51,7 +51,6 @@ enum IconType {
         UsesIcon = Red3Icon, // Perl
     Green3Icon,
         DocumentRootIcon = Green3Icon,
-        InterfaceIcon = Green3Icon, // PHP
         SubroutineIcon = Green3Icon, // Fortran
     Cyan3Icon,
         NamespaceIcon = Cyan3Icon,
@@ -74,8 +73,9 @@ enum IconType {
         FuncDecIcon = Cyan2Icon,
     Magenta2Icon,
         Head5Icon = Magenta2Icon,
-        TypedefIcon = Magenta2Icon,
+        TypedefIcon = Magenta2Icon, // C++, Go
     Yellow2Icon,
+        InterfaceIcon = Yellow2Icon, // PHP, Go
     Gray2Icon,
         EnumIcon = Gray2Icon,
 
