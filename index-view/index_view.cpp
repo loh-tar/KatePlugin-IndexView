@@ -66,9 +66,6 @@ IndexView::IndexView(KatePluginIndexView *plugin, KTextEditor::MainWindow *mw)
     m_updateCurrItemDelayTimer.setSingleShot(true);
     connect(&m_updateCurrItemDelayTimer, &QTimer::timeout, this, [this]() {
         updateCurrTreeItem();
-        // We do this here once to avoid so much special cases in updateCurrTreeItem()
-        // where we have to call it
-        m_treeStack->setCurrentWidget(m_indexTree);
     });
 
     m_filterDelayTimer.setSingleShot(true);
@@ -204,6 +201,21 @@ void IndexView::saveViewSettings()
 }
 
 
+Parser* IndexView::parserOfCurrentView()
+{
+    KTextEditor::View *docView = m_mainWindow->activeView();
+    if (!docView) {
+        return nullptr;
+    }
+
+    KTextEditor::Document* doc = docView->document();
+    if (!doc) {
+        return nullptr;
+    }
+
+    return m_cache.value(doc, nullptr);
+}
+
 void IndexView::viewChanged()
 {
     KTextEditor::View *docView = m_mainWindow->activeView();
@@ -216,26 +228,21 @@ void IndexView::viewChanged()
         return;
     }
 
-    if (m_parser && m_parser->document() == doc) {
-        connect(docView, &KTextEditor::View::cursorPositionChanged, this, &IndexView::docCursorPositionChanged, Qt::UniqueConnection);
-        connect(docView, &KTextEditor::View::selectionChanged, this, &IndexView::docSelectionChanged, Qt::UniqueConnection);
-        filterTree();
-        return;
-    }
-
-    m_parser = m_cache.value(doc);
-
-    if (!m_parser) {
+    auto parser = m_cache.value(doc, nullptr);
+    if (!parser) {
         docModeChanged(doc);
         return;
     }
 
-    m_indexTree = m_parser->indexTree();
+    // In case there is a split screen created, ensure we got updates
+    connect(docView, &KTextEditor::View::cursorPositionChanged, this, &IndexView::docCursorPositionChanged, Qt::UniqueConnection);
+    connect(docView, &KTextEditor::View::selectionChanged, this, &IndexView::docSelectionChanged, Qt::UniqueConnection);
 
-    if (m_parser->needsUpdate()) {
-        m_parseDelayTimer.start(0);
+    if (parser->needsUpdate()) {
+        m_parseDelayTimer.start(10);
     } else {
         filterTree();
+        m_treeStack->setCurrentWidget(parser->indexTree());
     }
 }
 
@@ -276,20 +283,19 @@ void IndexView::docModeChanged(KTextEditor::Document *doc)
         return;
     }
 
-    m_parser = Parser::create(doc, newDocType, this);
-    m_parser->loadSettings();
+    parser = Parser::create(doc, newDocType, this);
+    parser->loadSettings();
 
-    m_indexTree = m_parser->indexTree();
-    m_treeStack->addWidget(m_indexTree);
+    m_treeStack->addWidget(parser->indexTree());
 
-    m_cache.insert(doc, m_parser);
+    m_cache.insert(doc, parser);
 
     connect(docView, &KTextEditor::View::cursorPositionChanged, this, &IndexView::docCursorPositionChanged, Qt::UniqueConnection);
     connect(docView, &KTextEditor::View::selectionChanged, this, &IndexView::docSelectionChanged, Qt::UniqueConnection);
     connect(doc, &KTextEditor::Document::modeChanged, this, &IndexView::docModeChanged);
     connect(doc, &KTextEditor::Document::highlightingModeChanged, this, &IndexView::docModeChanged);
     connect(doc, &KTextEditor::Document::textChanged, this, &IndexView::docEdited);
-    connect(m_parser, &Parser::parsingDone, this, &IndexView::parsingDone);
+    connect(parser, &Parser::parsingDone, this, &IndexView::parsingDone);
 
     // Don't call parseDocument() direct, must wait a little until other stuff is done
     m_parseDelayTimer.start(10);
@@ -351,11 +357,13 @@ void IndexView::docCursorPositionChanged()
 
 void IndexView::lookupIndex()
 {
-    KTextEditor::View *docView = m_mainWindow->activeView();
-    if (!docView) {
+    auto parser = parserOfCurrentView();
+    if(!parser) {
         return;
     }
 
+    // After using parserOfCurrentView() we are save
+    auto docView = m_mainWindow->activeView();
     if (!docView->selection()) {
         return;
     }
@@ -386,7 +394,7 @@ void IndexView::lookupIndex()
     // Iterate over all our parser (aka open/used documents)...
     for (auto i = m_cache.cbegin(), end = m_cache.cend(); i != end; ++i) {
         // ...but skip the current one...
-        if (i.value() == m_parser) {
+        if (i.value() == parser) {
             continue;
         }
 
@@ -457,10 +465,13 @@ void IndexView::filterTree()
         return;
     }
 
-    KTextEditor::View *docView = m_mainWindow->activeView();
-    if (!docView) {
+    // After using parserOfCurrentView() we are save
+    auto parser = parserOfCurrentView();
+    if(!parser) {
         return;
     }
+
+    auto docView = m_mainWindow->activeView();
 
     // To filter our tree is surprising complex because there seams to be no
     // suitable Qt build in for that. QTreeWidget::findItems() does not traverse
@@ -477,13 +488,13 @@ void IndexView::filterTree()
     }
 
     if (pattern.isEmpty()) {
-        restoreTree();
+        restoreTree(parser);
         return;
     }
 
     // Test if something match...
     bool hit = false;
-    for (QTreeWidgetItem *item : std::as_const(*m_parser->indexList())) {
+    for (QTreeWidgetItem *item : std::as_const(*parser->indexList())) {
         if (item->text(0).contains(pattern, Qt::CaseInsensitive)) {
             hit = true;
             break;
@@ -492,18 +503,18 @@ void IndexView::filterTree()
 
     if (!hit) {
         m_updateCurrItemDelayTimer.start(10);
-        restoreTree();
+        restoreTree(parser);
         m_filterBox->indicateMatch(FilterBox::NoMatch);
         return;
     }
 
     m_filterBox->indicateMatch(FilterBox::Match);
-    m_parser->setTreeFiltered(true);
-
-    for (QTreeWidgetItem *item : std::as_const(*m_parser->indexList())) {
+    parser->setTreeFiltered(true);
+    auto indexTree = parser->indexTree();
+    for (QTreeWidgetItem *item : std::as_const(*parser->indexList())) {
         if (item->text(0).contains(pattern, Qt::CaseInsensitive)) {
             while (item) {
-                m_indexTree->expandItem(item);
+                indexTree->expandItem(item);
                 item->setHidden(false);
                 item = item->parent();
             }
@@ -516,31 +527,36 @@ void IndexView::filterTree()
 }
 
 
-void IndexView::restoreTree()
+void IndexView::restoreTree(Parser *parser)
 {
+    if (!parser) {
+        return;
+    }
+
     m_filterBox->indicateMatch(FilterBox::Neutral);
 
-    if (!m_parser->treeIsFiltered()) {
+    if (!parser->treeIsFiltered()) {
         m_updateCurrItemDelayTimer.start(10);
         return;
     }
 
-    m_parser->setTreeFiltered(false);
+    parser->setTreeFiltered(false);
+    auto indexTree = parser->indexTree();
 
-    if (m_parser->showAsTree()) {
-        for (int i = 0; i < m_indexTree->topLevelItemCount(); i++) {
-            m_indexTree->topLevelItem(i)->setExpanded(m_parser->showExpanded());
+    if (parser->showAsTree()) {
+        for (int i = 0; i < indexTree->topLevelItemCount(); i++) {
+            indexTree->topLevelItem(i)->setExpanded(parser->showExpanded());
         }
     }
 
-    for (QTreeWidgetItem *item : std::as_const(*m_parser->indexList())) {
+    for (QTreeWidgetItem *item : std::as_const(*parser->indexList())) {
         item->setHidden(false);
-        item->setExpanded(m_parser->showExpanded());
+        item->setExpanded(parser->showExpanded());
     }
 
-    QTreeWidgetItem *node = m_indexTree->currentItem();
+    QTreeWidgetItem *node = indexTree->currentItem();
     while (node) {
-        m_indexTree->expandItem(node);
+        indexTree->expandItem(node);
         node = node->parent();
     }
 
@@ -554,18 +570,23 @@ void IndexView::updateCurrTreeItem()
         return;
     }
 
-    KTextEditor::View *docView = m_mainWindow->activeView();
-    if (!docView) {
+    auto parser = parserOfCurrentView();
+    if(!parser) {
         return;
     }
 
+    // After using parserOfCurrentView() we are save
+    auto docView = m_mainWindow->activeView();
     if (docView->selection()) {
         // When one select some text is an update of the item sometimes annoying
         return;
     }
 
+    auto indexTree = parser->indexTree();
+    m_treeStack->setCurrentWidget(indexTree);
+
     KTextEditor::Cursor cursorPos = docView->cursorPositionVirtual();
-    QTreeWidgetItem *currItem = m_indexTree->currentItem();
+    QTreeWidgetItem *currItem = indexTree->currentItem();
     if (currItem) {
         if (currItem->data(0, NodeData::Line).toInt() == cursorPos.line() && currItem->data(0, NodeData::Column).toInt() <= cursorPos.column()) {
             return;
@@ -574,8 +595,8 @@ void IndexView::updateCurrTreeItem()
 
     bool newItemIsFuzzy = true;
     QTreeWidgetItem *newItem = nullptr;
-    for (int i = 0; i < m_parser->indexList()->size(); ++i) {
-        currItem = m_parser->indexList()->at(i);
+    for (int i = 0; i < parser->indexList()->size(); ++i) {
+        currItem = parser->indexList()->at(i);
         const int beginLine = currItem->data(0, NodeData::Line).toInt();
         const int beginColumn = currItem->data(0, NodeData::Column).toInt();
         // FIXME Some parser don't set the end line in some cases, as work around we use here begin line
@@ -608,17 +629,17 @@ void IndexView::updateCurrTreeItem()
         }
     }
 
-    if (currItem == m_indexTree->currentItem() && newItemIsFuzzy) {
+    if (currItem == indexTree->currentItem() && newItemIsFuzzy) {
         // The situation is fuzzy, any change make nothing better
         return;
     }
 
-    if (newItem && newItem != m_indexTree->currentItem()) {
+    if (newItem && newItem != indexTree->currentItem()) {
         //qDebug() << "set new item from" << newItem->data(0, NodeData::Line).toInt() << "to" << newItem->data(0, NodeData::EndLine).toInt();
-        m_indexTree->blockSignals(true);
-        m_indexTree->setCurrentItem(newItem);
-        m_indexTree->scrollToItem(newItem);
-        m_indexTree->blockSignals(false);
+        indexTree->blockSignals(true);
+        indexTree->setCurrentItem(newItem);
+        indexTree->scrollToItem(newItem);
+        indexTree->blockSignals(false);
     }
 }
 
@@ -636,7 +657,8 @@ bool IndexView::eventFilter(QObject *obj, QEvent *event)
                 return true;
             }
         } else if (event->type() == QEvent::Show) {
-            m_parseDelayTimer.start(0); // trigger parsing immediately
+            updateCurrTreeItem();
+            m_parseDelayTimer.start(10); // trigger parsing immediately
         }
     }
 
@@ -646,8 +668,9 @@ bool IndexView::eventFilter(QObject *obj, QEvent *event)
 
 void IndexView::showContextMenu(const QPoint&)
 {
-    if (m_parser) {
-        m_parser->contextMenu()->popup(QCursor::pos());
+    auto parser = parserOfCurrentView();
+    if (parser) {
+        parser->contextMenu()->popup(QCursor::pos());
     }
 }
 
@@ -658,24 +681,25 @@ void IndexView::parseDocument()
         return;
     }
 
-    if (!m_parser) {
+    auto parser = parserOfCurrentView();
+    if (!parser) {
         return;
     }
 
-    if (m_parser->isParsing()) {
+    if (parser->isParsing()) {
         // Parse is already running, do it later
-        docEdited(m_parser->document());
+        docEdited(parser->document());
         return;
     }
 
-    if (!m_parser->needsUpdate()) {
+    if (!parser->needsUpdate()) {
         return;
     }
 
     // The ultimate-special-final-director-cut flicker-avoidance :-/ Part A
     m_treeStack->setUpdatesEnabled(false);
 
-    m_parser->parse();
+    parser->parse();
 }
 
 
@@ -689,12 +713,10 @@ void IndexView::parsingDone(Parser *parser)
     m_treeStack->removeWidget(parser->mustyTree());
     parser->burnDownMustyTree();
 
-    if (parser != m_parser) {
+    if (parser != parserOfCurrentView()) {
         // View/Doc has changed in the meanwhile
         return;
     }
-
-    m_indexTree = indexTree;
 
     // Don't use timer here, we must do it all in one rush
     filterTree();
@@ -702,7 +724,7 @@ void IndexView::parsingDone(Parser *parser)
     updateCurrTreeItem();
 
     // All updates are done, switch to the new tree now
-    m_treeStack->setCurrentWidget(m_indexTree);
+    m_treeStack->setCurrentWidget(indexTree);
 
     // The ultimate-special-final-director-cut flicker-avoidance :-/ Part B
     // Why 300 is needed, who knows? 200 works almost but not full

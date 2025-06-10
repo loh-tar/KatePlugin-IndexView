@@ -155,7 +155,7 @@ KTextEditor::ConfigPage *KatePluginIndexView::configPage(int number, QWidget *pa
             w->ui_parserVersion->setText(parser->version());
             w->ui_parserAuthor->setText(parser->author());
             p->ui_parserTabs->addTab(w, className);
-            if (view->m_parser == parser) {
+            if (view->parserOfCurrentView() == parser) {
                 p->ui_parserTabs->setCurrentWidget(w);
             }
         }
@@ -169,7 +169,7 @@ KTextEditor::ConfigPage *KatePluginIndexView::configPage(int number, QWidget *pa
         p->ui_currentParserHint->setHidden(false);
         for (int i = 0; i < p->ui_parserTabs->count(); ++i) {
             for (auto view : m_views) {
-                QString className = QLatin1String(view->m_parser->metaObject()->className());
+                QString className = QLatin1String(view->parserOfCurrentView()->metaObject()->className());
                 if (p->ui_parserTabs->tabText(i) == className) {
                     className.append(QStringLiteral(" *"));
                     p->ui_parserTabs->setTabText(i, className);

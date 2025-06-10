@@ -84,18 +84,17 @@ protected:
     bool eventFilter(QObject *obj, QEvent *ev) override;
 
 private:
-    int  filterBoxPosition();
-    void updateFilterBoxPosition(int pos);
-    void restoreTree();
+    Parser         *parserOfCurrentView();
+    int             filterBoxPosition();
+    void            updateFilterBoxPosition(int pos);
+    void            restoreTree(Parser *parser);
 
     KatePluginIndexView        *m_plugin;
     KTextEditor::MainWindow    *m_mainWindow;
-    QPointer<Parser>            m_parser;
     QHash<KTextEditor::Document*, Parser*> m_cache;
 
     QWidget                    *m_toolview;
     QStackedWidget             *m_treeStack;
-    QTreeWidget                *m_indexTree;
     QTreeWidget                *m_lookupTree = nullptr;
     QTreeWidget                *m_welcomeTree;
     QVBoxLayout                *m_mainLayout;
