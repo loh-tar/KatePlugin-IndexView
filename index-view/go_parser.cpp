@@ -55,6 +55,8 @@ void GoParser::parseDocument()
 
     QRegularExpressionMatch rxMatch;
 
+    p_types.clear();
+
     while (nextInstruction()) {
 
         if (m_line.contains(rxStruct, &rxMatch)) {
