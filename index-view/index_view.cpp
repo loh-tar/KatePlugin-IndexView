@@ -589,6 +589,7 @@ void IndexView::updateCurrTreeItem()
     QTreeWidgetItem *currItem = indexTree->currentItem();
     if (currItem) {
         if (currItem->data(0, NodeData::Line).toInt() == cursorPos.line() && currItem->data(0, NodeData::Column).toInt() <= cursorPos.column()) {
+            indexTree->scrollToItem(currItem);
             return;
         }
     }
@@ -631,6 +632,7 @@ void IndexView::updateCurrTreeItem()
 
     if (currItem == indexTree->currentItem() && newItemIsFuzzy) {
         // The situation is fuzzy, any change make nothing better
+        indexTree->scrollToItem(indexTree->currentItem());
         return;
     }
 
@@ -638,9 +640,10 @@ void IndexView::updateCurrTreeItem()
         //qDebug() << "set new item from" << newItem->data(0, NodeData::Line).toInt() << "to" << newItem->data(0, NodeData::EndLine).toInt();
         indexTree->blockSignals(true);
         indexTree->setCurrentItem(newItem);
-        indexTree->scrollToItem(newItem);
         indexTree->blockSignals(false);
     }
+
+    indexTree->scrollToItem(indexTree->currentItem());
 }
 
 
