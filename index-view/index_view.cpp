@@ -45,7 +45,7 @@
 
 #include "index_view.h"
 
-#define UpdateCurrItemDelay 400
+#define UpdateCurrItemDelay 400 // Sensible compromise, determined by try&error
 
 IndexView::IndexView(KatePluginIndexView *plugin, KTextEditor::MainWindow *mw)
     : QObject(mw)
@@ -336,7 +336,7 @@ void IndexView::docSelectionChanged()
         return;
     }
 
-    m_filterDelayTimer.start(UpdateCurrItemDelay + 300);
+    m_filterDelayTimer.start(UpdateCurrItemDelay);
 }
 
 
