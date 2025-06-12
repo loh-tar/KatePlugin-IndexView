@@ -67,6 +67,11 @@ QIcon getIcon(const int size/* = -1 */, const int qtGlobalColorEnum/* = -1 */, c
         color = QColor((Qt::GlobalColor)qtGlobalColorEnum);
     }
 
+    if (color == QColor(Qt::blue)) {
+        // Blue looks too dark for my taste
+        color = color.lighter(130);
+    }
+
     QPainter painter(&pixmap);
     painter.setRenderHint(QPainter::Antialiasing);
     QPen pen = painter.pen();
