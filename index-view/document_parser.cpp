@@ -136,11 +136,15 @@ void DocumentParser::prepareForParse()
 
     p_indexTree->setRootIsDecorated(1);
 
+    QString fileName = document()->url().fileName();
+    if (fileName.isEmpty()) {
+        fileName = i18n("* NEW UNSAVED FILE *");
+    }
     // Add the root node here keeps addNode() less complex
     // Using line number 0 will cause a jump to the top of the document when
     // clicked which make absolutely sense.
     QTreeWidgetItem *node = rootNode(RootNode);
-    setNodeProperties(node, RootNode, i18n("Document"), 0);
+    setNodeProperties(node, RootNode, fileName, 0);
 }
 
 
