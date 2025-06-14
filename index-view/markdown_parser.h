@@ -57,7 +57,7 @@ protected:
         DashLine
     };
 
-    QString version() override { return QStringLiteral("0.9 Jul 2025"); } ;
+    QString version() override { return QStringLiteral("0.9, Jul 2025"); } ;
     QString author() override { return QStringLiteral("2018, 2022, 2025 loh.tar"); } ;
 
     void parseDocument() override;
@@ -97,7 +97,7 @@ protected:
         DashLine
     };
 
-    QString version() override { return QStringLiteral("0.5 Aug 2022"); } ;
+    QString version() override { return QStringLiteral("0.5, Aug 2022"); } ;
     QString author() override { return QStringLiteral("2022 loh.tar"); } ;
 
     void parseDocument() override;
