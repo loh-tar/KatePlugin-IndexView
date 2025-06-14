@@ -54,14 +54,16 @@ Some paragraph
 
 Some more paragraph
 
-####### More sharps than six are not treated as header, therefore is this a
-paragraph, which conforms to Kate's syntax highlighter.
+####### More sharps than six are not treated as header, therefore
+is this a paragraph, which conforms to Kate's syntax highlighter.
 
-This is a H1 heading
-====================
+The largest H1 heading in Setext style
+======================================
+Setext-style headers are “underlined” using equal signs (for first-level headers) ...
 
-This is a H2 heading
---------------------
+The second largest H2 heading in Setext style
+---------------------------------------------
+...and dashes (for second-level headers).
 
 On the day of writing this test file are these Setext-style headers not
 highlighted by Kate's syntax highlighter, but they are allowed by [Gruber][1].
