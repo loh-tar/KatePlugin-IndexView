@@ -48,48 +48,17 @@ CppParser::CppParser(QObject *view, KTextEditor::Document *doc)
 
     m_nonBlockElements << MacroNode << FunctionDecNode;
 
-    // https://en.cppreference.com/w/cpp/language/attributes
-    QString rxAttribute = QStringLiteral("(\\[\\[.*\\]\\])?");
-    // https://en.cppreference.com/w/cpp/language/function
-    // https://en.cppreference.com/w/cpp/language/declarations
-    QString rxFuncDeclarator = QStringLiteral("(\\W?[\\s\\w<\\(\\),:]*[&>\\s\\*]+)?");
-
-    // https://en.cppreference.com/w/cpp/language/classes
-    QString rx = QStringLiteral("^(class|struct|union)%1[^:{]*\\b(\\w+)[:{]");
-    m_rxStruct = QRegularExpression(rx.arg(rxAttribute));
-
-    // https://en.cppreference.com/w/cpp/language/enum
-    rx = QStringLiteral("\\benum\\W?(class|struct)?%1\\W?(\\w+)(:\\w+)?\\{");
-    m_rxEnum = QRegularExpression(rx.arg(rxFuncDeclarator));
-
-    // FIXME Namespace part does not match Mul::ti::ple case
-    rx = QStringLiteral("^%1(\\w+::)*(\\~?\\w+)\\(.*\\)(.*)?\\{");
-    m_rxFuncDef = QRegularExpression(rx.arg(rxFuncDeclarator), QRegularExpression::InvertedGreedinessOption);
-//     m_rxFuncDef.setMinimal(true);
-
-    rx = QStringLiteral("^%1(\\~?\\w+)\\(.*\\)(.*)?;");
-    m_rxFuncDec = QRegularExpression(rx.arg(rxFuncDeclarator), QRegularExpression::InvertedGreedinessOption);
-//     m_rxFuncDec.setMinimal(true);
-
-    // https://en.cppreference.com/w/c/language/typedef
-    m_rxTypedef = QRegularExpression(QStringLiteral("\\btypedef\\s(\\w+)\\b(.+);"));
-
-    m_rxMarcro = QRegularExpression(QStringLiteral("^#define (\\w+)"));
-
-    m_rxNamespace= QRegularExpression(QStringLiteral("^namespace (\\w+)"));
-
     m_keywordsToIgnore // To avaoid false detection, e.g. as function
-        << QStringLiteral("Q_FOREACH")
-        << QStringLiteral("catch")
-        << QStringLiteral("else")
-        << QStringLiteral("for")
-        << QStringLiteral("foreach")
-        << QStringLiteral("if")
-        << QStringLiteral("switch")
-        << QStringLiteral("until")
+    << QStringLiteral("Q_FOREACH")
+    << QStringLiteral("catch")
+    << QStringLiteral("else")
+    << QStringLiteral("for")
+    << QStringLiteral("foreach")
+    << QStringLiteral("if")
+    << QStringLiteral("switch")
+    << QStringLiteral("until")
     //     << QStringLiteral("")
-        << QStringLiteral("while");
-
+    << QStringLiteral("while");
 }
 
 
@@ -100,28 +69,55 @@ CppParser::~CppParser()
 
 void CppParser::parseDocument()
 {
-    static const QRegularExpression typeDefStruct(QStringLiteral("\\btypedef struct( \\w+)?\\{"));
-    static const QRegularExpression typeDefStructA(QStringLiteral("\\btypedef struct (\\w+) (\\w+)"));
+    // https://en.cppreference.com/w/cpp/language/attributes
+    static const QLatin1StringView rxAttribute(R"((\[\[.*\]\])?)");
+    // https://en.cppreference.com/w/cpp/language/function
+    // https://en.cppreference.com/w/cpp/language/declarations
+    static const QLatin1StringView rxFuncDeclarator(R"((\W?[\s\w<\(\),:]*[&>\s\*]+)?)");
+
+    // https://en.cppreference.com/w/cpp/language/classes
+    static const QLatin1StringView rx1(R"(^(class|struct|union)%1[^:{]*\b(\w+)[:{])");
+    static const QRegularExpression rxStruct(rx1.arg(rxAttribute));
+
+    // https://en.cppreference.com/w/cpp/language/enum
+    static const QLatin1StringView rx2(R"(\benum\W?(class|struct)?%1\W?(\w+)(:\w+)?\{)");
+    static const QRegularExpression rxEnum(rx2.arg(rxFuncDeclarator));
+
+    // FIXME Namespace part does not match Mul::ti::ple case
+    static const QLatin1StringView rx3(R"(^%1(\w+::)*(\~?\w+)\(.*\)(.*)?\{)");
+    static const QRegularExpression rxFuncDef(rx3.arg(rxFuncDeclarator), QRegularExpression::InvertedGreedinessOption);
+
+    static const QLatin1StringView rx4(R"(^%1(\~?\w+)\(.*\)(.*)?;)");
+    static const QRegularExpression rxFuncDec(rx4.arg(rxFuncDeclarator), QRegularExpression::InvertedGreedinessOption);
+
+    // https://en.cppreference.com/w/c/language/typedef
+    static const QRegularExpression rxTypedef(QStringLiteral(R"(\btypedef\s(\w+)\b(.+);)"));
+
+    static const QRegularExpression rxNamespace(QStringLiteral(R"(^namespace (\w+))"));
+
+    static const QRegularExpression typeDefStruct(QStringLiteral(R"(\btypedef struct( \w+)?\{)"));
+    static const QRegularExpression typeDefStructA(QStringLiteral(R"(\btypedef struct (\w+) (\w+))"));
+
     QRegularExpressionMatch rxMatch;
 
     while (nextInstruction()) {
 
-        static const QRegularExpression firstWordRx(QStringLiteral("^[\\W]*(\\w+)\\b"));
+        static const QRegularExpression firstWordRx(QStringLiteral(R"(^[\W]*(\w+)\b)"));
         const QString firstWord = firstWordRx.match(m_line).captured(1);
 
         if (m_keywordsToIgnore.contains(firstWord)) {
             // Do nothing
 
-        } else if (m_line.contains(m_rxNamespace, &rxMatch)) {
+        } else if (m_line.contains(rxNamespace, &rxMatch)) {
             addScopeNode(NamespaceNode, rxMatch.captured(1), m_lineNumber);
 
-        } else if (m_line.contains(m_rxStruct, &rxMatch)) {
+        } else if (m_line.contains(rxStruct, &rxMatch)) {
             addScopeNode(StructNode, rxMatch.captured(3), m_lineNumber);
 
-        } else if (m_line.contains(m_rxEnum, &rxMatch)) {
+        } else if (m_line.contains(rxEnum, &rxMatch)) {
             addNode(EnumNode, rxMatch.captured(3), m_lineNumber);
 
-        } else if (m_line.contains(m_rxFuncDef, &rxMatch)) {
+        } else if (m_line.contains(rxFuncDef, &rxMatch)) {
             addFuncDefNode(rxMatch.captured(1), rxMatch.captured(2), rxMatch.captured(3));
 
             // https://en.cppreference.com/w/cpp/language/function
@@ -130,8 +126,8 @@ void CppParser::parseDocument()
             // like: SomeClass foo(bar, baz);
             // so I add these parentNodeType check to have functions in header files but no stupid
             // stuff elsewhere. Edit: Also below namespace
-        } else if ((parentNodeType() == StructNode || parentNodeType() == NamespaceNode) && m_line.contains(m_rxFuncDec, &rxMatch)) {
-    //  } else if ((parentNodeType() == StructNode) && m_line.contains(m_rxFuncDec)) {
+        } else if ((parentNodeType() == StructNode || parentNodeType() == NamespaceNode) && m_line.contains(rxFuncDec, &rxMatch)) {
+    //  } else if ((parentNodeType() == StructNode) && m_line.contains(rxFuncDec)) {
             addNode(FunctionDecNode, rxMatch.captured(2), m_lineNumber);
 
         } else if (m_line.contains(typeDefStruct)) {
@@ -155,8 +151,8 @@ void CppParser::parseDocument()
             // typedef struct tnode tnode; // tnode in ordinary name space is an alias to tnode in tag name space
             addNode(TypedefNode, rxMatch.captured(2), m_lineNumber);
 
-        } else if (m_line.contains(m_rxTypedef, &rxMatch)) {
-            static const QRegularExpression rxAlias(QStringLiteral("([a-zA-Z_][\\w]*)"));
+        } else if (m_line.contains(rxTypedef, &rxMatch)) {
+            static const QRegularExpression rxAlias(QStringLiteral(R"(([a-zA-Z_][\w]*))"));
             // Assume such case from cppreference.com
             //   typedef char char_t, *char_p, (*fp)(void);
             for (const QRegularExpressionMatch &match : rxAlias.globalMatch(rxMatch.captured(2))) {
@@ -194,7 +190,7 @@ bool CppParser::lineIsGood()
     // Despite the documentation to ProgramParser::lineIsGood(), I add these
     // quirk to solve some false detection of Q_FooMacro as function which has
     // occour when edit e.g. our index_view.h due to line concatenating
-    static const QRegularExpression rx(QStringLiteral("^Q_\\w+"));
+    static const QRegularExpression rx(QStringLiteral(R"(^Q_\w+)"));
     if (m_line.contains(rx)) {
         return true;
     }
@@ -211,7 +207,7 @@ bool CppParser::appendNextLine()
         return false;
     }
 
-    static const QRegularExpression rx(QStringLiteral("[^\\\\]\\\\$"));
+    static const QRegularExpression rx(QStringLiteral(R"([^\\]\\$)"));
     while (m_line.contains(rx)) {
         m_line.chop(1);
         if(!incrementLineNumber()) {
@@ -234,8 +230,9 @@ void CppParser::removeStrings()
 void CppParser::removeComment()
 {
     removeMultiLineSlashStarComment();
+    static const QRegularExpression rxMarcro = QRegularExpression(QStringLiteral(R"(^#define (\w+))"));
     QRegularExpressionMatch rxMatch;
-    if (m_line.contains(m_rxMarcro, &rxMatch)) {
+    if (m_line.contains(rxMarcro, &rxMatch)) {
         addNode(MacroNode, rxMatch.captured(1), m_lineNumber);
     }
 
