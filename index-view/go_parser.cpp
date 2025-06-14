@@ -51,7 +51,6 @@ void GoParser::parseDocument()
     static const QRegularExpression rxType(QStringLiteral(R"(^type (\w+) (\w+))"));
     static const QRegularExpression rxFunc(QStringLiteral(R"(^func (\w+))"));
     static const QRegularExpression rxInterfaceDef(QStringLiteral(R"(^func\(\w+[\s\*](\w+)\)(\w+)\()"));
-    static const QRegularExpression firstWordRx(QStringLiteral("^[\\W]*(\\w+)\\b"));
 
     QRegularExpressionMatch rxMatch;
 
