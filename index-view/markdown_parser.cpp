@@ -145,6 +145,16 @@ void MarkdownParser::parseDocument()
                 initHistory();
                 break;
             }
+
+            // Check for pre blocks to be skipped
+        } else if (rawLine().startsWith(QStringLiteral("<pre>"))) {
+            while (nextLine()) {
+                if (!rawLine().startsWith(QStringLiteral("</pre>"))) {
+                    continue;
+                }
+                initHistory();
+                break;
+            }
         }
     }
 

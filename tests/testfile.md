@@ -27,6 +27,18 @@ Some paragraph
 
 Some more paragraph
 
+Regarding HTML tags wrote [Gruber][1]
+
+<pre>
+      The only restrictions are that block-level HTML elements
+      — e.g. <div>, <table>, <pre>, <p>, etc. -
+      must be separated from surrounding content by blank lines,
+      and the start and end tags of the block should not be indented with tabs or spaces.
+      Markdown is smart enough not to add extra (unwanted) <p> tags around HTML block-level tags.
+</pre>
+
+This <pre> Block is never shown, just like the Code block above
+
 #### The forth heading H4
 Some paragraph
 
