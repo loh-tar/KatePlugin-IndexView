@@ -52,7 +52,7 @@ namespace ns
 }
 
 // 1) Member declarations
-class S
+class S1
 {
     int d1;             // non-static data member
     int a[10] = {1, 2}; // non-static data member with initializer (C++11)
@@ -74,7 +74,7 @@ class S
 };
 
 // 2) Function definitions, which both declare and define member functions or friend functions.
-class M
+class M1
 {
     std::size_t C;
     std::vector<int> data;
@@ -93,7 +93,7 @@ public:
 };
 
 // 3) Access specifiers public:, protected:, and private:
-class S
+class S2
 {
 public:
     S();          // public constructor
@@ -104,13 +104,13 @@ private:
 };
 
 // 4) Using-declarations:
-class Base
+class Base1
 {
 protected:
     int d;
 };
 
-class Derived : public Base
+class Derived1 : public Base2
 {
 public:
     using Base::d;    // make Base's protected member d a public member of Derived
@@ -125,7 +125,7 @@ struct Foo
 };
 
 // 6) member template declarations:
-struct S
+struct S3
 {
     template<typename T>
     void f(T&& n);
@@ -146,7 +146,7 @@ struct identity
 
 
 // 8) deduction guides of member class templates:
-struct S
+struct S4
 {
     template<class CharT>
     struct NestedS
