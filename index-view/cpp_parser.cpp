@@ -34,6 +34,8 @@ CppParser::CppParser(QObject *view, KTextEditor::Document *doc)
     : ProgramParser(view, doc)
 {
     using namespace IconCollection;
+    // AccessSpecNode need special treatment, we store the action
+    m_showAccessSpec = registerViewOption(AccessSpecNode, AccessSpecIcon, QStringLiteral("AccessSpec"), i18n("Show Access Specifiers"));
     registerViewOption(MacroNode, MacroIcon, QStringLiteral("Macros"), i18n("Show Macros"));
     registerViewOption(TypedefNode, TypedefIcon, QStringLiteral("Typedefs"), i18n("Show Typedefs"));
 //     registerViewOption(VariableNode, VariableIcon, QStringLiteral("Variable"), i18n("Show Variables"));
@@ -45,7 +47,6 @@ CppParser::CppParser(QObject *view, KTextEditor::Document *doc)
 
     setNodeTypeIcon(NamespaceNode, NamespaceIcon);
     setNodeTypeIcon(StructNode, ClassIcon);
-    setNodeTypeIcon(AccessSpecNode, AccessSpecIcon);
 
     m_nonBlockElements << MacroNode << FunctionDecNode;
 
@@ -70,6 +71,10 @@ CppParser::~CppParser()
 
 void CppParser::parseDocument()
 {
+    // AccessSpecNode need special treatment
+    nodeTypeIsWanted(AccessSpecNode);
+    m_showAccessSpec->setEnabled(showAsTree());
+
     // https://en.cppreference.com/w/cpp/language/attributes
     static const QLatin1StringView rxAttribute(R"((\[\[.*\]\])?)");
     // https://en.cppreference.com/w/cpp/language/function
@@ -185,6 +190,11 @@ void CppParser::parseDocument()
 
 void CppParser::addAccessSpecNode(const QString &accessSpec)
 {
+    // AccessSpecNode need special treatment
+    if (!m_showAccessSpec->isChecked() || !m_showAccessSpec->isEnabled()) {
+        return;
+    }
+
     QTreeWidgetItem *node = lastNode();
     while (node) {
         if (node->type() == StructNode) {

@@ -65,7 +65,9 @@ protected:
     void addAccessSpecNode(const QString &accessSpec);
     void addFuncDefNode(const QString &retType, const QString &nameSpace, const QString &funcName);
 
-//     QAction     *m_showParameters; // FIXME if you really need need it
+    QAction            *m_showAccessSpec;
+    //     QAction     *m_showParameters; // FIXME if you really need need it
+
 
     QSet<QString>       m_keywordsToIgnore; // To avoid false detection, e.g. as function
 };
