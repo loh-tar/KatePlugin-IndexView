@@ -45,6 +45,7 @@ CppParser::CppParser(QObject *view, KTextEditor::Document *doc)
 
     setNodeTypeIcon(NamespaceNode, NamespaceIcon);
     setNodeTypeIcon(StructNode, ClassIcon);
+    setNodeTypeIcon(AccessSpecNode, AccessSpecIcon);
 
     m_nonBlockElements << MacroNode << FunctionDecNode;
 
@@ -94,6 +95,8 @@ void CppParser::parseDocument()
     static const QRegularExpression rxTypedef(QStringLiteral(R"(\btypedef\s(\w+)\b(.+);)"));
 
     static const QRegularExpression rxNamespace(QStringLiteral(R"(^namespace (\w+))"));
+    // https://en.cppreference.com/w/cpp/language/access.html
+    static const QRegularExpression rxAccessSpec(QStringLiteral(R"(^((private|protected|public)( (\w+))?):)"));
 
     static const QRegularExpression typeDefStruct(QStringLiteral(R"(\btypedef struct( \w+)?\{)"));
     static const QRegularExpression typeDefStructA(QStringLiteral(R"(\btypedef struct (\w+) (\w+))"));
@@ -111,8 +114,19 @@ void CppParser::parseDocument()
         } else if (m_line.contains(rxNamespace, &rxMatch)) {
             addScopeNode(NamespaceNode, rxMatch.captured(1), m_lineNumber);
 
+        } else if (m_line.contains(rxAccessSpec, &rxMatch)) {
+            // qDebug() << rxMatch.captured(1) << rxMatch.captured(2) << rxMatch.captured(3) << rxMatch.captured(4);
+            addAccessSpecNode(rxMatch.captured(1));
+
         } else if (m_line.contains(rxStruct, &rxMatch)) {
             addScopeNode(StructNode, rxMatch.captured(3), m_lineNumber);
+            if (rxMatch.captured(1) == QStringLiteral("struct")) {
+                addAccessSpecNode(QStringLiteral("public"));
+            } else if (rxMatch.captured(1) == QStringLiteral("class")) {
+                addAccessSpecNode(QStringLiteral("private"));
+            } else /*if (rxMatch.captured(1) == QStringLiteral("union"))*/ {
+                addAccessSpecNode(QStringLiteral("public"));
+            }
 
         } else if (m_line.contains(rxEnum, &rxMatch)) {
             addNode(EnumNode, rxMatch.captured(3), m_lineNumber);
@@ -126,8 +140,9 @@ void CppParser::parseDocument()
             // like: SomeClass foo(bar, baz);
             // so I add these parentNodeType check to have functions in header files but no stupid
             // stuff elsewhere. Edit: Also below namespace
-        } else if ((parentNodeType() == StructNode || parentNodeType() == NamespaceNode) && m_line.contains(rxFuncDec, &rxMatch)) {
-    //  } else if ((parentNodeType() == StructNode) && m_line.contains(rxFuncDec)) {
+        } else if ((parentNodeType() == AccessSpecNode || parentNodeType() == StructNode || parentNodeType() == NamespaceNode) && m_line.contains(rxFuncDec, &rxMatch)) {
+        // } else if ((parentNodeType() == StructNode || parentNodeType() == NamespaceNode) && m_line.contains(rxFuncDec, &rxMatch)) {
+        // } else if ((parentNodeType() == StructNode) && m_line.contains(rxFuncDec)) {
             addNode(FunctionDecNode, rxMatch.captured(2), m_lineNumber);
 
         } else if (m_line.contains(typeDefStruct)) {
@@ -165,6 +180,25 @@ void CppParser::parseDocument()
         //     qDebug() << "NOPE" << m_lineNumber << m_line;
         }
     }
+}
+
+
+void CppParser::addAccessSpecNode(const QString &accessSpec)
+{
+    QTreeWidgetItem *node = lastNode();
+    while (node) {
+        if (node->type() == StructNode) {
+            break;
+        }
+        node = node->parent();
+    }
+
+    if (!node) {
+        // Bad syntax in document
+        return;
+    }
+
+    addScopeNode(node, AccessSpecNode, accessSpec);
 }
 
 

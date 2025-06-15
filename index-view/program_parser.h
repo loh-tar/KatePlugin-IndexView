@@ -219,6 +219,13 @@ protected:
      */
     void addScopeNode(const int nodeType, const QString &text, const int lineNumber, const int columnNumber = 0);
 
+    /**
+     * This function add a node with the caption of @p text to the tree below @p parentNode and set @c p_parentNode
+     * to the new added node. Should such node already exist is only @c p_parentNode set to the existing node.
+     */
+    // Introduced for C++ Access Specifiers
+    void addScopeNode(QTreeWidgetItem *parentNode, const int nodeType, const QString &text);
+
     int parentNodeType() { return p_parentNode ? p_parentNode->type() : -1; }; // Introduced for C++ function declarations
     int nestingLevel() { return p_nestingStack.size(); }; // Introduced for Tcl
 

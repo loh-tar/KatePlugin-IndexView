@@ -474,4 +474,24 @@ void ProgramParser::addScopeNode(const int nodeType, const QString &text, const 
     setNodeProperties(node, nodeType, text, lineNumber, columnNumber);
 }
 
+
+void ProgramParser::addScopeNode(QTreeWidgetItem *parentNode, const int nodeType, const QString &text)
+{
+    if (!parentNode) {
+        return;
+    }
+
+    for (int j = 0; j < parentNode->childCount(); ++j) {
+        if (parentNode->child(j)->text(0) == text) {
+            // Already there
+            p_parentNode = parentNode->child(j);
+            return;
+        }
+    }
+
+    auto node = new QTreeWidgetItem(parentNode, nodeType);
+    setNodeProperties(node, nodeType, text, -1, -1);
+    p_parentNode = node;
+}
+
 // kate: space-indent on; indent-width 4; replace-tabs on;

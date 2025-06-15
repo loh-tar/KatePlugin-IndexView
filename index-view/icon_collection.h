@@ -63,6 +63,7 @@ enum IconType {
     // Two 2 Dot Icons
     Blue2Icon,
         Head2Icon = Blue2Icon,
+        AccessSpecIcon = Blue2Icon,
         TypeIcon = Blue2Icon, // Fortran
     Red2Icon,
         PragmaIcon = Red2Icon, // Perl

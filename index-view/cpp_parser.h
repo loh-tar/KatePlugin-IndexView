@@ -47,6 +47,7 @@ protected:
         TypedefNode,
 //         VariableNode,
         StructNode,
+        AccessSpecNode,
         EnumNode,
         FunctionDefNode,// Function definition
         FunctionDecNode,// Function declaration
@@ -61,6 +62,7 @@ protected:
     void removeStrings() override;
     void removeComment() override;
 
+    void addAccessSpecNode(const QString &accessSpec);
     void addFuncDefNode(const QString &retType, const QString &nameSpace, const QString &funcName);
 
 //     QAction     *m_showParameters; // FIXME if you really need need it
