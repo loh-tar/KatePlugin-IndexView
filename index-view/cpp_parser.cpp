@@ -113,6 +113,16 @@ void CppParser::parseDocument()
         static const QRegularExpression firstWordRx(QStringLiteral(R"(^[\W]*(\w+)\b)"));
         const QString firstWord = firstWordRx.match(m_line).captured(1);
 
+        if (lastNode() && lastNode()->type() == StructNode) {
+            if (lastNode()->text(0) == QStringLiteral("struct")) {
+                    addAccessSpecNode(QStringLiteral("public"));
+            } else if (lastNode()->text(0) == QStringLiteral("class")) {
+                    addAccessSpecNode(QStringLiteral("private"));
+            } else /*if (rxMatch.captured(1) == QStringLiteral("union"))*/ {
+                    addAccessSpecNode(QStringLiteral("public"));
+            }
+        }
+
         if (m_keywordsToIgnore.contains(firstWord)) {
             // Do nothing
 
@@ -125,13 +135,6 @@ void CppParser::parseDocument()
 
         } else if (m_line.contains(rxStruct, &rxMatch)) {
             addScopeNode(StructNode, rxMatch.captured(3), m_lineNumber);
-            if (rxMatch.captured(1) == QStringLiteral("struct")) {
-                addAccessSpecNode(QStringLiteral("public"));
-            } else if (rxMatch.captured(1) == QStringLiteral("class")) {
-                addAccessSpecNode(QStringLiteral("private"));
-            } else /*if (rxMatch.captured(1) == QStringLiteral("union"))*/ {
-                addAccessSpecNode(QStringLiteral("public"));
-            }
 
         } else if (m_line.contains(rxEnum, &rxMatch)) {
             addNode(EnumNode, rxMatch.captured(3), m_lineNumber);

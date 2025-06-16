@@ -485,6 +485,7 @@ void ProgramParser::addScopeNode(QTreeWidgetItem *parentNode, const int nodeType
         if (parentNode->child(j)->text(0) == text) {
             // Already there
             p_parentNode = parentNode->child(j);
+            p_lastNode = parentNode->child(j);
             return;
         }
     }
