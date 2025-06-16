@@ -36,8 +36,6 @@ BashParser::BashParser(QObject *view, KTextEditor::Document *doc)
     registerViewOption(FunctionNode, FuncDefIcon, QStringLiteral("Functions"), i18n("Show Functions"));
 //     registerViewOption(QStringLiteral("Parameters"), i18n("Show Parameter"));
 
-    m_nestableElements << FunctionNode;
-
     initHereDoc(QStringLiteral("<<-?"), QStringLiteral("\"'"));
 }
 

@@ -231,7 +231,6 @@ protected:
 
     QSet<QString>   m_blockElements;
     QSet<int>       m_nonBlockElements;
-    QSet<int>       m_nestableElements;
 
     /**
      * Simplified line, may handy to extract data.
