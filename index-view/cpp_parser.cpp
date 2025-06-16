@@ -113,6 +113,7 @@ void CppParser::parseDocument()
         static const QRegularExpression firstWordRx(QStringLiteral(R"(^[\W]*(\w+)\b)"));
         const QString firstWord = firstWordRx.match(m_line).captured(1);
 
+        // Add the "default" access specifiers of a probaly just added struct in advance
         if (lastNode() && lastNode()->type() == StructNode) {
             if (lastNode()->text(0) == QStringLiteral("struct")) {
                     addAccessSpecNode(QStringLiteral("public"));
@@ -187,6 +188,23 @@ void CppParser::parseDocument()
         // } else {
         //     qDebug() << "NOPE" << m_lineNumber << m_line;
         }
+    }
+
+    // Because our eagerly added "default" access specifiers may unused, we remove these now
+    for (int i = 0; i < indexList()->size(); ++i) {
+        QTreeWidgetItem *item = indexList()->at(i);
+        if (item->type() != AccessSpecNode) {
+            continue;
+        } else if (item->childCount() > 0) {
+            continue;
+        } else if (!item->parent()) {
+            // Oops?! Should never happens that we have a top level item of such type, but anyway
+            continue;
+        }
+
+        item->parent()->takeChild(0);
+        indexList()->takeAt(i);
+        delete item;
     }
 }
 
