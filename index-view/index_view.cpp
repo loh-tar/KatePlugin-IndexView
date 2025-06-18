@@ -747,7 +747,7 @@ void IndexView::itemClicked(QTreeWidgetItem *it)
     int column = it->data(0, NodeData::Column).toInt();
 
     if (m_cozyClickExpand) {
-        if (m_lastClickedItem == it || (line < 0)) {
+        if (m_lastClickedItem == it) {
             it->setExpanded(!it->isExpanded());
         }
         m_lastClickedItem = it;
