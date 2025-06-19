@@ -79,7 +79,7 @@ void CppParser::parseDocument()
     static const QLatin1StringView rxAttribute(R"((\[\[.*\]\])?)");
     // https://en.cppreference.com/w/cpp/language/function
     // https://en.cppreference.com/w/cpp/language/declarations
-    static const QLatin1StringView rxFuncDeclarator(R"((\W?[\s\w<\(\),:]*[&>\s\*]+)?)");
+    static const QLatin1StringView rxDeclarator(R"((\w[\s\w<\(\),:\*]*[&>\s\*])?)");
 
     // https://en.cppreference.com/w/cpp/language/classes
     static const QLatin1StringView rx1(R"(^(class|struct|union)%1[^:{]*\b(\w+)[:{])");
@@ -87,14 +87,14 @@ void CppParser::parseDocument()
 
     // https://en.cppreference.com/w/cpp/language/enum
     static const QLatin1StringView rx2(R"(\benum\W?(class|struct)?%1\W?(\w+)(:\w+)?\{)");
-    static const QRegularExpression rxEnum(rx2.arg(rxFuncDeclarator));
+    static const QRegularExpression rxEnum(rx2.arg(rxDeclarator));
 
     // FIXME Namespace part does not match Mul::ti::ple case
     static const QLatin1StringView rx3(R"(^%1(\w+::)*(\~?\w+)\(.*\)(.*)?\{)");
-    static const QRegularExpression rxFuncDef(rx3.arg(rxFuncDeclarator), QRegularExpression::InvertedGreedinessOption);
+    static const QRegularExpression rxFuncDef(rx3.arg(rxDeclarator), QRegularExpression::InvertedGreedinessOption);
 
     static const QLatin1StringView rx4(R"(^%1(\~?\w+)\(.*\)(.*)?;)");
-    static const QRegularExpression rxFuncDec(rx4.arg(rxFuncDeclarator), QRegularExpression::InvertedGreedinessOption);
+    static const QRegularExpression rxFuncDec(rx4.arg(rxDeclarator), QRegularExpression::InvertedGreedinessOption);
 
     // https://en.cppreference.com/w/c/language/typedef
     static const QRegularExpression rxTypedef(QStringLiteral(R"(\btypedef\s(\w+)\b(.+);)"));
