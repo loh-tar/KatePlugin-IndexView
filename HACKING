@@ -1,0 +1,28 @@
+How To Build and Set-Up a Development Environment
+---------------------------------------------------
+
+You have got the source tree, then
+
+    $ cd /path/to/KatePlugin-IndexView
+    $ mkdir build install; cd build
+    $ cmake .. -DCMAKE_BUILD_TYPE=Debug -DREPORT=1
+
+    # Adjust -j8 as you like, fitting your cpu
+    $ make -j8 DESTDIR=/path/to/KatePlugin-IndexView/install install
+
+Create a helper script like this
+
+    $ cat /path/to/kate-with-new-plugin
+    #!/bin/bash
+    export QT_MESSAGE_PATTERN="[%{function} %{line} - %{message}"
+    export QT_PLUGIN_PATH=/path/to/KatePlugin-IndexView/install/usr/lib/qt6/plugins/:$QT_PLUGIN_PATH
+    kate "$@"
+
+Make the script executable
+
+    $ chmod +x /path/to/kate-with-new-plugin
+
+Run Kate with fresh build plugin
+
+    $ /path/to/kate-with-new-plugin -ns <your-indexview-test-session>
+
