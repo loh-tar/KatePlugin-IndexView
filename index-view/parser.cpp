@@ -399,7 +399,8 @@ bool Parser::appendNextLine()
 
 
 #ifndef GENERATE_REPORT
-// Edit/Set GENERATE_REPORT manually from 0 to 1 to take effect
+// Status Report generation can be enabled by CMake switch -DREPORT=1
+// or manually here by changing the 0 to 1
 #define GENERATE_REPORT 0
 #endif
 #if GENERATE_REPORT>0
@@ -455,10 +456,11 @@ void Parser::parse()
     m_runTime.start();
     parseDocument();
 
-    // Enable GENERATE_REPORT above this function
+    // To enable Status Report generation see above this function
     #if GENERATE_REPORT>0
     QString filePath = document()->url().adjusted(QUrl::RemoveFilename).path();
     if (filePath.endsWith(QLatin1StringView("/KatePlugin-IndexView/tests/"))) {
+        qDebug() << "Update Status Report for file " << filePath + document()->url().fileName();
         QFile file(filePath + QLatin1StringView("reports/") + document()->url().fileName() + QLatin1StringView(".txt"));
         if (file.open(QIODevice::WriteOnly)) {
             QTextStream stream(&file);

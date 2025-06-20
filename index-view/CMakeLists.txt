@@ -1,3 +1,8 @@
+option(REPORT "Setting of 1 enables parsers Status Report generation" 0)
+if(REPORT)
+    add_definitions(-DGENERATE_REPORT)
+endif(REPORT)
+
 add_definitions(-DTRANSLATION_DOMAIN=\"kateindexview\")
 ########### next target ###############
 set(kateindexviewplugin_PART_SRCS
