@@ -1,0 +1,76 @@
+Status Report
+===============
+Parser        : PhpParser
+Parser Version: 0.8.1, Jul 2022
+Test File     : KatePlugin-IndexView/tests/testfile.php
+File CheckSum : 6f6d45fb8f7eece4a1bc5dc3001a3900dfd3e27f
+
+WARNING! The CheckSum equals the file on disk! Before you commit a changed
+         report, reload (F5) the Test File to be save!
+
+
+View Options
+--------------
+Needless to say, but CHANGES HERE affect the result THERE!
+So, something should only change here if options are added or removed.
+In any other case adjust the view options and trigger a new parsing.
+
+                 Show Sorted: 0
+              Structure View: 1
+                  Adorn View: 1
+                 Expand View: 1
+             Show FIXME/TODO: 1
+                  Show BEGIN: 1
+                Show Classes: 1
+             Show Interfaces: 1
+              Show Namespace: 1
+              Show Constants: 1
+              Show Functions: 1
+              Show Variables: 1
+
+
+List of Nodes
+---------------
+Node  Node-Text                                         Line Column EndLine
+   0  bar                                                  8    0     -1      
+   1  Cat                                                  9    0     10      
+   2  says                                                10    0     -1      
+   3  ONE                                                 13    0     13      
+   4  FOO                                                 14    0     14      
+   5  MyClassA                                            16    0     23      
+   6  CONSTANT                                            18    0     18      
+   7  showConstant                                        20    0     22      
+   8  classname                                           27    0     27      
+   9  classname                                           28    0     28      
+  10  xclass                                              30    0     30      
+  11  xclass                                              31    0     31      
+  12  xclass                                              33    0     33      
+  13  fooA                                                40    0     59      
+  14  F: Namespace stuff is more complex                  64    0     64      
+  15  foo                                                 68    0     74      
+  16  bar                                                 70    0     71      
+  17  WrongKeyWords                                       81    0     85      
+  18  TWO                                                 82    0     82      
+  19  THREE                                               83    0     83      
+  20  SENTENCE                                            84    0     84      
+  21  Foo                                                 92    0     96      
+  22  BAR                                                 94    0     94      
+  23  BAZ                                                 95    0     95      
+  24  BaseClass                                          104    0    112      
+  25  test                                               105    0    107      
+  26  moreTesting                                        109    0    111      
+  27  ChildClass                                         114    0    118      
+  28  moreTesting                                        115    0    117      
+  29  a                                                  125    0    128      
+  30  foo                                                127    0     -1      
+  31  b                                                  130    0    133      
+  32  bar                                                132    0     -1      
+  33  c                                                  135    0    138      
+  34  baz                                                137    0     -1      
+  35  d                                                  140    0    153      
+  36  foo                                                142    0    144      
+  37  bar                                                146    0    148      
+  38  baz                                                150    0    152      
+  39  youShouldSeeThis                                   181    0     -1      
+  40  i                                                  205    0    212      
+  41  i                                                  214    0    214      

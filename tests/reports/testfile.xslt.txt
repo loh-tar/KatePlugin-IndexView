@@ -1,0 +1,54 @@
+Status Report
+===============
+Parser        : XmlTypeParser
+Parser Version: 0.7, Jul 2022
+Test File     : KatePlugin-IndexView/tests/testfile.xslt
+File CheckSum : 4ca0fa2a4ce7de990a69f957a05a807d671f7983
+
+Needless to say, a changed CheckSum indicate a changed Test File and we may see changed Nodes!
+WARNING! The CheckSum equals the file on disk!
+         Before you commit a changed report, close/open the Test File to be save!
+
+
+View Options
+--------------
+Needless to say, but CHANGES HERE affect the result THERE!
+So, something should only change here if options are added or removed.
+In any other case adjust the view options and trigger a new parsing.
+
+                 Show Sorted: 0
+                   Tree View: 1
+                  Adorn View: 1
+                 Expand View: 0
+              Show nesting 1: 1
+              Show nesting 2: 1
+              Show nesting 3: 1
+             Show nesting 4+: 1
+             Show FIXME/TODO: 1
+                  Show BEGIN: 1
+               Show Comments: 1
+             Detach Comments: 1
+
+
+List of Nodes
+---------------
+Node-Number Node-Text                                                             Line-Number-in-File
+   0        Document                                                              0
+   1        Replace this poor test file with some mo…                             3
+   2        /                                                                     10
+   3        Schleife                                                              16
+   4        number(/test/start)                                                   17
+   5        Foo                                                                   24
+   6        Baz-.!\                                                               24
+   7        Error: attribute not found                                            25
+   8        The node is created but empty, it's not …                             26
+   9        Schleife                                                              28
+  10        Zaehler                                                               29
+  11        $Zaehler <= number(/test/ende)                                        31
+  12        Schleife                                                              36
+  13        $Zaehler + 1                                                          37
+  14        xsl:otherwise                                                         40
+  15        xsl:template name="Don't show this"                                   41
+  16        The following must not cause trouble                                  48
+  17        Here is the last tag not finished, but t…                             51
+  18        ShowThis                                                              52

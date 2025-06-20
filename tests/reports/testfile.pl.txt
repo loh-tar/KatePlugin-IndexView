@@ -1,0 +1,68 @@
+Status Report
+===============
+Parser        : PerlParser
+Parser Version: 0.5.1, Jul 2022
+Test File     : KatePlugin-IndexView/tests/testfile.pl
+File CheckSum : de8ea00e0767bb10fb4bb5cd299c0129f12f103c
+
+WARNING! The CheckSum equals the file on disk! Before you commit a changed
+         report, reload (F5) the Test File to be save!
+
+
+View Options
+--------------
+Needless to say, but CHANGES HERE affect the result THERE!
+So, something should only change here if options are added or removed.
+In any other case adjust the view options and trigger a new parsing.
+
+                 Show Sorted: 0
+              Structure View: 1
+                  Adorn View: 1
+                 Expand View: 1
+             Show FIXME/TODO: 1
+                  Show BEGIN: 1
+                   Show Uses: 1
+                Show Pragmas: 1
+              Show Variables: 1
+            Show Subroutines: 1
+
+
+List of Nodes
+---------------
+Node  Node-Text                                         Line Column EndLine
+   0  T: Improve this haphazardly test file. Parts are taken from   1    0      1      
+   1  warnings                                             5    0      5      
+   2  v1.3.4                                               6    0      6      
+   3  strict qw(subs vars refs)                            7    0      7      
+   4  if$]<5.008,                                          8    0      8      
+   5  if WANT_WARNINGS,warnings=>qw(all)                   9    0      9      
+   6  Path::Tiny                                          10    0     10      
+   7  Net::DNS::Resolver                                  11    0     11      
+   8  $dir                                                13    0     13      
+   9  $iter                                               16    0     16      
+  10  $file                                               17    0     26      
+  11  $name                                               28    0     28      
+  12  @_private_names                                     29    0     29      
+  13  %Names_to_Addresses                                 30    0     30      
+  14  anAwkwardName3                                      31    0     -1      
+  15  $scalar                                             38    0     38      
+  16  @array                                              39    0     39      
+  17  %hash                                               40    0     40      
+  18  F: Not well handled                                 41    0     41      
+  19  $bad_name,@bad_name,%bad_name                       42    0     42      
+  20  @hash_elements                                      47    0     47      
+  21  @array_elements                                     48    0     48      
+  22  T: package as...what?..uses                         50    0     50      
+  23  $discount                                           53    0     61      
+  24  $name                                               63    0     63      
+  25  $address                                            64    0     64      
+  26  $reminder                                           65    0     65      
+  27  $quote                                              68    0     68      
+  28  $reminder                                           69    0     69      
+  29  $complaint                                          70    0    116      
+  30  foo                                                118    0    121      
+  31  $arg                                               119    0    119      
+  32  foo_explicit_args                                  123    0    126      
+  33  $arg                                               124    0    173      
+  34  F: this one not                                    137    0    137      
+  35  F: That odd token is not well recognised           175    0    175      

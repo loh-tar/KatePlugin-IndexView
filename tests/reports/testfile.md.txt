@@ -1,0 +1,66 @@
+Status Report
+===============
+Parser        : MarkdownParser
+Parser Version: 0.9, Jul 2025
+Test File     : KatePlugin-IndexView/tests/testfile.md
+File CheckSum : 4da5368ed601dff8853c909a38f3118eaf37cd65
+
+WARNING! The CheckSum equals the file on disk! Before you commit a changed
+         report, reload (F5) the Test File to be save!
+
+
+View Options
+--------------
+Needless to say, but CHANGES HERE affect the result THERE!
+So, something should only change here if options are added or removed.
+In any other case adjust the view options and trigger a new parsing.
+
+                 Show Sorted: 0
+                   Tree View: 1
+                  Adorn View: 1
+                 Expand View: 1
+              Show nesting 1: 1
+              Show nesting 2: 1
+              Show nesting 3: 1
+             Show nesting 4+: 1
+             Show Paragraphs: 1
+
+
+List of Nodes
+---------------
+Node  Node-Text                                         Line Column EndLine
+   0  testfile.md                                          0    0     86      
+   1  Test And Demo File For The MarkdownParser            0    0     10      
+   2  There are two main sources of reference documentation for the Markdown syntax,   1    0      4      
+   3  Our MarkdownParser tries to follow both of them where possible, but in case of   5    0      7      
+   4  Currently are only rudimentary things supported, like headers and paragraphs,   8    0     10      
+   5  The largest heading H1                              11    0     58      
+   6  The second largest heading H2                       12    0     58      
+   7  Some paragraph                                      13    0     21      
+   8  Some more paragraph                                 22    0     23      
+   9  The third level heading H3                          24    0     58      
+  10  Some paragraph                                      25    0     26      
+  11  Some more paragraph                                 27    0     28      
+  12  Regarding HTML tags wrote [Gruber][1]               29    0     38      
+  13  This <pre> Block is never shown, just like the Code block above  39    0     40      
+  14  The forth heading H4                                41    0     58      
+  15  Some paragraph                                      42    0     43      
+  16  Some more paragraph                                 44    0     45      
+  17  The fifths heading H5                               46    0     58      
+  18  Some paragraph                                      47    0     48      
+  19  Some more paragraph                                 49    0     50      
+  20  The smallest heading H6                             51    0     58      
+  21  Some paragraph                                      52    0     53      
+  22  Some more paragraph                                 54    0     55      
+  23  ####### More sharps than six are not treated as header, therefore  56    0     58      
+  24  The largest H1 heading in Setext style              59    0     69      
+  25  Setext-style headers are “underlined” using equal signs (for first-level headers  61    0     62      
+  26  The second largest H2 heading in Setext style       63    0     69      
+  27  ...and dashes (for second-level headers).           65    0     66      
+  28  On the day of writing this test file are these Setext-style headers not  67    0     69      
+  29  TODO                                                70    0     86      
+  30  Grabbed from GitHub                                 72    0     78      
+  31  - [ ] Lists (with or without Task feature) as these are currently listed as  74    0     78      
+  32  Grabbed from Gruber                                 79    0     86      
+  33  - [ ] Horizontal Rules                              81    0     83      
+  34  [1]: https://daringfireball.net/projects/markdown/syntax  84    0     86      

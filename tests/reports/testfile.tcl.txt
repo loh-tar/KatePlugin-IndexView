@@ -1,0 +1,59 @@
+Status Report
+===============
+Parser        : TclParser
+Parser Version: 0.6.1, Jul 2022
+Test File     : KatePlugin-IndexView/tests/testfile.tcl
+File CheckSum : 4cc4b2bbbb6675636af11e3048469278c5294115
+
+Needless to say, a changed CheckSum indicate a changed Test File and we may see changed Nodes!
+WARNING! The CheckSum equals the file on disk!
+         Before you commit a changed report, close/open the Test File to be save!
+
+
+View Options
+--------------
+Needless to say, but CHANGES HERE affect the result THERE!
+So, something should only change here if options are added or removed.
+In any other case adjust the view options and trigger a new parsing.
+
+                 Show Sorted: 0
+              Structure View: 1
+                  Adorn View: 1
+                 Expand View: 1
+             Show FIXME/TODO: 1
+                  Show BEGIN: 1
+              Show Variables: 1
+            Show Assignments: 1
+              Show Functions: 1
+              Show Parameter: 1
+
+
+List of Nodes
+---------------
+Node-Number Node-Text                                                             Line-Number-in-File
+   0        F: recognition                                                        7
+   1        foo                                                                   15
+   2        greeting  Hello!                                                      37
+   3        F: Not quoted strings are not considered                              38
+   4        F: Braced strings are not supported                                   42
+   5        test                                                                  43
+   6        F: note                                                               54
+   7        root  c:/html                                                         59
+   8        default  index.htm                                                    60
+   9        port  80                                                              61
+  10        encoding  iso8859-1                                                   62
+  11        bgerror  msg                                                          64
+  12        answer sock host2 port2                                               66
+  13        foo  bar                                                              68
+  14        bar  foo                                                              69
+  15        serve  sock                                                           72
+  16        tail /                                                                79
+  17        name                                                                  84
+  18        F: Don't show 'file' as parameter, nor 'sock bytes                    103
+  19        done file sock bytes                                                  104
+  20        nest1 file sock bytes                                                 105
+  21        foo  bar                                                              106
+  22        nest2 file sock bytes                                                 108
+  23        foo  bar                                                              109
+  24        baz  faz                                                              114
+  25        makeEnum name values                                                  120

@@ -1,0 +1,54 @@
+Status Report
+===============
+Parser        : PlainTextParser
+Parser Version: 0.9.1, Aug 2022
+Test File     : KatePlugin-IndexView/tests/testfile.txt
+File CheckSum : 97ea7407317ac195b14151dc8003d3c25cbb78e3
+
+Needless to say, a changed CheckSum indicate a changed Test File and we may see changed Nodes!
+WARNING! The CheckSum equals the file on disk!
+         Before you commit a changed report, close/open the Test File to be save!
+
+
+View Options
+--------------
+Needless to say, but CHANGES HERE affect the result THERE!
+So, something should only change here if options are added or removed.
+In any other case adjust the view options and trigger a new parsing.
+
+                 Show Sorted: 0
+                   Tree View: 1
+                  Adorn View: 1
+                 Expand View: 1
+              Show nesting 1: 1
+              Show nesting 2: 1
+              Show nesting 3: 1
+             Show nesting 4+: 1
+             Show Paragraphs: 0
+
+
+List of Nodes
+---------------
+Node-Number Node-Text                                                             Line-Number-in-File
+   0        testfile.txt                                                          0
+   1        Test And Demo File For The PlainText-Parser                           0
+   2        Section                                                               6
+   3        Header                                                                19
+   4        Bad Formatting Example                                                52
+   5        Missed Empty Line                                                     54
+   6        Special Treatments                                                    65
+   7        Avoided Paragraphs                                                    68
+   8        ISO-Date Forced Sections                                              98
+   9        2018-07-19 Made first commit of my Kate patches                       104
+  10        2018-07-19 Made first commit of my Kate patches to the symbol view plugin109
+  11        2018-07-22 Contacted the "Kate-Devils" at there list                  118
+  12        2018-07-25 Very cool, my first patch is upstream                      122
+  13        2018-07-25                                                            138
+  14        Other Seen Structuring Styles                                         150
+  15        Using Sharp                                                           155
+  16        Using Tilde                                                           158
+  17        Using Asterisk                                                        161
+  18        Using Caret                                                           164
+  19        Feel Free                                                             169
+  20        To Fix Me                                                             172
+  21        Room For Improvements                                                 178

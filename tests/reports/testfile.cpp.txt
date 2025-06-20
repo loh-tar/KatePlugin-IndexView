@@ -1,0 +1,73 @@
+Status Report
+===============
+Parser        : CppParser
+Parser Version: 0.9.1, Jun 2025
+Test File     : KatePlugin-IndexView/tests/testfile.cpp
+File CheckSum : 0196288bdd0bee5cbc2012f02d1fdadef6ddb132
+
+WARNING! The CheckSum equals the file on disk! Before you commit a changed
+         report, reload (F5) the Test File to be save!
+
+
+View Options
+--------------
+Needless to say, but CHANGES HERE affect the result THERE!
+So, something should only change here if options are added or removed.
+In any other case adjust the view options and trigger a new parsing.
+
+                 Show Sorted: 0
+              Structure View: 1
+                  Adorn View: 1
+                 Expand View: 1
+             Show FIXME/TODO: 1
+                  Show BEGIN: 1
+      Show Access Specifiers: 1
+                 Show Macros: 1
+               Show Typedefs: 1
+                  Show Enums: 1
+           Show Function Def: 1
+           Show Function Dec: 1
+
+
+List of Nodes
+---------------
+Node  Node-Text                                         Line Column EndLine
+   0  Matrix                                               5    0      9      
+   1  Vector                                              11    0     15      
+   2  MyStruct                                            20    0     25      
+   3  s                                                   27    0     -1      
+   4  g                                                   30    0     38      
+   5  s                                                   37    0     -1      
+   6  ns                                                  42    0     51      
+   7  f                                                   44    0     44      
+   8  f                                                   46    0     46      
+   9  S1                                                  54    0     73      
+  10  public                                              -1   -1     -1      
+  11  f1                                                  61    0     61      
+  12  NestedS                                             67    0     70      
+  13  value_type                                          72    0     -1      
+  14  pointer_type                                        72    0     -1      
+  15  M1                                                  76    0     92      
+  16  public                                              -1   -1     -1      
+  17  operator                                            83    0     86      
+  18  operator                                            88    0     91      
+  19  S2                                                  95    0    103      
+  20  public                                              -1   -1     -1      
+  21  S                                                   98    0     98      
+  22  S                                                   99    0     99      
+  23  Base1                                              106    0    110      
+  24  protected                                           -1   -1     -1      
+  25  Derived1                                           112    0    117      
+  26  public                                              -1   -1    124      
+  27  static_assert                                      123    0    123      
+  28  S3                                                 127    0    137      
+  29  S4                                                 148    0    158      
+  30  NestedS                                            156    0    156      
+  31  color                                              161    0     -1      
+  32  highlight                                          163    0    166      
+  33  main                                               172    0    189      
+  34  Local                                              176    0    182      
+  35  public                                              -1   -1     -1      
+  36  operator                                           178    0    181      
+  37  Ss                                                 194    0    199      
+  38  main                                               246    0    249      

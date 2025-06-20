@@ -1,0 +1,43 @@
+Status Report
+===============
+Parser        : DiffFileParser
+Parser Version: 0.5, Jul 2022
+Test File     : KatePlugin-IndexView/tests/testfile.diff
+File CheckSum : a11366e2d2c8f3c0b2ec720c11a7b04353817f2b
+
+WARNING! The CheckSum equals the file on disk! Before you commit a changed
+         report, reload (F5) the Test File to be save!
+
+
+View Options
+--------------
+Needless to say, but CHANGES HERE affect the result THERE!
+So, something should only change here if options are added or removed.
+In any other case adjust the view options and trigger a new parsing.
+
+                 Show Sorted: 0
+                   Tree View: 1
+                  Adorn View: 1
+                 Expand View: 1
+              Show nesting 1: 1
+              Show nesting 2: 1
+              Show nesting 3: 1
+             Show nesting 4+: 1
+  Avoid line number as chunk: 1
+
+
+List of Nodes
+---------------
+Node  Node-Text                                         Line Column EndLine
+   0  testfile.diff                                        0    0     -1      
+   1  index-view                                           0    0     -1      
+   2  parser.cpp                                           0    0     -1      
+   3  void Parser::parse(                                  4    0     21      
+   4  bash_parser.cpp                                     22    0     -1      
+   5  #include "bash_parser.h"                            26    0     36      
+   6  bash_parser.h                                       37    0     -1      
+   7  class BashParser : public ProgramParser             41    0     49      
+   8  cpp_parser.cpp                                      50    0     -1      
+   9  #include "cpp_parser.h"                             54    0     64      
+  10  cpp_parser.h                                        65    0     -1      
+  11  class CppParser : public ProgramParser              69    0     -1      

@@ -1,0 +1,41 @@
+Status Report
+===============
+Parser        : EcmaParser
+Parser Version: 0.5.1, Jul 2022
+Test File     : KatePlugin-IndexView/tests/testfile.js
+File CheckSum : 0f5a035f038a48e04d6f2ebadcc31d8f3c8820e2
+
+WARNING! The CheckSum equals the file on disk! Before you commit a changed
+         report, reload (F5) the Test File to be save!
+
+
+View Options
+--------------
+Needless to say, but CHANGES HERE affect the result THERE!
+So, something should only change here if options are added or removed.
+In any other case adjust the view options and trigger a new parsing.
+
+                 Show Sorted: 1
+              Structure View: 1
+                  Adorn View: 1
+                 Expand View: 1
+             Show FIXME/TODO: 1
+                  Show BEGIN: 1
+              Show Functions: 1
+                  Show Func2: 1
+                  Show Func3: 1
+
+
+List of Nodes
+---------------
+Node  Node-Text                                         Line Column EndLine
+   0  T: Improve this haphazardly test file. Parts are taken from   0    0      0      
+   1  factorial                                            4    0      9      
+   2  counter                                             16    0     21      
+   3  Ball                                                31    0     37      
+   4  show                                                34    0     36      
+   5  LCMCalculator                                       45    0     57      
+   6  checkInt                                            46    0    101      
+   7  output                                             104    0    119      
+   8  printResult                                        121    0    123      
+   9  foo                                                126    0    129      

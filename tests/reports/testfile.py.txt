@@ -1,0 +1,45 @@
+Status Report
+===============
+Parser        : PythonParser
+Parser Version: 0.7, Okt 2018
+Test File     : KatePlugin-IndexView/tests/testfile.py
+File CheckSum : d82e45661a005c15642f974e5c1c956017df3bac
+
+Needless to say, a changed CheckSum indicate a changed Test File and we may see changed Nodes!
+WARNING! The CheckSum equals the file on disk!
+         Before you commit a changed report, close/open the Test File to be save!
+
+
+View Options
+--------------
+Needless to say, but CHANGES HERE affect the result THERE!
+So, something should only change here if options are added or removed.
+In any other case adjust the view options and trigger a new parsing.
+
+                 Show Sorted: 0
+              Structure View: 1
+                  Adorn View: 1
+                 Expand View: 1
+             Show FIXME/TODO: 1
+                  Show BEGIN: 1
+                Show Classes: 1
+                Show Methods: 1
+              Show Functions: 1
+
+
+List of Nodes
+---------------
+Node-Number Node-Text                                                             Line-Number-in-File
+   0        foo                                                                   3
+   1        MyClass                                                               13
+   2        get_a                                                                 14
+   3        set_a                                                                 16
+   4        My26Class                                                             21
+   5        a                                                                     23
+   6        a                                                                     26
+   7        getline1                                                              31
+   8        getline2                                                              34
+   9        getline3                                                              39
+  10        getline4                                                              43
+  11        F: Don't show this note                                               91
+  12        bar                                                                   110

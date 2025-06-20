@@ -1,0 +1,78 @@
+diff --cc index-view/parser.cpp
+index 0091a62,16fab60..0000000
+--- a/index-view/parser.cpp
++++ b/index-view/parser.cpp
+@@@ -272,6 -272,14 +272,17 @@@ void Parser::parse(
+          return;
+      }
+
+++<<<<<<< HEAD
+++=======
++     qDebug() << "Parser::parse >>>" << this;
++
++     QElapsedTimer rollex;
++     rollex.start();
++
++     if (p_view->m_mainWindow->activeView()->document() != p_document) {
++         qDebug() << "Parser::parse urgs?! View()->document() != p_document";
++     }
+++>>>>>>> 2e69c89 (d057d29 - (remove me) time measure and some more debug stuff)
+      p_docNeedParsing = false;
+      p_parsingIsRunning = true;
+
+diff --git a/index-view/bash_parser.cpp b/index-view/bash_parser.cpp
+index c787b66..2df2dcd 100644
+--- a/index-view/bash_parser.cpp
++++ b/index-view/bash_parser.cpp
+@@ -29,8 +29,8 @@
+
+ #include "bash_parser.h"
+
+-BashParser::BashParser(IndexView *view)
+-    : ProgramParser(view)
++BashParser::BashParser(IndexView *view, const QString &docType)
++    : ProgramParser(view, docType)
+ {
+     using namespace IconCollection;
+     registerViewOption(FunctionNode, FuncDefIcon, QStringLiteral("Functions"), i18n("Show Functions"));
+diff --git a/index-view/bash_parser.h b/index-view/bash_parser.h
+index 76da8aa..8164185 100644
+--- a/index-view/bash_parser.h
++++ b/index-view/bash_parser.h
+@@ -37,7 +37,7 @@ class BashParser : public ProgramParser
+     Q_OBJECT
+
+ public:
+-    BashParser(IndexView *view);
++    BashParser(IndexView *view, const QString &docType);
+    ~BashParser();
+
+ protected:
+diff --git a/index-view/cpp_parser.cpp b/index-view/cpp_parser.cpp
+index 96a9a59..f5be28c 100644
+--- a/index-view/cpp_parser.cpp
++++ b/index-view/cpp_parser.cpp
+@@ -30,8 +30,8 @@
+ #include "cpp_parser.h"
+
+
+-CppParser::CppParser(IndexView *view)
+-    : ProgramParser(view)
++CppParser::CppParser(IndexView *view, const QString &docType)
++    : ProgramParser(view, docType)
+ {
+     using namespace IconCollection;
+     registerViewOption(MacroNode, MacroIcon, QStringLiteral("Macros"), i18n("Show Macros"));
+diff --git a/index-view/cpp_parser.h b/index-view/cpp_parser.h
+index 20ffec4..9de7cfe 100644
+--- a/index-view/cpp_parser.h
++++ b/index-view/cpp_parser.h
+@@ -37,7 +37,7 @@ class CppParser : public ProgramParser
+     Q_OBJECT
+
+ public:
+-    CppParser(IndexView *view);
++    CppParser(IndexView *view, const QString &docType);
+    ~CppParser();
+
+ protected:

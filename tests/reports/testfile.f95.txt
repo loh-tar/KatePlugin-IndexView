@@ -1,0 +1,43 @@
+Status Report
+===============
+Parser        : FortranParser
+Parser Version: 0.6.2, Jul 2022
+Test File     : KatePlugin-IndexView/tests/testfile.f95
+File CheckSum : 5c633f4120a319d41e43fe7caf72d4d53c7e42a1
+
+WARNING! The CheckSum equals the file on disk! Before you commit a changed
+         report, reload (F5) the Test File to be save!
+
+
+View Options
+--------------
+Needless to say, but CHANGES HERE affect the result THERE!
+So, something should only change here if options are added or removed.
+In any other case adjust the view options and trigger a new parsing.
+
+                 Show Sorted: 0
+              Structure View: 1
+                  Adorn View: 1
+                 Expand View: 1
+             Show FIXME/TODO: 1
+                  Show BEGIN: 1
+                  Show Types: 1
+              Show Functions: 1
+            Show Subroutines: 1
+                Show Modules: 1
+
+
+List of Nodes
+---------------
+Node  Node-Text                                         Line Column EndLine
+   0  F: Improve this file with more meaningful content    1    0      1      
+   1  string_concat                                        3    0      9      
+   2  person                                              28    0     31      
+   3  point                                               39    0     41      
+   4  triangle                                            42    0     44      
+   5  string_type                                         55    0     95      
+   6  string80                                            57    0     60      
+   7  c_to_s_assign                                       68    0     73      
+   8  s_to_c_assign                                       74    0     78      
+   9  string_concat                                       79    0     94      
+  10  Main: main                                          97    0    105      

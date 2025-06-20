@@ -1,0 +1,43 @@
+Status Report
+===============
+Parser        : GoParser
+Parser Version: 0.6, Jul 2025
+Test File     : KatePlugin-IndexView/tests/testfile.go
+File CheckSum : 4f36a74a8e405f38c5f74be9d84c0b38f6e51e87
+
+WARNING! The CheckSum equals the file on disk! Before you commit a changed
+         report, reload (F5) the Test File to be save!
+
+
+View Options
+--------------
+Needless to say, but CHANGES HERE affect the result THERE!
+So, something should only change here if options are added or removed.
+In any other case adjust the view options and trigger a new parsing.
+
+                 Show Sorted: 0
+              Structure View: 1
+                  Adorn View: 1
+                 Expand View: 1
+             Show FIXME/TODO: 1
+                  Show BEGIN: 1
+                Show Structs: 1
+                  Show Types: 1
+             Show Interfaces: 1
+              Show Functions: 1
+
+
+List of Nodes
+---------------
+Node  Node-Text                                         Line Column EndLine
+   0  User                                                 7    0      9      
+   1  Admin                                               11    0     14      
+   2  Notifier                                            17    0     19      
+   3  Notify                                              25    0     27      
+   4  Notify                                              29    0     33      
+   5  main                                                35    0     55      
+   6  ipv4addr                                            59    0     -1      
+   7  ZeroBroadcast                                       61    0     63      
+   8  Downloader                                          66    0     68      
+   9  decrementUsage                                      70    0     72      
+  10  getDownloadReader                                   74    0     78      

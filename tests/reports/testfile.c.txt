@@ -1,0 +1,92 @@
+Status Report
+===============
+Parser        : CppParser
+Parser Version: 0.9.1, Jun 2025
+Test File     : KatePlugin-IndexView/tests/testfile.c
+File CheckSum : f805fd0c728cdd7fae754fc5cffaa1df87c20101
+
+WARNING! The CheckSum equals the file on disk! Before you commit a changed
+         report, reload (F5) the Test File to be save!
+
+
+View Options
+--------------
+Needless to say, but CHANGES HERE affect the result THERE!
+So, something should only change here if options are added or removed.
+In any other case adjust the view options and trigger a new parsing.
+
+                 Show Sorted: 0
+              Structure View: 1
+                  Adorn View: 1
+                 Expand View: 1
+             Show FIXME/TODO: 1
+                  Show BEGIN: 1
+      Show Access Specifiers: 1
+                 Show Macros: 1
+               Show Typedefs: 1
+                  Show Enums: 1
+           Show Function Def: 1
+           Show Function Dec: 1
+
+
+List of Nodes
+---------------
+Node  Node-Text                                         Line Column EndLine
+   0  VALUE                                               10    0     10      
+   1  MACRO                                               12    0     12      
+   2  Another_test,*pTest                                 20    0     25      
+   3  Xauth                                               27    0     31      
+   4  game                                                33    0     36      
+   5  gt_data                                             38    0     -1      
+   6  MyMusicFunction                                     45    0     62      
+   7  test                                                65    0     -1      
+   8  test2                                               66    0     -1      
+   9  MY_MACRO                                            69    0     69      
+  10  MY_MACRO2                                           70    0     70      
+  11  MY_MACRO3                                           71    0     71      
+  12  quoteTest1                                          74    0     -1      
+  13  quoteTest2                                          75    0     -1      
+  14  quoteTest3                                          76    0     -1      
+  15  quoteTest4                                          77    0     -1      
+  16  SomeClass                                           83    0     87      
+  17  public                                              -1   -1     -1      
+  18  someFunction1                                       85    0     85      
+  19  someFunction2                                       86    0     86      
+  20  Cpp_Parser2                                         89    0     -1      
+  21  ProgramParser                                       -1    0     -1      
+  22  addNode                                             99    0    102      
+  23  fp11                                               110    0    113      
+  24  f2                                                 115    0    123      
+  25  KWrite                                              -1    0     -1      
+  26  sizeHint                                           125    0    127      
+  27  funcRetConstChar                                   129    0    131      
+  28  tnode                                              134    0    137      
+  29  range                                              138    0    141      
+  30  tnode                                              143    0     -1      
+  31  range2                                             144    0    144      
+  32  int_t                                              145    0     -1      
+  33  arr_t                                              146    0     -1      
+  34  fp                                                 147    0     -1      
+  35  char_t                                             148    0     -1      
+  36  char_p                                             148    0     -1      
+  37  fp2                                                148    0     -1      
+  38  Color1                                             151    0     -1      
+  39  Color2                                             152    0     -1      
+  40  smallenum                                          153    0     -1      
+  41  color3                                             154    0     -1      
+  42  altitude                                           155    0     -1      
+  43  F: Will not recognized, may be to                  156    0    156      
+  44  IconCollection                                     159    0    165      
+  45  test                                               160    0     -1      
+  46  IconType                                           161    0    163      
+  47  getIcon                                            164    0    164      
+  48  KateSessionsAction                                 168    0     -1      
+  49  ViewPrivate                                         -1    0     -1      
+  50  home                                               169    0     -1      
+  51  Speller                                             -1    0     -1      
+  52  preferredDictionaries                              170    0     -1      
+  53  F: not sure if it must shown as function as it does currently, may be to 171    0    171      
+  54  std                                                 -1    0     -1      
+  55  transform                                          172    0    174      
+  56  ABC                                                179    0    179      
+  57  main                                               189    0    193      
