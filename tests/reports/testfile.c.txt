@@ -1,7 +1,7 @@
 Status Report
 ===============
 Parser        : CppParser
-Parser Version: 0.9.1, Jun 2025
+Parser Version: 0.9.2, Jul 2025
 Test File     : KatePlugin-IndexView/tests/testfile.c
 File CheckSum : f805fd0c728cdd7fae754fc5cffaa1df87c20101
 
@@ -27,6 +27,7 @@ In any other case adjust the view options and trigger a new parsing.
                   Show Enums: 1
            Show Function Def: 1
            Show Function Dec: 1
+          Show Variables Dec: 1
 
 
 List of Nodes
@@ -61,32 +62,35 @@ Node  Node-Text                                         Line Column EndLine
   26  sizeHint                                           125    0    127      
   27  funcRetConstChar                                   129    0    131      
   28  tnode                                              134    0    137      
-  29  range                                              138    0    141      
-  30  tnode                                              143    0     -1      
-  31  range2                                             144    0    144      
-  32  int_t                                              145    0     -1      
-  33  arr_t                                              146    0     -1      
-  34  fp                                                 147    0     -1      
-  35  char_t                                             148    0     -1      
-  36  char_p                                             148    0     -1      
-  37  fp2                                                148    0     -1      
-  38  Color1                                             151    0     -1      
-  39  Color2                                             152    0     -1      
-  40  smallenum                                          153    0     -1      
-  41  color3                                             154    0     -1      
-  42  altitude                                           155    0     -1      
-  43  F: Will not recognized, may be to                  156    0    156      
-  44  IconCollection                                     159    0    165      
-  45  test                                               160    0     -1      
-  46  IconType                                           161    0    163      
-  47  getIcon                                            164    0    164      
-  48  KateSessionsAction                                 168    0     -1      
-  49  ViewPrivate                                         -1    0     -1      
-  50  home                                               169    0     -1      
-  51  Speller                                             -1    0     -1      
-  52  preferredDictionaries                              170    0     -1      
-  53  F: not sure if it must shown as function as it does currently, may be to 171    0    171      
-  54  std                                                 -1    0     -1      
-  55  transform                                          172    0    174      
-  56  ABC                                                179    0    179      
-  57  main                                               189    0    193      
+  29  public                                              -1   -1     -1      
+  30  count                                              135    0     -1      
+  31  right                                              136    0     -1      
+  32  range                                              138    0    141      
+  33  tnode                                              143    0     -1      
+  34  range2                                             144    0    144      
+  35  int_t                                              145    0     -1      
+  36  arr_t                                              146    0     -1      
+  37  fp                                                 147    0     -1      
+  38  char_t                                             148    0     -1      
+  39  char_p                                             148    0     -1      
+  40  fp2                                                148    0     -1      
+  41  Color1                                             151    0     -1      
+  42  Color2                                             152    0     -1      
+  43  smallenum                                          153    0     -1      
+  44  color3                                             154    0     -1      
+  45  altitude                                           155    0     -1      
+  46  F: Will not recognized, may be to                  156    0    156      
+  47  IconCollection                                     159    0    165      
+  48  test                                               160    0     -1      
+  49  IconType                                           161    0    163      
+  50  getIcon                                            164    0    164      
+  51  KateSessionsAction                                 168    0     -1      
+  52  ViewPrivate                                         -1    0     -1      
+  53  home                                               169    0     -1      
+  54  Speller                                             -1    0     -1      
+  55  preferredDictionaries                              170    0     -1      
+  56  F: not sure if it must shown as function as it does currently, may be to 171    0    171      
+  57  std                                                 -1    0     -1      
+  58  transform                                          172    0    174      
+  59  ABC                                                179    0    179      
+  60  main                                               189    0    193      
