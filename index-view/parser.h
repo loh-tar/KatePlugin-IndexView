@@ -428,6 +428,11 @@ protected:
 
 private:
     /**
+     * This function is only called by Parser::parse
+     */
+    void generateReport();
+
+    /**
      * This function is only called by Parser::create
      */
     void finalizeSetup(const QString &docType);

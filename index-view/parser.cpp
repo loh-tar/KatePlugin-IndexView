@@ -405,7 +405,59 @@ bool Parser::appendNextLine()
 #endif
 #if GENERATE_REPORT>0
 #include <QFile>
+void Parser::generateReport()
+{
+    QString filePath = document()->url().adjusted(QUrl::RemoveFilename).path();
+    if (filePath.endsWith(QLatin1StringView("/KatePlugin-IndexView/tests/"))) {
+        qDebug() << "Update Status Report for file " << filePath + document()->url().fileName();
+        QFile file(filePath + QLatin1StringView("reports/") + document()->url().fileName() + QLatin1StringView(".txt"));
+        if (file.open(QIODevice::WriteOnly)) {
+            QTextStream stream(&file);
+            stream << "Status Report" << Qt::endl
+                   << "===============" << Qt::endl
+                   << "Parser        : " << metaObject()->className() << Qt::endl
+                   << "Parser Version: " << version() << Qt::endl
+                   << "Test File     : KatePlugin-IndexView/tests/" << document()->url().fileName() << Qt::endl
+                   << "File CheckSum : " << document()->checksum().toHex() << Qt::endl
+                   << Qt::endl
+                   << "WARNING! The CheckSum equals the file on disk! Before you commit a changed" << Qt::endl
+                   << "         report, reload (F5) the Test File to be save!" << Qt::endl
+                   << Qt::endl << Qt::endl
+                   << "View Options" << Qt::endl
+                   << "--------------" << Qt::endl
+                   << "Needless to say, but CHANGES HERE affect the result THERE!" << Qt::endl
+                   << "So, something should only change here if options are added or removed." << Qt::endl
+                   << "In any other case adjust the view options and trigger a new parsing." << Qt::endl
+                   << Qt::endl;
+            for (QAction *action : contextMenu()->actions()) {
+                if (action->isSeparator()) {
+                    continue;
+                }
+                stream << qSetFieldWidth(30) << Qt::right << action->text() + QLatin1StringView(": ") << qSetFieldWidth(0) << action->isChecked() << Qt::endl;
+            }
+            stream << Qt::endl << Qt::endl
+                   << "List of Nodes" << Qt::endl
+                   << "---------------" << Qt::endl
+                   << qSetFieldWidth(6) << Qt::left << "Node" << qSetFieldWidth(50) << "Node-Text" << qSetFieldWidth(0) << "Line Column EndLine" << Qt::endl;
+            for (int i = 0; i < p_indexList.size(); ++i) {
+                QTreeWidgetItem *item = p_indexList.at(i);
+                stream << qSetFieldWidth(4) << Qt::right << i << qSetFieldWidth(2) << " "
+                       << qSetFieldWidth(50) << Qt::left << item->text(0)
+                       << qSetFieldWidth(4) << Qt::right << item->data(0, NodeData::Line).toInt()
+                       << qSetFieldWidth(5) << item->data(0, NodeData::Column).toInt()
+                       << qSetFieldWidth(7) << item->data(0, NodeData::EndLine).toInt()<< Qt::endl;
+            }
+        }
+    }
+}
+#else
+void Parser::generateReport()
+{
+    // Nothing todo! Guess the compiler will remove the entire call in this case
+    return;
+}
 #endif
+
 
 void Parser::parse()
 {
@@ -455,52 +507,7 @@ void Parser::parse()
     prepareForParse();
     m_runTime.start();
     parseDocument();
-
-    // To enable Status Report generation see above this function
-    #if GENERATE_REPORT>0
-    QString filePath = document()->url().adjusted(QUrl::RemoveFilename).path();
-    if (filePath.endsWith(QLatin1StringView("/KatePlugin-IndexView/tests/"))) {
-        qDebug() << "Update Status Report for file " << filePath + document()->url().fileName();
-        QFile file(filePath + QLatin1StringView("reports/") + document()->url().fileName() + QLatin1StringView(".txt"));
-        if (file.open(QIODevice::WriteOnly)) {
-            QTextStream stream(&file);
-            stream << "Status Report" << Qt::endl
-                   << "===============" << Qt::endl
-                   << "Parser        : " << metaObject()->className() << Qt::endl
-                   << "Parser Version: " << version() << Qt::endl
-                   << "Test File     : KatePlugin-IndexView/tests/" << document()->url().fileName() << Qt::endl
-                   << "File CheckSum : " << document()->checksum().toHex() << Qt::endl
-                   << Qt::endl
-                   << "WARNING! The CheckSum equals the file on disk! Before you commit a changed" << Qt::endl
-                   << "         report, reload (F5) the Test File to be save!" << Qt::endl
-                   << Qt::endl << Qt::endl
-                   << "View Options" << Qt::endl
-                   << "--------------" << Qt::endl
-                   << "Needless to say, but CHANGES HERE affect the result THERE!" << Qt::endl
-                   << "So, something should only change here if options are added or removed." << Qt::endl
-                   << "In any other case adjust the view options and trigger a new parsing." << Qt::endl
-                   << Qt::endl;
-            for (QAction *action : contextMenu()->actions()) {
-                if (action->isSeparator()) {
-                    continue;
-                }
-                stream << qSetFieldWidth(30) << Qt::right << action->text() + QLatin1StringView(": ") << qSetFieldWidth(0) << action->isChecked() << Qt::endl;
-            }
-            stream << Qt::endl << Qt::endl
-                   << "List of Nodes" << Qt::endl
-                   << "---------------" << Qt::endl
-                   << qSetFieldWidth(6) << Qt::left << "Node" << qSetFieldWidth(50) << "Node-Text" << qSetFieldWidth(0) << "Line Column EndLine" << Qt::endl;
-            for (int i = 0; i < p_indexList.size(); ++i) {
-                QTreeWidgetItem *item = p_indexList.at(i);
-                stream  << qSetFieldWidth(4) << Qt::right << i << qSetFieldWidth(2) << " "
-                        << qSetFieldWidth(50) << Qt::left << item->text(0)
-                        << qSetFieldWidth(4) << Qt::right << item->data(0, NodeData::Line).toInt()
-                        << qSetFieldWidth(5) << item->data(0, NodeData::Column).toInt()
-                        << qSetFieldWidth(7) << item->data(0, NodeData::EndLine).toInt()<< Qt::endl;
-            }
-        }
-    }
-    #endif
+    generateReport();
 
     if (p_gitConflict) {
         p_indexTree->setFocusPolicy(Qt::NoFocus);
