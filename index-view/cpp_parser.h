@@ -53,7 +53,7 @@ protected:
         VariableNode,
     };
 
-    QString version() override { return QStringLiteral("0.9.1, Jun 2025"); } ;
+    QString version() override { return QStringLiteral("0.9.2, Jul 2025"); } ;
     QString author() override { return QStringLiteral("2018, 2022, 2025 loh.tar \n\nInspired by \n2003 Massimo Callegari"); } ;
 
     void parseDocument() override;

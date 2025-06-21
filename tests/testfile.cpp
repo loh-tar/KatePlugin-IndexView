@@ -61,7 +61,7 @@ class S1
 
     virtual void f1(int) = 0; // pure virtual member function
 
-    std::string d3, *d4, f2(int); // two data members and a member function
+    std::string d3, *d4, f2(int); // FIXME two data members and a member function
 
     enum { NORTH, SOUTH, EAST, WEST };
 
@@ -197,13 +197,29 @@ struct Ss
     int member;
     // decl-specifier-seq is "int"
     // declarator is "member"
-} obj, *pObj(&obj);
+} obj, *pObj(&obj);// FIXME
 // decl-specifier-seq is "struct S { int member; }"
 // declarator "obj" declares an object of type S
 // declarator "*pObj" declares a pointer to S,
 //     and initializer "(&obj)" initializes it
 
-int i = 1, *p = nullptr, f(), (*pf)(double);
+// NOTE: Variables need a parent like namespace
+// or will not be shown in our tree
+namespace foo {
+QHash<int, NodeTypeStruct>      p_nodeTypes;
+QHash<int, QTreeWidgetItem*>    p_rootNodes;
+std::size_t C;
+std::vector<int> data;
+
+char c = 'x';
+int i;
+int j = 1;
+int k(42); // FIXME
+const int i = 1;
+int *p = nullptr;
+int (*pf)(double); // FIXME
+
+int i = 1, *p = nullptr, f(), (*pf)(double);// FIXME only i is found, not the rest
 // decl-specifier-seq is "int"
 // declarator "i" declares a variable of type int,
 //     and initializer "= 1" initializes it
@@ -214,7 +230,7 @@ int i = 1, *p = nullptr, f(), (*pf)(double);
 // declarator "(*pf)(double)" declares a pointer to function
 //     taking double and returning int
 
-int (*(*var1)(double))[3] = nullptr;
+int (*(*var1)(double))[3] = nullptr;// FIXME
 // decl-specifier-seq is "int"
 // declarator is "(*(*var1)(double))[3]"
 // initializer is "= nullptr"
@@ -235,7 +251,7 @@ int (*(*var1)(double))[3] = nullptr;
 // The initializer "= nullptr" provides the initial value of this pointer.
 
 // C++11 alternative syntax:
-auto (*var2)(double) -> int (*)[3] = nullptr;
+auto (*var2)(double) -> int (*)[3] = nullptr;// FIXME
 // decl-specifier-seq is "auto"
 // declarator is "(*var2)(double) -> int (*)[3]"
 // initializer is "= nullptr"
@@ -243,6 +259,7 @@ auto (*var2)(double) -> int (*)[3] = nullptr;
 // 1. declarator "(*var2)(double) -> int (*)[3]" is a function declarator:
 //    Type declared is: "(*var2)" function taking "(double)", returning "int (*)[3]"
 // ...
+}
 
 int main()
 {

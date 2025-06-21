@@ -1,9 +1,9 @@
 Status Report
 ===============
 Parser        : CppParser
-Parser Version: 0.9.1, Jun 2025
+Parser Version: 0.9.2, Jul 2025
 Test File     : KatePlugin-IndexView/tests/testfile.cpp
-File CheckSum : 0196288bdd0bee5cbc2012f02d1fdadef6ddb132
+File CheckSum : 4bb7f270d2158b49c10b3fe9d5d5d275b5d7884e
 
 WARNING! The CheckSum equals the file on disk! Before you commit a changed
          report, reload (F5) the Test File to be save!
@@ -27,6 +27,7 @@ In any other case adjust the view options and trigger a new parsing.
                   Show Enums: 1
            Show Function Def: 1
            Show Function Dec: 1
+          Show Variables Dec: 1
 
 
 List of Nodes
@@ -35,39 +36,82 @@ Node  Node-Text                                         Line Column EndLine
    0  Matrix                                               5    0      9      
    1  Vector                                              11    0     15      
    2  MyStruct                                            20    0     25      
-   3  s                                                   27    0     -1      
-   4  g                                                   30    0     38      
-   5  s                                                   37    0     -1      
-   6  ns                                                  42    0     51      
-   7  f                                                   44    0     44      
-   8  f                                                   46    0     46      
-   9  S1                                                  54    0     73      
-  10  public                                              -1   -1     -1      
-  11  f1                                                  61    0     61      
-  12  NestedS                                             67    0     70      
-  13  value_type                                          72    0     -1      
-  14  pointer_type                                        72    0     -1      
-  15  M1                                                  76    0     92      
-  16  public                                              -1   -1     -1      
-  17  operator                                            83    0     86      
-  18  operator                                            88    0     91      
-  19  S2                                                  95    0    103      
-  20  public                                              -1   -1     -1      
-  21  S                                                   98    0     98      
-  22  S                                                   99    0     99      
-  23  Base1                                              106    0    110      
-  24  protected                                           -1   -1     -1      
-  25  Derived1                                           112    0    117      
-  26  public                                              -1   -1    124      
-  27  static_assert                                      123    0    123      
-  28  S3                                                 127    0    137      
-  29  S4                                                 148    0    158      
-  30  NestedS                                            156    0    156      
-  31  color                                              161    0     -1      
-  32  highlight                                          163    0    166      
-  33  main                                               172    0    189      
-  34  Local                                              176    0    182      
-  35  public                                              -1   -1     -1      
-  36  operator                                           178    0    181      
-  37  Ss                                                 194    0    199      
-  38  main                                               246    0    249      
+   3  public                                              -1   -1     -1      
+   4  value                                               22    0     -1      
+   5  s                                                   27    0     -1      
+   6  g                                                   30    0     38      
+   7  s                                                   37    0     -1      
+   8  ns                                                  42    0     51      
+   9  f                                                   44    0     44      
+  10  f                                                   46    0     46      
+  11  p                                                   49    0     -1      
+  12  q                                                   50    0     -1      
+  13  S1                                                  54    0     73      
+  14  public                                              -1   -1     -1      
+  15  d1                                                  56    0     -1      
+  16  a                                                   57    0     -1      
+  17  d2                                                  59    0     -1      
+  18  f1                                                  61    0     61      
+  19  F: two data members and a member function           63    0     63      
+  20  enum                                                65    0     -1      
+  21  NestedS                                             67    0     70      
+  22  public                                              -1   -1     -1      
+  23  s                                                   69    0     -1      
+  24  value_type                                          72    0     -1      
+  25  pointer_type                                        72    0     -1      
+  26  M1                                                  76    0     92      
+  27  public                                              -1   -1     -1      
+  28  C                                                   78    0     -1      
+  29  data                                                79    0     -1      
+  30  operator                                            83    0     86      
+  31  operator                                            88    0     91      
+  32  S2                                                  95    0    103      
+  33  public                                              -1   -1     -1      
+  34  S                                                   98    0     98      
+  35  S                                                   99    0     99      
+  36  private                                             -1   -1     -1      
+  37  ptr                                                102    0     -1      
+  38  Base1                                              106    0    110      
+  39  protected                                           -1   -1     -1      
+  40  d                                                  109    0     -1      
+  41  Derived1                                           112    0    117      
+  42  public                                              -1   -1    124      
+  43  static_assert                                      123    0    123      
+  44  S3                                                 127    0    137      
+  45  public                                              -1   -1    136      
+  46  s                                                  135    0    144      
+  47  S4                                                 148    0    158      
+  48  public                                              -1   -1    154      
+  49  s                                                  153    0     -1      
+  50  NestedS                                            156    0    156      
+  51  color                                              161    0     -1      
+  52  highlight                                          163    0    166      
+  53  main                                               172    0    189      
+  54  Local                                              176    0    182      
+  55  public                                              -1   -1     -1      
+  56  operator                                           178    0    181      
+  57  Ss                                                 194    0    199      
+  58  public                                              -1   -1     -1      
+  59  member                                             196    0     -1      
+  60  F: obj, *pObj(&obj                                 199    0    199      
+  61  foo                                                207    0    261      
+  62  p_nodeTypes                                        208    0     -1      
+  63  p_rootNodes                                        209    0     -1      
+  64  C                                                  210    0     -1      
+  65  data                                               211    0     -1      
+  66  c                                                  213    0     -1      
+  67  i                                                  214    0     -1      
+  68  j                                                  215    0     -1      
+  69  F: int k(42                                        216    0    216      
+  70  k                                                  216    0    216      
+  71  i                                                  217    0     -1      
+  72  p                                                  218    0     -1      
+  73  F: int (*pf)(double                                219    0    219      
+  74  int                                                219    0    219      
+  75  F: only i is found, not the rest                   221    0    221      
+  76  i                                                  221    0     -1      
+  77  F: int (*(*var1)(double))[3] = nullptr             232    0    232      
+  78  int                                                232    0    232      
+  79  F: auto (*var2)(double) -> int (*)[3] = nullptr    253    0    253      
+  80  auto                                               253    0    253      
+  81  main                                               263    0    266      
