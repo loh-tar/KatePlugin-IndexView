@@ -38,12 +38,12 @@ CppParser::CppParser(QObject *view, KTextEditor::Document *doc)
     m_showAccessSpec = registerViewOption(AccessSpecNode, AccessSpecIcon, QStringLiteral("AccessSpec"), i18n("Show Access Specifiers"));
     registerViewOption(MacroNode, MacroIcon, QStringLiteral("Macros"), i18n("Show Macros"));
     registerViewOption(TypedefNode, TypedefIcon, QStringLiteral("Typedefs"), i18n("Show Typedefs"));
-//     registerViewOption(VariableNode, VariableIcon, QStringLiteral("Variable"), i18n("Show Variables"));
     registerViewOption(EnumNode, EnumIcon, QStringLiteral("Enum"), i18n("Show Enums"));
     registerViewOption(FunctionDefNode, FuncDefIcon, QStringLiteral("Functions"), i18n("Show Function Def"));
 //     m_showParameters  = registerViewOptionModifier(FunctionDefNode, QStringLiteral("ParameterF"), i18n("Show FParameter"));
     registerViewOption(FunctionDecNode, FuncDecIcon, QStringLiteral("Functions"), i18n("Show Function Dec"));
 //     m_showParameters  = registerViewOptionModifier(FunctionDecNode, QStringLiteral("ParameterC"), i18n("Show CParameter"));
+    registerViewOption(VariableNode, VariableIcon, QStringLiteral("Variables"), i18n("Show Variables Dec"));
 
     setNodeTypeIcon(NamespaceNode, NamespaceIcon);
     setNodeTypeIcon(StructNode, ClassIcon);
@@ -75,15 +75,22 @@ void CppParser::parseDocument()
     nodeTypeIsWanted(AccessSpecNode);
     m_showAccessSpec->setEnabled(showAsTree());
 
+    // https://en.cppreference.com/w/cpp/language/name.html
+    static const QLatin1StringView rxName(R"([a-zA-Z_]\w*)");
+    // https://en.cppreference.com/w/cpp/language/initialization.html
+    // FIXME Make use of this rxInitializer and add similar logical stuff like rxName or rxAttribute
+    // static const QLatin1StringView rxInitializer(R"(=.*|\{.*\}|\(.*\))");
+
     // https://en.cppreference.com/w/cpp/language/attributes
     static const QLatin1StringView rxAttribute(R"((\[\[.*\]\])?)");
-    // https://en.cppreference.com/w/cpp/language/function
-    // https://en.cppreference.com/w/cpp/language/declarations
-    static const QLatin1StringView rxDeclarator(R"((\w[\s\w<\(\),:\*]*[&>\s\*])?)");
 
     // https://en.cppreference.com/w/cpp/language/classes
     static const QLatin1StringView rx1(R"(^(class|struct|union)%1[^:{]*\b(\w+)[:{])");
     static const QRegularExpression rxStruct(rx1.arg(rxAttribute));
+
+    // https://en.cppreference.com/w/cpp/language/function
+    // https://en.cppreference.com/w/cpp/language/declarations
+    static const QLatin1StringView rxDeclarator(R"((\w[\s\w<\(\),:\*]*[&>\s\*])?)");
 
     // https://en.cppreference.com/w/cpp/language/enum
     static const QLatin1StringView rx2(R"(\benum\W?(class|struct)?%1\W?(\w+)(:\w+)?\{)");
@@ -105,6 +112,10 @@ void CppParser::parseDocument()
 
     static const QRegularExpression typeDefStruct(QStringLiteral(R"(\btypedef struct( \w+)?\{)"));
     static const QRegularExpression typeDefStructA(QStringLiteral(R"(\btypedef struct (\w+) (\w+))"));
+
+    static const QLatin1StringView noneTypesToIgnore("friend|class|struct|union|delete|using");
+    static const QLatin1StringView rx5(R"(^(?!%1)%2(%3)(\[\d+\])?([=\{\(].*)?;)");
+    static const QRegularExpression rxVariableDec(rx5.arg(noneTypesToIgnore).arg(rxDeclarator).arg(rxName));
 
     QRegularExpressionMatch rxMatch;
 
@@ -131,7 +142,6 @@ void CppParser::parseDocument()
             addScopeNode(NamespaceNode, rxMatch.captured(1), m_lineNumber);
 
         } else if (m_line.contains(rxAccessSpec, &rxMatch)) {
-            // qDebug() << rxMatch.captured(1) << rxMatch.captured(2) << rxMatch.captured(3) << rxMatch.captured(4);
             addAccessSpecNode(rxMatch.captured(1));
 
         } else if (m_line.contains(rxStruct, &rxMatch)) {
@@ -185,8 +195,12 @@ void CppParser::parseDocument()
                 addNode(TypedefNode, match.captured(1), m_lineNumber);
             }
 
+        } else if ((parentNodeType() == AccessSpecNode || parentNodeType() == NamespaceNode) && m_line.contains(rxVariableDec, &rxMatch)) {
+            // qDebug() << lineNumber() << rxMatch.captured(1) << rxMatch.captured(2) << rxMatch.captured(3) << rxMatch.captured(4);
+            addNode(VariableNode, rxMatch.captured(2), m_lineNumber);
+
         // } else {
-        //     qDebug() << "NOPE" << m_lineNumber << m_line;
+        //     qDebug() << "NOPE" << lineNumber() << m_line;
         }
     }
 

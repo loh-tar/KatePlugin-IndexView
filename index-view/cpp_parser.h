@@ -45,12 +45,12 @@ protected:
         MacroNode = FirstNodeType,
         NamespaceNode,
         TypedefNode,
-//         VariableNode,
         StructNode,
         AccessSpecNode,
         EnumNode,
         FunctionDefNode,// Function definition
         FunctionDecNode,// Function declaration
+        VariableNode,
     };
 
     QString version() override { return QStringLiteral("0.9.1, Jun 2025"); } ;
