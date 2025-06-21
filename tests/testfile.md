@@ -52,7 +52,14 @@ Some more paragraph
 ###### The smallest heading H6
 Some paragraph
 
-Some more paragraph
+Regarding code blocks wrote [Gruber][1]
+
+    To produce a code block in Markdown,
+      simply indent every line
+        of the block by at least 4 spaces
+	or 1 tab (take care, first char in this line is a tab \t)
+
+Therefore is nothing from this Code block to see in our tree!
 
 ####### More sharps than six are not treated as header, therefore
 is this a paragraph, which conforms to Kate's syntax highlighter.

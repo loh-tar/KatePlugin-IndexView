@@ -59,6 +59,7 @@ void MarkdownParser::parseDocument()
     static const QRegularExpression rxEqualLine(QStringLiteral(R"(^[=]{3,}$)"));
     static const QRegularExpression rxDashLine(QStringLiteral(R"(^[-]{3,}$)"));
     static const QRegularExpression rxHeader(QStringLiteral(R"(^#{1,6}\s.*$)"));
+    static const QRegularExpression rxCodeLine(QStringLiteral(R"(^(\t| {4,})+\S.*$)"));
 
     QString paraLine;   // First line of a paragraph
     initHistory(3);
@@ -68,6 +69,7 @@ void MarkdownParser::parseDocument()
         bool currIsEqualLine = rawLine().contains(rxEqualLine);
         bool currIsDashLine  = rawLine().contains(rxDashLine);
         bool currIsHeader    = rawLine().contains(rxHeader);
+        bool currIsCode      = rawLine().contains(rxCodeLine);
 
         // Keep a record of the history
         if (m_line.isEmpty()) {
@@ -78,6 +80,9 @@ void MarkdownParser::parseDocument()
             addToHistory(EqualLine, m_line);
         } else if (currIsHeader) {
             addToHistory(HeaderLine, m_line);
+        } else if (currIsCode) {
+            // More is not needed to ignore code lines "by Gruber", just this notice
+            addToHistory(CodeLine, m_line);
         } else {
             addToHistory(NormalLine, m_line);
         }
@@ -136,7 +141,7 @@ void MarkdownParser::parseDocument()
             }
             addNode(headerType, text, lineNumber());
 
-            // Check for code blocks to be skipped
+            // Check for github code blocks to be skipped
         } else if (rawLine().startsWith(QStringLiteral("```"))) {
             while (nextLine()) {
                 if (!rawLine().startsWith(QStringLiteral("```"))) {

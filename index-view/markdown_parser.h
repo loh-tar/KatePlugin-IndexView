@@ -52,6 +52,7 @@ protected:
 
     enum LineType {
         NormalLine = FirstCustomLineType,
+        CodeLine,
         HeaderLine,
         EqualLine,
         DashLine
