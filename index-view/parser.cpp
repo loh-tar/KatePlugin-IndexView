@@ -408,6 +408,7 @@ bool Parser::appendNextLine()
 void Parser::generateReport()
 {
     QString filePath = document()->url().adjusted(QUrl::RemoveFilename).path();
+
     if (filePath.endsWith(QLatin1StringView("/KatePlugin-IndexView/tests/"))) {
         qDebug() << "Update Status Report for file " << filePath + document()->url().fileName();
         QFile file(filePath + QLatin1StringView("reports/") + document()->url().fileName() + QLatin1StringView(".txt"));
@@ -433,11 +434,24 @@ void Parser::generateReport()
                 if (action->isSeparator()) {
                     continue;
                 }
-                stream << qSetFieldWidth(30) << Qt::right << action->text() + QLatin1StringView(": ") << qSetFieldWidth(0) << action->isChecked() << Qt::endl;
+                stream << qSetFieldWidth(38) << Qt::right
+                       << action->text()
+                       << qSetFieldWidth(0) << Qt::left
+                       << QLatin1StringView(" : ") + QLatin1StringView(action->isChecked() ? "yes" : "no")
+                       << Qt::endl;
             }
-            stream << Qt::endl << Qt::endl
+
+            stream << Qt::endl << Qt::endl << qSetFieldWidth(0) << Qt::left
                    << "List of Nodes" << Qt::endl
-                   << "---------------" << Qt::endl
+                   << "---------------" << Qt::endl;
+            for (int i = 0; i < p_indexList.size(); ++i) {
+                QTreeWidgetItem *item = p_indexList.at(i);
+                stream << qSetFieldWidth(80) << Qt::center << item->text(0) << qSetFieldWidth(0) << Qt::endl;
+            }
+
+            stream << qSetFieldWidth(0) << Qt::endl << Qt::endl << Qt::left
+                   << "List of Nodes with line numbers" << Qt::endl
+                   << "---------------------------------" << Qt::endl
                    << qSetFieldWidth(6) << Qt::left << "Node" << qSetFieldWidth(50) << "Node-Text" << qSetFieldWidth(0) << "Line Column EndLine" << Qt::endl;
             for (int i = 0; i < p_indexList.size(); ++i) {
                 QTreeWidgetItem *item = p_indexList.at(i);
