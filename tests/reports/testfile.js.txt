@@ -28,7 +28,7 @@ In any other case adjust the view options and trigger a new parsing.
 
 List of Nodes
 ---------------
-          T: Improve this haphazardly test file. Parts are taken from           
+                 T: Improve this haphazardly test file. Parts …                 
                                    factorial                                    
                                     counter                                     
                                       Ball                                      
@@ -43,7 +43,7 @@ List of Nodes
 List of Nodes with line numbers
 ---------------------------------
 Node  Node-Text                                         Line Column EndLine
-   0  T: Improve this haphazardly test file. Parts are taken from   0    0      0      
+   0  T: Improve this haphazardly test file. Parts …       0    0      0      
    1  factorial                                            4    0      9      
    2  counter                                             16    0     21      
    3  Ball                                                31    0     37      

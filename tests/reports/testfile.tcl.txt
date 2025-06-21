@@ -47,7 +47,7 @@ List of Nodes
                                   serve  sock                                   
                                      tail /                                     
                                      name                                       
-               F: Don't show 'file' as parameter, nor 'sock bytes               
+                 F: Don't show 'file' as parameter, nor 'sock …                 
                               done file sock bytes                              
                              nest1 file sock bytes                              
                                     foo  bar                                    
@@ -78,7 +78,7 @@ Node  Node-Text                                         Line Column EndLine
   15  serve  sock                                         72    0    101      
   16  tail /                                              79    0     83      
   17  name                                                84    0    100      
-  18  F: Don't show 'file' as parameter, nor 'sock bytes 103    0    103      
+  18  F: Don't show 'file' as parameter, nor 'sock …     103    0    103      
   19  done file sock bytes                               104    0    113      
   20  nest1 file sock bytes                              105    0    107      
   21  foo  bar                                           106    0    106      

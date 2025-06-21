@@ -111,7 +111,7 @@ List of Nodes
                                        i                                        
                      F: int (*(*var1)(double))[3] = nullptr                     
                                       int                                       
-                F: auto (*var2)(double) -> int (*)[3] = nullptr                 
+                 F: auto (*var2)(double) -> int (*)[3] = nullp…                 
                                       auto                                      
                                       main                                      
 
@@ -198,6 +198,6 @@ Node  Node-Text                                         Line Column EndLine
   76  i                                                  221    0     -1      
   77  F: int (*(*var1)(double))[3] = nullptr             232    0    232      
   78  int                                                232    0    232      
-  79  F: auto (*var2)(double) -> int (*)[3] = nullptr    253    0    253      
+  79  F: auto (*var2)(double) -> int (*)[3] = nullp…     253    0    253      
   80  auto                                               253    0    253      
   81  main                                               263    0    266      

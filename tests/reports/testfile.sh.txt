@@ -35,7 +35,7 @@ List of Nodes
                               some_Other_Function                               
                              nested_Other_Function                              
                            nestedNestedOtherFunction                            
-        T: Improve the Bash-Parser with more options, not only functions        
+                 T: Improve the Bash-Parser with more options,…                 
                                after_heredoc_func                               
 
 
@@ -51,5 +51,5 @@ Node  Node-Text                                         Line Column EndLine
    6  some_Other_Function                                 39    0     43      
    7  nested_Other_Function                               40    0     42      
    8  nestedNestedOtherFunction                           41    0     -1      
-   9  T: Improve the Bash-Parser with more options, not only functions  44    0     44      
+   9  T: Improve the Bash-Parser with more options,…      44    0     44      
   10  after_heredoc_func                                 101    0    102      

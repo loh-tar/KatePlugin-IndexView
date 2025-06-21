@@ -29,7 +29,7 @@ In any other case adjust the view options and trigger a new parsing.
 
 List of Nodes
 ---------------
-               F: Improve this file with more meaningful content                
+                 F: Improve this file with more meaningful con…                 
                                  string_concat                                  
                                      person                                     
                                      point                                      
@@ -45,7 +45,7 @@ List of Nodes
 List of Nodes with line numbers
 ---------------------------------
 Node  Node-Text                                         Line Column EndLine
-   0  F: Improve this file with more meaningful content    1    0      1      
+   0  F: Improve this file with more meaningful con…       1    0      1      
    1  string_concat                                        3    0      9      
    2  person                                              28    0     31      
    3  point                                               39    0     41      

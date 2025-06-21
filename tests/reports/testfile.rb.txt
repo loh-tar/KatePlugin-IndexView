@@ -35,7 +35,7 @@ List of Nodes
                              gib_meine_funktion_aus                             
                               auto1.beschleunigen                               
                                  auto2.bremsen                                  
-                methode_die_block_aufruft(übergebener_parameter)                
+                 methode_die_block_aufruft(übergebener_paramet…                 
                            mache_block_zu_proc&block                            
                                       Tier                                      
                                       sagt                                      
@@ -69,7 +69,7 @@ Node  Node-Text                                         Line Column EndLine
    2  gib_meine_funktion_aus                               9    0     11      
    3  auto1.beschleunigen                                 18    0     20      
    4  auto2.bremsen                                       25    0     34      
-   5  methode_die_block_aufruft(übergebener_parameter)    40    0     46      
+   5  methode_die_block_aufruft(übergebener_paramet…      40    0     46      
    6  mache_block_zu_proc&block                           57    0     59      
    7  Tier                                                76    0     80      
    8  sagt                                                77    0     79      

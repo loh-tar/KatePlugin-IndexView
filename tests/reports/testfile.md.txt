@@ -30,9 +30,9 @@ List of Nodes
 ---------------
                                   testfile.md                                   
                    Test And Demo File For The MarkdownParser                    
- There are two main sources of reference documentation for the Markdown syntax, 
- Our MarkdownParser tries to follow both of them where possible, but in case of 
- Currently are only rudimentary things supported, like headers and paragraphs,  
+                 There are two main sources of reference docum…                 
+                 Our MarkdownParser tries to follow both of th…                 
+                 Currently are only rudimentary things support…                 
                              The largest heading H1                             
                          The second largest heading H2                          
                                  Some paragraph                                 
@@ -41,7 +41,7 @@ List of Nodes
                                  Some paragraph                                 
                               Some more paragraph                               
                      Regarding HTML tags wrote [Gruber][1]                      
-        This <pre> Block is never shown, just like the Code block above         
+                 This <pre> Block is never shown, just like th…                 
                               The forth heading H4                              
                                  Some paragraph                                 
                               Some more paragraph                               
@@ -51,19 +51,19 @@ List of Nodes
                             The smallest heading H6                             
                                  Some paragraph                                 
                     Regarding code blocks wrote [Gruber][1]                     
-         Therefore is nothing from this Code block to see in our tree!          
-       ####### More sharps than six are not treated as header, therefore        
+                 Therefore is nothing from this Code block to …                 
+                 ####### More sharps than six are not treated …                 
                      The largest H1 heading in Setext style                     
-Setext-style headers are “underlined” using equal signs (for first-level headers
+                 Setext-style headers are “underlined” using e…                 
                  The second largest H2 heading in Setext style                  
                    ...and dashes (for second-level headers).                    
-    On the day of writing this test file are these Setext-style headers not     
+                 On the day of writing this test file are thes…                 
                                       TODO                                      
                               Grabbed from GitHub                               
-  - [ ] Lists (with or without Task feature) as these are currently listed as   
+                 - [ ] Lists (with or without Task feature) as…                 
                               Grabbed from Gruber                               
                              - [ ] Horizontal Rules                             
-            [1]: https://daringfireball.net/projects/markdown/syntax            
+                 [1]: https://daringfireball.net/projects/mark…                 
 
 
 List of Nodes with line numbers
@@ -71,9 +71,9 @@ List of Nodes with line numbers
 Node  Node-Text                                         Line Column EndLine
    0  testfile.md                                          0    0     93      
    1  Test And Demo File For The MarkdownParser            0    0     10      
-   2  There are two main sources of reference documentation for the Markdown syntax,   1    0      4      
-   3  Our MarkdownParser tries to follow both of them where possible, but in case of   5    0      7      
-   4  Currently are only rudimentary things supported, like headers and paragraphs,   8    0     10      
+   2  There are two main sources of reference docum…       1    0      4      
+   3  Our MarkdownParser tries to follow both of th…       5    0      7      
+   4  Currently are only rudimentary things support…       8    0     10      
    5  The largest heading H1                              11    0     65      
    6  The second largest heading H2                       12    0     65      
    7  Some paragraph                                      13    0     21      
@@ -82,7 +82,7 @@ Node  Node-Text                                         Line Column EndLine
   10  Some paragraph                                      25    0     26      
   11  Some more paragraph                                 27    0     28      
   12  Regarding HTML tags wrote [Gruber][1]               29    0     38      
-  13  This <pre> Block is never shown, just like the Code block above  39    0     40      
+  13  This <pre> Block is never shown, just like th…      39    0     40      
   14  The forth heading H4                                41    0     65      
   15  Some paragraph                                      42    0     43      
   16  Some more paragraph                                 44    0     45      
@@ -92,16 +92,16 @@ Node  Node-Text                                         Line Column EndLine
   20  The smallest heading H6                             51    0     65      
   21  Some paragraph                                      52    0     53      
   22  Regarding code blocks wrote [Gruber][1]             54    0     60      
-  23  Therefore is nothing from this Code block to see in our tree!  61    0     62      
-  24  ####### More sharps than six are not treated as header, therefore  63    0     65      
+  23  Therefore is nothing from this Code block to …      61    0     62      
+  24  ####### More sharps than six are not treated …      63    0     65      
   25  The largest H1 heading in Setext style              66    0     76      
-  26  Setext-style headers are “underlined” using equal signs (for first-level headers  68    0     69      
+  26  Setext-style headers are “underlined” using e…      68    0     69      
   27  The second largest H2 heading in Setext style       70    0     76      
   28  ...and dashes (for second-level headers).           72    0     73      
-  29  On the day of writing this test file are these Setext-style headers not  74    0     76      
+  29  On the day of writing this test file are thes…      74    0     76      
   30  TODO                                                77    0     93      
   31  Grabbed from GitHub                                 79    0     85      
-  32  - [ ] Lists (with or without Task feature) as these are currently listed as  81    0     85      
+  32  - [ ] Lists (with or without Task feature) as…      81    0     85      
   33  Grabbed from Gruber                                 86    0     93      
   34  - [ ] Horizontal Rules                              88    0     90      
-  35  [1]: https://daringfireball.net/projects/markdown/syntax  91    0     93      
+  35  [1]: https://daringfireball.net/projects/mark…      91    0     93      

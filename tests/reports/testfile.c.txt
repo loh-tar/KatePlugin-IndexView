@@ -88,7 +88,7 @@ List of Nodes
                                       home                                      
                                     Speller                                     
                              preferredDictionaries                              
-    F: not sure if it must shown as function as it does currently, may be to    
+                 F: not sure if it must shown as function as i…                 
                                       std                                       
                                    transform                                    
                                       ABC                                       
@@ -154,7 +154,7 @@ Node  Node-Text                                         Line Column EndLine
   53  home                                               169    0     -1      
   54  Speller                                             -1    0     -1      
   55  preferredDictionaries                              170    0     -1      
-  56  F: not sure if it must shown as function as it does currently, may be to 171    0    171      
+  56  F: not sure if it must shown as function as i…     171    0    171      
   57  std                                                 -1    0     -1      
   58  transform                                          172    0    174      
   59  ABC                                                179    0    179      

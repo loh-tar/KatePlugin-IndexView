@@ -30,58 +30,58 @@ List of Nodes
 ---------------
                                   testfile.txt                                  
                   Test And Demo File For The PlainText-Parser                   
-With this plugin you have something like a table of contents when reading/edit a
+                 With this plugin you have something like a ta…                 
                                     Section                                     
-  Recognized right now is only === as section and --- as header starting at a   
-There can be any space before or after some recognized section/header/paragraph 
+                 Recognized right now is only === as section a…                 
+                 There can be any space before or after some r…                 
                                      Header                                     
-                So this is a paragraph consist only of one line.                
+                 So this is a paragraph consist only of one li…                 
                               - This paragraph has                              
                             This is a new paragraph                             
-There is no length compare done to test if the underlining fit the title length.
-   The decision to use a min length of three fit to all these but of cause no   
+                 There is no length compare done to test if th…                 
+                 The decision to use a min length of three fit…                 
                                        2)                                       
-For my taste works this all pretty charming when you have a well formatted file.
+                 For my taste works this all pretty charming w…                 
                              Bad Formatting Example                             
                                Missed Empty Line                                
                                   Foo bar text                                  
                    ^-- Well done as Section/Header/Paragraph                    
-      But there could be things improved. As hint what I talk about I have      
+                 But there could be things improved. As hint w…                 
                                Special Treatments                               
                                Avoided Paragraphs                               
- To keep the symbol list free from useless entries, will some lines ignored. So 
+                 To keep the symbol list free from useless ent…                 
                  A single line of section/header characters...                  
                  ...any line consists of only one character...                  
-       ...and any line with only two characters if there are as follows:        
-   The sharp is obviously useful in some config file, the others I have added   
+                 ...and any line with only two characters if t…                 
+                 The sharp is obviously useful in some config …                 
                             ISO-Date Forced Sections                            
-  I have the habit to write down some notes like a diary, starting with a ISO   
-                2018-07-19 Made first commit of my Kate patches                 
+                 I have the habit to write down some notes lik…                 
+                 2018-07-19 Made first commit of my Kate patch…                 
                        ...but my entries looks this way:                        
    2018-07-19 Made first commit of my Kate patches to the symbol view plugin    
                           - Fix broken toggle actions                           
-              2018-07-22 Contacted the "Kate-Devils" at there list              
+                 2018-07-22 Contacted the "Kate-Devils" at the…                 
                         Nice people, but a bit taciturn                         
                 2018-07-25 Very cool, my first patch is upstream                
                       That was lastly faster than thought                       
- Without this trick would only be the date appears in the symbol list, which is 
+                 Without this trick would only be the date app…                 
                                    2018-07-22                                   
                    Contacted the "Kate-Devils" at there list                    
                                    2018-07-25                                   
                      Very cool, my first patch is upstream                      
-The former could be added but I'm not sure if that may cause unexpected results,
+                 The former could be added but I'm not sure if…                 
                          Other Seen Structuring Styles                          
-I can remember that I have seen plain text files where was other characters used
+                 I can remember that I have seen plain text fi…                 
                                   Using Sharp                                   
                                   Using Tilde                                   
                                  Using Asterisk                                 
                                   Using Caret                                   
-   I have quickly added these as you can see, but in a (too?) very lazy way:    
+                 I have quickly added these as you can see, bu…                 
                                    Feel Free                                    
                                    To Fix Me                                    
                    Perhaps not a problem but a funny feature.                   
                              Room For Improvements                              
-There could be a list with items indented to the paragraph. But that's not only 
+                 There could be a list with items indented to …                 
 
 
 List of Nodes with line numbers
@@ -89,55 +89,55 @@ List of Nodes with line numbers
 Node  Node-Text                                         Line Column EndLine
    0  testfile.txt                                         0    0    183      
    1  Test And Demo File For The PlainText-Parser          0    0      5      
-   2  With this plugin you have something like a table of contents when reading/edit a   2    0      5      
+   2  With this plugin you have something like a ta…       2    0      5      
    3  Section                                              6    0     51      
-   4  Recognized right now is only === as section and --- as header starting at a   8    0     12      
-   5  There can be any space before or after some recognized section/header/paragraph  13    0     18      
+   4  Recognized right now is only === as section a…       8    0     12      
+   5  There can be any space before or after some r…      13    0     18      
    6  Header                                              19    0     51      
-   7  So this is a paragraph consist only of one line.    24    0     25      
+   7  So this is a paragraph consist only of one li…      24    0     25      
    8  - This paragraph has                                26    0     28      
    9  This is a new paragraph                             29    0     32      
-  10  There is no length compare done to test if the underlining fit the title length.  33    0     37      
-  11  The decision to use a min length of three fit to all these but of cause no  38    0     45      
+  10  There is no length compare done to test if th…      33    0     37      
+  11  The decision to use a min length of three fit…      38    0     45      
   12  2)                                                  46    0     48      
-  13  For my taste works this all pretty charming when you have a well formatted file.  49    0     51      
+  13  For my taste works this all pretty charming w…      49    0     51      
   14  Bad Formatting Example                              52    0     64      
   15  Missed Empty Line                                   54    0     64      
   16  Foo bar text                                        56    0     57      
   17  ^-- Well done as Section/Header/Paragraph           58    0     60      
-  18  But there could be things improved. As hint what I talk about I have  61    0     64      
+  18  But there could be things improved. As hint w…      61    0     64      
   19  Special Treatments                                  65    0    103      
   20  Avoided Paragraphs                                  68    0     97      
-  21  To keep the symbol list free from useless entries, will some lines ignored. So  70    0     72      
+  21  To keep the symbol list free from useless ent…      70    0     72      
   22  A single line of section/header characters...       73    0     77      
   23  ...any line consists of only one character...       78    0     85      
-  24  ...and any line with only two characters if there are as follows:  86    0     93      
-  25  The sharp is obviously useful in some config file, the others I have added  94    0     97      
+  24  ...and any line with only two characters if t…      86    0     93      
+  25  The sharp is obviously useful in some config …      94    0     97      
   26  ISO-Date Forced Sections                            98    0    103      
-  27  I have the habit to write down some notes like a diary, starting with a ISO 100    0    103      
-  28  2018-07-19 Made first commit of my Kate patches    104    0    108      
+  27  I have the habit to write down some notes lik…     100    0    103      
+  28  2018-07-19 Made first commit of my Kate patch…     104    0    108      
   29  ...but my entries looks this way:                  107    0    108      
   30  2018-07-19 Made first commit of my Kate patches to the symbol view plugin 109    0    117      
   31  - Fix broken toggle actions                        113    0    117      
-  32  2018-07-22 Contacted the "Kate-Devils" at there list 118    0    121      
+  32  2018-07-22 Contacted the "Kate-Devils" at the…     118    0    121      
   33  Nice people, but a bit taciturn                    120    0    121      
   34  2018-07-25 Very cool, my first patch is upstream   122    0    137      
   35  That was lastly faster than thought                125    0    127      
-  36  Without this trick would only be the date appears in the symbol list, which is 128    0    132      
+  36  Without this trick would only be the date app…     128    0    132      
   37  2018-07-22                                         133    0    134      
   38  Contacted the "Kate-Devils" at there list          135    0    137      
   39  2018-07-25                                         138    0    154      
   40  Very cool, my first patch is upstream              141    0    143      
-  41  The former could be added but I'm not sure if that may cause unexpected results, 144    0    149      
+  41  The former could be added but I'm not sure if…     144    0    149      
   42  Other Seen Structuring Styles                      150    0    154      
-  43  I can remember that I have seen plain text files where was other characters used 152    0    154      
+  43  I can remember that I have seen plain text fi…     152    0    154      
   44  Using Sharp                                        155    0    160      
   45  Using Tilde                                        158    0    160      
   46  Using Asterisk                                     161    0    168      
   47  Using Caret                                        164    0    168      
-  48  I have quickly added these as you can see, but in a (too?) very lazy way: 167    0    168      
+  48  I have quickly added these as you can see, bu…     167    0    168      
   49  Feel Free                                          169    0    177      
   50  To Fix Me                                          172    0    177      
   51  Perhaps not a problem but a funny feature.         175    0    177      
   52  Room For Improvements                              178    0    183      
-  53  There could be a list with items indented to the paragraph. But that's not only 180    0    183      
+  53  There could be a list with items indented to …     180    0    183      

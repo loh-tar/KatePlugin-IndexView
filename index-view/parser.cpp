@@ -664,7 +664,14 @@ void Parser::setNodeProperties(QTreeWidgetItem *const node, const int nodeType, 
         return;
     }
 
-    node->setText(0, text);
+    // The size of 45 is choosen to fit into the Status Report (sure could be changed..)
+    // but I think no one need such long lines (ok, maybe these who want parameter to see..)
+    if (text.size() > 45) {
+        node->setText(0, text.first(45) + QStringLiteral("…"));
+    } else {
+        node->setText(0, text);
+    }
+
     if (p_addIcons->isChecked()) {
     node->setIcon(0, p_nodeTypes.value(nodeType).icon); }
     node->setData(0, NodeData::Line, lineNumber);

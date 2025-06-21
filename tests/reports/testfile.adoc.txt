@@ -30,7 +30,7 @@ List of Nodes
 ---------------
                                  testfile.adoc                                  
                              Some AsciiDoc Article                              
-    Taken from https://en.wikipedia.org/wiki/AsciiDoc and a little modified.    
+                 Taken from https://en.wikipedia.org/wiki/Asci…                 
                      https://wikipedia.org[Wikipedia] is an                     
                                     Software                                    
                       You can install 'package-name' using                      
@@ -38,33 +38,33 @@ List of Nodes
                                     Hardware                                    
                               Metals commonly used                              
                                     * copper                                    
-Below follow parts of the README from Asciidoctor. I have no idea what parts may
+                 Below follow parts of the README from Asciido…                 
                                   Asciidoctor                                   
-Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Sarah White <https://g
-{url-project}[Asciidoctor] is a fast, open source, Ruby-based text processor for
-Asciidoctor also has an ecosystem of extensions, converters, build plugins, and 
-In addition to running on Ruby, Asciidoctor can be executed on a JVM using {url-
+                 Dan Allen <https://github.com/mojavelinux[@mo…                 
+                 {url-project}[Asciidoctor] is a fast, open so…                 
+                 Asciidoctor also has an ecosystem of extensio…                 
+                 In addition to running on Ruby, Asciidoctor c…                 
                           ifndef::env-site,env-yard[]                           
                                .Key documentation                               
                                 ifdef::status[]                                 
                   AsciiDoc Processing and Built-in Converters                   
                           AsciiDoc is the language. +                           
-Asciidoctor reads the AsciiDoc source, as shown in the panel on the left in the 
-image::{image-url-screenshot}[Preview of AsciiDoc source and corresponding rende
-Asciidoctor provides built-in {url-docs}/asciidoctor/latest/converters/[converte
+                 Asciidoctor reads the AsciiDoc source, as sho…                 
+                 image::{image-url-screenshot}[Preview of Asci…                 
+                 Asciidoctor provides built-in {url-docs}/asci…                 
                              Asciidoctor Ecosystem                              
                                   Requirements                                  
-Asciidoctor works on Linux, macOS and Windows and requires one of the following 
+                 Asciidoctor works on Linux, macOS and Windows…                 
                           * CRuby (aka MRI) 2.3 - 3.0                           
                                    [CAUTION]                                    
                                    chcp 65001                                   
-   Once you make this change, all your Unicode headaches will be behind you.    
+                 Once you make this change, all your Unicode h…                 
                                     Bundler                                     
-. Create a Gemfile in the root folder of your project (or the current directory)
+                 . Create a Gemfile in the root folder of your…                 
                          source 'https://rubygems.org'                          
                                . Save the Gemfile                               
                                     $ bundle                                    
-To upgrade the gem, specify the new version in the Gemfile and run `bundle` agai
+                 To upgrade the gem, specify the new version i…                 
 
 
 List of Nodes with line numbers
@@ -72,7 +72,7 @@ List of Nodes with line numbers
 Node  Node-Text                                         Line Column EndLine
    0  testfile.adoc                                        0    0    127      
    1  Some AsciiDoc Article                                0    0     30      
-   2  Taken from https://en.wikipedia.org/wiki/AsciiDoc and a little modified.   2    0      4      
+   2  Taken from https://en.wikipedia.org/wiki/Asci…       2    0      4      
    3  https://wikipedia.org[Wikipedia] is an               5    0      8      
    4  Software                                             9    0     15      
    5  You can install 'package-name' using                11    0     13      
@@ -80,30 +80,30 @@ Node  Node-Text                                         Line Column EndLine
    7  Hardware                                            16    0     30      
    8  Metals commonly used                                18    0     30      
    9  * copper                                            20    0     26      
-  10  Below follow parts of the README from Asciidoctor. I have no idea what parts may  27    0     30      
+  10  Below follow parts of the README from Asciido…      27    0     30      
   11  Asciidoctor                                         31    0    127      
-  12  Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Sarah White <https://g  32    0     37      
-  13  {url-project}[Asciidoctor] is a fast, open source, Ruby-based text processor for  38    0     39      
-  14  Asciidoctor also has an ecosystem of extensions, converters, build plugins, and   40    0     42      
-  15  In addition to running on Ruby, Asciidoctor can be executed on a JVM using {url-  43    0     44      
+  12  Dan Allen <https://github.com/mojavelinux[@mo…      32    0     37      
+  13  {url-project}[Asciidoctor] is a fast, open so…      38    0     39      
+  14  Asciidoctor also has an ecosystem of extensio…      40    0     42      
+  15  In addition to running on Ruby, Asciidoctor c…      43    0     44      
   16  ifndef::env-site,env-yard[]                         45    0     55      
   17  .Key documentation                                  56    0     61      
   18  ifdef::status[]                                     62    0     68      
   19  AsciiDoc Processing and Built-in Converters         69    0     81      
   20  AsciiDoc is the language. +                         71    0     73      
-  21  Asciidoctor reads the AsciiDoc source, as shown in the panel on the left in the   74    0     75      
-  22  image::{image-url-screenshot}[Preview of AsciiDoc source and corresponding rende  76    0     77      
-  23  Asciidoctor provides built-in {url-docs}/asciidoctor/latest/converters/[converte  78    0     81      
+  21  Asciidoctor reads the AsciiDoc source, as sho…      74    0     75      
+  22  image::{image-url-screenshot}[Preview of Asci…      76    0     77      
+  23  Asciidoctor provides built-in {url-docs}/asci…      78    0     81      
   24  Asciidoctor Ecosystem                               82    0     83      
   25  Requirements                                        84    0    127      
-  26  Asciidoctor works on Linux, macOS and Windows and requires one of the following   86    0     87      
+  26  Asciidoctor works on Linux, macOS and Windows…      86    0     87      
   27  * CRuby (aka MRI) 2.3 - 3.0                         88    0     91      
   28  [CAUTION]                                           92    0     96      
   29  chcp 65001                                          97    0     98      
-  30  Once you make this change, all your Unicode headaches will be behind you.  99    0    104      
+  30  Once you make this change, all your Unicode h…      99    0    104      
   31  Bundler                                            105    0    127      
-  32  . Create a Gemfile in the root folder of your project (or the current directory) 107    0    111      
+  32  . Create a Gemfile in the root folder of your…     107    0    111      
   33  source 'https://rubygems.org'                      112    0    117      
   34  . Save the Gemfile                                 118    0    120      
   35  $ bundle                                           121    0    122      
-  36  To upgrade the gem, specify the new version in the Gemfile and run `bundle` agai 123    0    127      
+  36  To upgrade the gem, specify the new version i…     123    0    127      
