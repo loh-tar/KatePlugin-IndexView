@@ -56,9 +56,9 @@ MarkdownParser::~MarkdownParser()
 
 void MarkdownParser::parseDocument()
 {
-    static const QRegularExpression rx1(QStringLiteral("^[=]{3,}$"));
-    static const QRegularExpression rx2(QStringLiteral("^[-]{3,}$"));
-    static const QRegularExpression rx3(QStringLiteral("^#{1,6}\\s.*$"));
+    static const QRegularExpression rx1(QStringLiteral(R"(^[=]{3,}$)"));
+    static const QRegularExpression rx2(QStringLiteral(R"(^[-]{3,}$)"));
+    static const QRegularExpression rx3(QStringLiteral(R"(^#{1,6}\s.*$)"));
 
     QString paraLine;   // First line of a paragraph
     initHistory(3);
@@ -194,9 +194,9 @@ AsciiDocParser::~AsciiDocParser()
 
 void AsciiDocParser::parseDocument()
 {
-    static const QRegularExpression rx1(QStringLiteral("^[=]{3,}$"));
-    static const QRegularExpression rx2(QStringLiteral("^[-]{3,}$"));
-    static const QRegularExpression rx3(QStringLiteral("^={1,6}\\s.*$"));
+    static const QRegularExpression rx1(QStringLiteral(R"(^[=]{3,}$)"));
+    static const QRegularExpression rx2(QStringLiteral(R"(^[-]{3,}$)"));
+    static const QRegularExpression rx3(QStringLiteral(R"(^={1,6}\s.*$)"));
 
     QString paraLine;   // First line of a paragraph
     initHistory(3);
