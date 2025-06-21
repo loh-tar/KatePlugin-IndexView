@@ -56,18 +56,18 @@ MarkdownParser::~MarkdownParser()
 
 void MarkdownParser::parseDocument()
 {
-    static const QRegularExpression rx1(QStringLiteral(R"(^[=]{3,}$)"));
-    static const QRegularExpression rx2(QStringLiteral(R"(^[-]{3,}$)"));
-    static const QRegularExpression rx3(QStringLiteral(R"(^#{1,6}\s.*$)"));
+    static const QRegularExpression rxEqualLine(QStringLiteral(R"(^[=]{3,}$)"));
+    static const QRegularExpression rxDashLine(QStringLiteral(R"(^[-]{3,}$)"));
+    static const QRegularExpression rxHeader(QStringLiteral(R"(^#{1,6}\s.*$)"));
 
     QString paraLine;   // First line of a paragraph
     initHistory(3);
 
     while (nextLine()) {
         // Let's start the investigation
-        bool currIsEqualLine = rawLine().contains(rx1);
-        bool currIsDashLine  = rawLine().contains(rx2);
-        bool currIsHeader    = rawLine().contains(rx3);
+        bool currIsEqualLine = rawLine().contains(rxEqualLine);
+        bool currIsDashLine  = rawLine().contains(rxDashLine);
+        bool currIsHeader    = rawLine().contains(rxHeader);
 
         // Keep a record of the history
         if (m_line.isEmpty()) {
@@ -194,18 +194,18 @@ AsciiDocParser::~AsciiDocParser()
 
 void AsciiDocParser::parseDocument()
 {
-    static const QRegularExpression rx1(QStringLiteral(R"(^[=]{3,}$)"));
-    static const QRegularExpression rx2(QStringLiteral(R"(^[-]{3,}$)"));
-    static const QRegularExpression rx3(QStringLiteral(R"(^={1,6}\s.*$)"));
+    static const QRegularExpression rxEqualLine(QStringLiteral(R"(^[=]{3,}$)"));
+    static const QRegularExpression rxDashLine(QStringLiteral(R"(^[-]{3,}$)"));
+    static const QRegularExpression rxHeader(QStringLiteral(R"(^={1,6}\s.*$)"));
 
     QString paraLine;   // First line of a paragraph
     initHistory(3);
 
     while (nextLine()) {
         // Let's start the investigation
-        bool currIsEqualLine = rawLine().contains(rx1);// atm not used (and related)
-        bool currIsDashLine  = rawLine().contains(rx2);
-        bool currIsHeader    = rawLine().contains(rx3);
+        bool currIsEqualLine = rawLine().contains(rxEqualLine);// atm not used (and related)
+        bool currIsDashLine  = rawLine().contains(rxDashLine);
+        bool currIsHeader    = rawLine().contains(rxHeader);
 
         // Keep a record of the history
         if (m_line.isEmpty()) {
