@@ -5,9 +5,8 @@ Parser Version: 0.6.1, Jul 2022
 Test File     : KatePlugin-IndexView/tests/testfile.tcl
 File CheckSum : 4cc4b2bbbb6675636af11e3048469278c5294115
 
-Needless to say, a changed CheckSum indicate a changed Test File and we may see changed Nodes!
-WARNING! The CheckSum equals the file on disk!
-         Before you commit a changed report, close/open the Test File to be save!
+WARNING! The CheckSum equals the file on disk! Before you commit a changed
+         report, reload (F5) the Test File to be save!
 
 
 View Options
@@ -16,44 +15,74 @@ Needless to say, but CHANGES HERE affect the result THERE!
 So, something should only change here if options are added or removed.
 In any other case adjust the view options and trigger a new parsing.
 
-                 Show Sorted: 0
-              Structure View: 1
-                  Adorn View: 1
-                 Expand View: 1
-             Show FIXME/TODO: 1
-                  Show BEGIN: 1
-              Show Variables: 1
-            Show Assignments: 1
-              Show Functions: 1
-              Show Parameter: 1
+                           Show Sorted : no
+                        Structure View : yes
+                            Adorn View : yes
+                           Expand View : yes
+                       Show FIXME/TODO : yes
+                            Show BEGIN : yes
+                        Show Variables : yes
+                      Show Assignments : yes
+                        Show Functions : yes
+                        Show Parameter : yes
 
 
 List of Nodes
 ---------------
-Node-Number Node-Text                                                             Line-Number-in-File
-   0        F: recognition                                                        7
-   1        foo                                                                   15
-   2        greeting  Hello!                                                      37
-   3        F: Not quoted strings are not considered                              38
-   4        F: Braced strings are not supported                                   42
-   5        test                                                                  43
-   6        F: note                                                               54
-   7        root  c:/html                                                         59
-   8        default  index.htm                                                    60
-   9        port  80                                                              61
-  10        encoding  iso8859-1                                                   62
-  11        bgerror  msg                                                          64
-  12        answer sock host2 port2                                               66
-  13        foo  bar                                                              68
-  14        bar  foo                                                              69
-  15        serve  sock                                                           72
-  16        tail /                                                                79
-  17        name                                                                  84
-  18        F: Don't show 'file' as parameter, nor 'sock bytes                    103
-  19        done file sock bytes                                                  104
-  20        nest1 file sock bytes                                                 105
-  21        foo  bar                                                              106
-  22        nest2 file sock bytes                                                 108
-  23        foo  bar                                                              109
-  24        baz  faz                                                              114
-  25        makeEnum name values                                                  120
+                                 F: recognition                                 
+                                     foo                                        
+                                greeting  Hello!                                
+                    F: Not quoted strings are not considered                    
+                      F: Braced strings are not supported                       
+                                     test                                       
+                                    F: note                                     
+                                 root  c:/html                                  
+                               default  index.htm                               
+                                    port  80                                    
+                              encoding  iso8859-1                               
+                                  bgerror  msg                                  
+                            answer sock host2 port2                             
+                                    foo  bar                                    
+                                    bar  foo                                    
+                                  serve  sock                                   
+                                     tail /                                     
+                                     name                                       
+               F: Don't show 'file' as parameter, nor 'sock bytes               
+                              done file sock bytes                              
+                             nest1 file sock bytes                              
+                                    foo  bar                                    
+                             nest2 file sock bytes                              
+                                    foo  bar                                    
+                                    baz  faz                                    
+                              makeEnum name values                              
+
+
+List of Nodes with line numbers
+---------------------------------
+Node  Node-Text                                         Line Column EndLine
+   0  F: recognition                                       7    0      7      
+   1  foo                                                 15    0     33      
+   2  greeting  Hello!                                    37    0     37      
+   3  F: Not quoted strings are not considered            38    0     38      
+   4  F: Braced strings are not supported                 42    0     42      
+   5  test                                                43    0     55      
+   6  F: note                                             54    0     54      
+   7  root  c:/html                                       59    0     59      
+   8  default  index.htm                                  60    0     60      
+   9  port  80                                            61    0     61      
+  10  encoding  iso8859-1                                 62    0     62      
+  11  bgerror  msg                                        64    0     -1      
+  12  answer sock host2 port2                             66    0     70      
+  13  foo  bar                                            68    0     68      
+  14  bar  foo                                            69    0     69      
+  15  serve  sock                                         72    0    101      
+  16  tail /                                              79    0     83      
+  17  name                                                84    0    100      
+  18  F: Don't show 'file' as parameter, nor 'sock bytes 103    0    103      
+  19  done file sock bytes                               104    0    113      
+  20  nest1 file sock bytes                              105    0    107      
+  21  foo  bar                                           106    0    106      
+  22  nest2 file sock bytes                              108    0    110      
+  23  foo  bar                                           109    0    109      
+  24  baz  faz                                           114    0    114      
+  25  makeEnum name values                               120    0    123      

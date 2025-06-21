@@ -5,9 +5,8 @@ Parser Version: 0.7.1, Jul 2022
 Test File     : KatePlugin-IndexView/tests/testfile.rb
 File CheckSum : e64f77ec56b68f4abc8e49f9f14150dd7452b35c
 
-Needless to say, a changed CheckSum indicate a changed Test File and we may see changed Nodes!
-WARNING! The CheckSum equals the file on disk!
-         Before you commit a changed report, close/open the Test File to be save!
+WARNING! The CheckSum equals the file on disk! Before you commit a changed
+         report, reload (F5) the Test File to be save!
 
 
 View Options
@@ -16,48 +15,81 @@ Needless to say, but CHANGES HERE affect the result THERE!
 So, something should only change here if options are added or removed.
 In any other case adjust the view options and trigger a new parsing.
 
-                 Show Sorted: 0
-              Structure View: 1
-                  Adorn View: 1
-                 Expand View: 1
-             Show FIXME/TODO: 1
-                  Show BEGIN: 1
-                Show Classes: 1
-                  Show Mixin: 1
-                Show Modules: 1
-                Show Methods: 1
-              Show Parameter: 1
+                           Show Sorted : no
+                        Structure View : yes
+                            Adorn View : yes
+                           Expand View : yes
+                       Show FIXME/TODO : yes
+                            Show BEGIN : yes
+                          Show Classes : yes
+                            Show Mixin : yes
+                          Show Modules : yes
+                          Show Methods : yes
+                        Show Parameter : yes
 
 
 List of Nodes
 ---------------
-Node-Number Node-Text                                                             Line-Number-in-File
-   0        meine_funktion                                                        3
-   1        ABC                                                                   8
-   2        gib_meine_funktion_aus                                                9
-   3        auto1.beschleunigen                                                   18
-   4        auto2.bremsen                                                         25
-   5        methode_die_block_aufruft(übergebener_parameter)                      40
-   6        mache_block_zu_proc&block                                             57
-   7        Tier                                                                  76
-   8        sagt                                                                  77
-   9        KannSchwimmen                                                         82
-  10        schwimmt                                                              83
-  11        KannNichtSchwimmen                                                    88
-  12        schwimmt                                                              89
-  13        Fisch<Tier                                                            94
-  14        KannSchwimmen                                                         95
-  15        Vogel<Tier                                                            98
-  16        KannNichtSchwimmen                                                    99
-  17        sagt                                                                  100
-  18        Mensch<Tier                                                           105
-  19        KannSchwimmen                                                         106
-  20        sagt                                                                  107
-  21        NichtSchwimmer<Mensch                                                 112
-  22        KannNichtSchwimmen                                                    113
-  23        Numeric                                                               132
-  24        inverse                                                               133
-  25        remember(&a_block)                                                    184
-  26        create_set_and_get(initial_value=0)                                   194
-  27        dont_show_this(closure_value=0)                                       210
-  28        create_set_and_get(closure_value=0)                                   222
+                                 meine_funktion                                 
+                                      ABC                                       
+                             gib_meine_funktion_aus                             
+                              auto1.beschleunigen                               
+                                 auto2.bremsen                                  
+                methode_die_block_aufruft(übergebener_parameter)                
+                           mache_block_zu_proc&block                            
+                                      Tier                                      
+                                      sagt                                      
+                                 KannSchwimmen                                  
+                                    schwimmt                                    
+                               KannNichtSchwimmen                               
+                                    schwimmt                                    
+                                  Fisch<Tier                                    
+                                 KannSchwimmen                                  
+                                   Vogel<Tier                                   
+                               KannNichtSchwimmen                               
+                                     sagt                                       
+                                  Mensch<Tier                                   
+                                 KannSchwimmen                                  
+                                      sagt                                      
+                             NichtSchwimmer<Mensch                              
+                              KannNichtSchwimmen                                
+                                    Numeric                                     
+                                    inverse                                     
+                               remember(&a_block)                               
+                      create_set_and_get(initial_value=0)                       
+                        dont_show_this(closure_value=0)                         
+                      create_set_and_get(closure_value=0)                       
+
+
+List of Nodes with line numbers
+---------------------------------
+Node  Node-Text                                         Line Column EndLine
+   0  meine_funktion                                       3    0      5      
+   1  ABC                                                  8    0     12      
+   2  gib_meine_funktion_aus                               9    0     11      
+   3  auto1.beschleunigen                                 18    0     20      
+   4  auto2.bremsen                                       25    0     34      
+   5  methode_die_block_aufruft(übergebener_parameter)    40    0     46      
+   6  mache_block_zu_proc&block                           57    0     59      
+   7  Tier                                                76    0     80      
+   8  sagt                                                77    0     79      
+   9  KannSchwimmen                                       82    0     86      
+  10  schwimmt                                            83    0     85      
+  11  KannNichtSchwimmen                                  88    0     92      
+  12  schwimmt                                            89    0     91      
+  13  Fisch<Tier                                          94    0     96      
+  14  KannSchwimmen                                       95    0     95      
+  15  Vogel<Tier                                          98    0    103      
+  16  KannNichtSchwimmen                                  99    0     99      
+  17  sagt                                               100    0    102      
+  18  Mensch<Tier                                        105    0    110      
+  19  KannSchwimmen                                      106    0    106      
+  20  sagt                                               107    0    109      
+  21  NichtSchwimmer<Mensch                              112    0    114      
+  22  KannNichtSchwimmen                                 113    0    113      
+  23  Numeric                                            132    0    136      
+  24  inverse                                            133    0    175      
+  25  remember(&a_block)                                 184    0    186      
+  26  create_set_and_get(initial_value=0)                194    0    197      
+  27  dont_show_this(closure_value=0)                    210    0    212      
+  28  create_set_and_get(closure_value=0)                222    0    224      

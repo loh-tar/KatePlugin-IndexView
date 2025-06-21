@@ -5,9 +5,8 @@ Parser Version: 0.5.1, Jul 2022
 Test File     : KatePlugin-IndexView/tests/testfile.sh
 File CheckSum : 0fa1aeb058384c4f20a50c0a4e778db8d02b4dc0
 
-Needless to say, a changed CheckSum indicate a changed Test File and we may see changed Nodes!
-WARNING! The CheckSum equals the file on disk!
-         Before you commit a changed report, close/open the Test File to be save!
+WARNING! The CheckSum equals the file on disk! Before you commit a changed
+         report, reload (F5) the Test File to be save!
 
 
 View Options
@@ -16,26 +15,41 @@ Needless to say, but CHANGES HERE affect the result THERE!
 So, something should only change here if options are added or removed.
 In any other case adjust the view options and trigger a new parsing.
 
-                 Show Sorted: 0
-              Structure View: 1
-                  Adorn View: 1
-                 Expand View: 1
-             Show FIXME/TODO: 1
-                  Show BEGIN: 1
-              Show Functions: 1
+                           Show Sorted : no
+                        Structure View : yes
+                            Adorn View : yes
+                           Expand View : yes
+                       Show FIXME/TODO : yes
+                            Show BEGIN : yes
+                        Show Functions : yes
 
 
 List of Nodes
 ---------------
-Node-Number Node-Text                                                             Line-Number-in-File
-   0        someFunction                                                          4
-   1        nestedFunction1                                                       11
-   2        nestedNestedFunction1                                                 16
-   3        nestedFunction2                                                       23
-   4        nestedNestedFunction2                                                 24
-   5        T: Improve this file to be less pointless                             37
-   6        some_Other_Function                                                   39
-   7        nested_Other_Function                                                 40
-   8        nestedNestedOtherFunction                                             41
-   9        T: Improve the Bash-Parser with more options, not only functions      44
-  10        after_heredoc_func                                                    101
+                                  someFunction                                  
+                                nestedFunction1                                 
+                             nestedNestedFunction1                              
+                                nestedFunction2                                 
+                             nestedNestedFunction2                              
+                   T: Improve this file to be less pointless                    
+                              some_Other_Function                               
+                             nested_Other_Function                              
+                           nestedNestedOtherFunction                            
+        T: Improve the Bash-Parser with more options, not only functions        
+                               after_heredoc_func                               
+
+
+List of Nodes with line numbers
+---------------------------------
+Node  Node-Text                                         Line Column EndLine
+   0  someFunction                                         4    0     35      
+   1  nestedFunction1                                     11    0     21      
+   2  nestedNestedFunction1                               16    0     18      
+   3  nestedFunction2                                     23    0     26      
+   4  nestedNestedFunction2                               24    0     33      
+   5  T: Improve this file to be less pointless           37    0     37      
+   6  some_Other_Function                                 39    0     43      
+   7  nested_Other_Function                               40    0     42      
+   8  nestedNestedOtherFunction                           41    0     -1      
+   9  T: Improve the Bash-Parser with more options, not only functions  44    0     44      
+  10  after_heredoc_func                                 101    0    102      
