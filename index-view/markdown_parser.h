@@ -47,12 +47,15 @@ protected:
         Head4Node,
         Head5Node,
         Head6Node,
-        ParaNode
+        ParaNode,
+        LinkNode,
     };
 
     enum LineType {
         NormalLine = FirstCustomLineType,
+        LinkLine,
         CodeLine,
+        IndentLine,
         HeaderLine,
         EqualLine,
         DashLine
@@ -63,6 +66,7 @@ protected:
 
     void parseDocument() override;
 
+    QAction *p_detachLinks;
 };
 
 /**

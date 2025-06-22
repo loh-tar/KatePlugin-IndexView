@@ -3,7 +3,7 @@ Status Report
 Parser        : MarkdownParser
 Parser Version: 0.9, Jul 2025
 Test File     : KatePlugin-IndexView/tests/testfile.md
-File CheckSum : e4ad4fd7723fc96542eb777554e44155894c2c91
+File CheckSum : 2e439f4c5dbc1170e5fe6daa1991295ad5c84f7a
 
 WARNING! The CheckSum equals the file on disk! Before you commit a changed
          report, reload (F5) the Test File to be save!
@@ -24,6 +24,8 @@ In any other case adjust the view options and trigger a new parsing.
                         Show nesting 3 : yes
                        Show nesting 4+ : yes
                        Show Paragraphs : yes
+              Show Links and Footnotes : yes
+            Detach Links and Footnotes : yes
 
 
 List of Nodes
@@ -43,11 +45,16 @@ List of Nodes
                      Regarding HTML tags wrote [Gruber][1]                      
                  This <pre> Block is never shown, just like th…                 
                               The forth heading H4                              
-                                 Some paragraph                                 
-                              Some more paragraph                               
+                   About footnotes can you read at [GitHub][]                   
+                 As you can see have I used Grubers *implicit …                 
+                              [^1]: My reference.                               
+                 [^2]: To add line breaks within a footnote, p…                 
                              The fifths heading H5                              
-                                 Some paragraph                                 
-                              Some more paragraph                               
+                 Links support [Gruber][1] as *reference* at t…                 
+                 [1]: https://daringfireball.net/projects/mark…                 
+                 [2]: https://help.github.com/articles/basic-w…                 
+                 [GitHub]: https://docs.github.com/en/get-star…                 
+                 Links and Footnotes will be collected at the …                 
                             The smallest heading H6                             
                                  Some paragraph                                 
                     Regarding code blocks wrote [Gruber][1]                     
@@ -63,45 +70,48 @@ List of Nodes
                  - [ ] Lists (with or without Task feature) as…                 
                               Grabbed from Gruber                               
                              - [ ] Horizontal Rules                             
-                 [1]: https://daringfireball.net/projects/mark…                 
 
 
 List of Nodes with line numbers
 ---------------------------------
 Node  Node-Text                                         Line Column EndLine
-   0  testfile.md                                          0    0     93      
+   0  testfile.md                                          0    0    106      
    1  Test And Demo File For The MarkdownParser            0    0     10      
    2  There are two main sources of reference docum…       1    0      4      
    3  Our MarkdownParser tries to follow both of th…       5    0      7      
    4  Currently are only rudimentary things support…       8    0     10      
-   5  The largest heading H1                              11    0     65      
-   6  The second largest heading H2                       12    0     65      
+   5  The largest heading H1                              11    0     81      
+   6  The second largest heading H2                       12    0     81      
    7  Some paragraph                                      13    0     21      
    8  Some more paragraph                                 22    0     23      
-   9  The third level heading H3                          24    0     65      
+   9  The third level heading H3                          24    0     81      
   10  Some paragraph                                      25    0     26      
   11  Some more paragraph                                 27    0     28      
   12  Regarding HTML tags wrote [Gruber][1]               29    0     38      
   13  This <pre> Block is never shown, just like th…      39    0     40      
-  14  The forth heading H4                                41    0     65      
-  15  Some paragraph                                      42    0     43      
-  16  Some more paragraph                                 44    0     45      
-  17  The fifths heading H5                               46    0     65      
-  18  Some paragraph                                      47    0     48      
-  19  Some more paragraph                                 49    0     50      
-  20  The smallest heading H6                             51    0     65      
-  21  Some paragraph                                      52    0     53      
-  22  Regarding code blocks wrote [Gruber][1]             54    0     60      
-  23  Therefore is nothing from this Code block to …      61    0     62      
-  24  ####### More sharps than six are not treated …      63    0     65      
-  25  The largest H1 heading in Setext style              66    0     76      
-  26  Setext-style headers are “underlined” using e…      68    0     69      
-  27  The second largest H2 heading in Setext style       70    0     76      
-  28  ...and dashes (for second-level headers).           72    0     73      
-  29  On the day of writing this test file are thes…      74    0     76      
-  30  TODO                                                77    0     93      
-  31  Grabbed from GitHub                                 79    0     85      
-  32  - [ ] Lists (with or without Task feature) as…      81    0     85      
-  33  Grabbed from Gruber                                 86    0     93      
-  34  - [ ] Horizontal Rules                              88    0     90      
-  35  [1]: https://daringfireball.net/projects/mark…      91    0     93      
+  14  The forth heading H4                                41    0     81      
+  15  About footnotes can you read at [GitHub][]          42    0     46      
+  16  As you can see have I used Grubers *implicit …      47    0     54      
+  17  [^1]: My reference.                                 51    0     51      
+  18  [^2]: To add line breaks within a footnote, p…      52    0     52      
+  19  The fifths heading H5                               55    0     81      
+  20  Links support [Gruber][1] as *reference* at t…      56    0     62      
+  21  [1]: https://daringfireball.net/projects/mark…      59    0     59      
+  22  [2]: https://help.github.com/articles/basic-w…      60    0     60      
+  23  [GitHub]: https://docs.github.com/en/get-star…      61    0     61      
+  24  Links and Footnotes will be collected at the …      63    0     66      
+  25  The smallest heading H6                             67    0     81      
+  26  Some paragraph                                      68    0     69      
+  27  Regarding code blocks wrote [Gruber][1]             70    0     76      
+  28  Therefore is nothing from this Code block to …      77    0     78      
+  29  ####### More sharps than six are not treated …      79    0     81      
+  30  The largest H1 heading in Setext style              82    0     92      
+  31  Setext-style headers are “underlined” using e…      84    0     85      
+  32  The second largest H2 heading in Setext style       86    0     92      
+  33  ...and dashes (for second-level headers).           88    0     89      
+  34  On the day of writing this test file are thes…      90    0     92      
+  35  TODO                                                93    0    106      
+  36  Grabbed from GitHub                                 95    0    101      
+  37  - [ ] Lists (with or without Task feature) as…      97    0    101      
+  38  Grabbed from Gruber                                102    0    106      
+  39  - [ ] Horizontal Rules                             104    0    106      

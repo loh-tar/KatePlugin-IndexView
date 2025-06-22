@@ -92,6 +92,7 @@ enum IconType {
         BeginIcon = Cyan1Icon,
     Magenta1Icon,
         Head6Icon = Magenta1Icon,
+        LinkIcon = Magenta1Icon, // Markdown
         VariableIcon = Magenta1Icon,
     Yellow1Icon,
         FixmeTodoIcon = Yellow1Icon,

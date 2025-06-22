@@ -287,6 +287,18 @@ protected:
     QTreeWidgetItem *rootNode(int nodeType);
 
     /**
+     * This function checks first if given @p nodeType is holded in @c m_detachedNodeTypes.
+     * If not, nothing else happens. Otherwise will a new node added to the tree below the
+     * corresponding root node.
+     * @param nodeType of type NodeType
+     * @param text the caption of the new node, visible in the view
+     * @param lineNumber the line where the pattern is located in the file
+     * @param columnNumber the column where the pattern is located in the file
+     * @return new added node or nullptr
+     */
+    QTreeWidgetItem *addDetachedNode(int nodeType, const QString &text, const int lineNumber, const int columnNumber = 0);
+
+    /**
      * Call this function in an ctor of a (master) class to add nesting options to the context menu.
      * Use @p adjust, when needed. E.g. DocumentParser need that, XmlTypeParser do not. It is related
      * how/when the nesting is calculated, before or after calling setNodeProperties(..).

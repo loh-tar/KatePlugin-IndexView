@@ -40,14 +40,30 @@ Regarding HTML tags wrote [Gruber][1]
 This <pre> Block is never shown, just like the Code block above
 
 #### The forth heading H4
-Some paragraph
+About footnotes can you read at [GitHub][]
 
-Some more paragraph
+    Here is a simple footnote[^1].
+    A footnote can also have multiple lines[^2].
+
+As you can see have I used Grubers *implicit link name shortcut* for the GitHub
+mention just for fun. We don't parse for links in the document. The qoted text
+continue with the the following lines (wich should appear in our tree).
+
+[^1]: My reference.
+[^2]: To add line breaks within a footnote, prefix new lines with 2 spaces.
+  This is a second line (and **MUST NOT** be shown in the tree!)
 
 ##### The fifths heading H5
-Some paragraph
+Links support [Gruber][1] as *reference* at the end of the document or anywhere else,
+like shown here, "optionally indented from the left margin using up to three spaces"
 
-Some more paragraph
+[1]: https://daringfireball.net/projects/markdown/syntax
+ [2]: https://help.github.com/articles/basic-writing-and-formatting-syntax
+   [GitHub]: https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#footnotes
+
+Links and Footnotes will be collected at the end of the tree if you have checked
+the *Detach Links and Footnotes* option. Otherwise appear they in the tree where they
+are found below the last header.
 
 ###### The smallest heading H6
 Some paragraph
@@ -88,6 +104,3 @@ highlighted by Kate's syntax highlighter, but they are allowed by [Gruber][1].
 
 - [ ] Horizontal Rules
 Images
-
-[1]: https://daringfireball.net/projects/markdown/syntax
-[2]: https://help.github.com/articles/basic-writing-and-formatting-syntax

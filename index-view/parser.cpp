@@ -248,6 +248,20 @@ void Parser::prepareForParse()
     p_indexTree->setRootIsDecorated(p_viewTree->isChecked());
 }
 
+
+QTreeWidgetItem *Parser::addDetachedNode(int nodeType, const QString &text, const int lineNumber, const int columnNumber/* = 0*/)
+{
+    if (!m_detachedNodeTypes.contains(nodeType) || !nodeTypeIsWanted(nodeType)) {
+        return nullptr;
+    }
+
+    auto node = new QTreeWidgetItem(rootNode(nodeType), nodeType);
+    setNodeProperties(node, nodeType, text, lineNumber, columnNumber);
+
+    return node;
+}
+
+
 QTreeWidgetItem *Parser::rootNode(int nodeType)
 {
     QTreeWidgetItem *node = p_rootNodes.value(nodeType, nullptr);

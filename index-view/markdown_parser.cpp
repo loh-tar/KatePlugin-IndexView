@@ -31,6 +31,9 @@ MarkdownParser::MarkdownParser(QObject *view, KTextEditor::Document *doc)
 {
     using namespace IconCollection;
     registerViewOption(ParaNode, ParaIcon, QStringLiteral("Paragraph"), i18n("Show Paragraphs"));
+    registerViewOption(LinkNode, LinkIcon, QStringLiteral("Links and Footnotes"), i18n("Show Links and Footnotes"));
+
+    p_detachLinks = registerViewOptionModifier(LinkNode, QStringLiteral("DetachLinks"), i18n("Detach Links and Footnotes"));
 
     setNodeTypeIcon(Head1Node, Head1Icon);
     setNodeTypeIcon(Head2Node, Head2Icon);
@@ -59,17 +62,27 @@ void MarkdownParser::parseDocument()
     static const QRegularExpression rxEqualLine(QStringLiteral(R"(^[=]{3,}$)"));
     static const QRegularExpression rxDashLine(QStringLiteral(R"(^[-]{3,}$)"));
     static const QRegularExpression rxHeader(QStringLiteral(R"(^#{1,6}\s.*$)"));
+    static const QRegularExpression rxLinkLine(QStringLiteral(R"(^( {0,3})\[(.*)\]:(\t| )+(.*)$)"));
     static const QRegularExpression rxCodeLine(QStringLiteral(R"(^(\t| {4,})+\S.*$)"));
+    static const QRegularExpression rxIndentLine(QStringLiteral(R"(^( {2,})+\S.*$)"));
 
     QString paraLine;   // First line of a paragraph
     initHistory(3);
+
+    if (p_detachLinks->isChecked()) {
+        m_detachedNodeTypes << LinkNode;
+    } else {
+        m_detachedNodeTypes.remove(LinkNode);
+    }
 
     while (nextLine()) {
         // Let's start the investigation
         bool currIsEqualLine = rawLine().contains(rxEqualLine);
         bool currIsDashLine  = rawLine().contains(rxDashLine);
         bool currIsHeader    = rawLine().contains(rxHeader);
+        bool currIsLink      = rawLine().contains(rxLinkLine);
         bool currIsCode      = rawLine().contains(rxCodeLine);
+        bool currIsIndented  = rawLine().contains(rxIndentLine);
 
         // Keep a record of the history
         if (m_line.isEmpty()) {
@@ -80,9 +93,18 @@ void MarkdownParser::parseDocument()
             addToHistory(EqualLine, m_line);
         } else if (currIsHeader) {
             addToHistory(HeaderLine, m_line);
+        } else if (currIsLink) {
+            addToHistory(LinkLine, m_line);
         } else if (currIsCode) {
             // More is not needed to ignore code lines "by Gruber", just this notice
             addToHistory(CodeLine, m_line);
+
+            // Due to the similarity with rxCodeLine we must check after currIsCode
+            // HINT: Looks pointless, a modified version of rxCodeLine should do it too
+            // but who knows what we can further improve...
+        } else if (currIsIndented) {
+            // More is not needed to ignore indent lines, just this notice
+            addToHistory(IndentLine, m_line);
         } else {
             addToHistory(NormalLine, m_line);
         }
@@ -100,14 +122,26 @@ void MarkdownParser::parseDocument()
             } else if (line2Type == NormalLine) {
                 paraLine = m_lineHistory.at(2);
                 m_paraLineNumber = lineNumber();
-            } else if (line2Type != HeaderLine) {
-                continue;
             }
         }
 
         // Check for Paragraph continuation
         if (line0Type == NormalLine && line1Type == NormalLine  && line2Type == NormalLine) {
             continue;
+
+        } else if (line2Type  == LinkLine) {
+            if (p_detachLinks->isChecked()) {
+                addDetachedNode(LinkNode, m_line, lineNumber());
+            } else {
+                QTreeWidgetItem *parentNode = lastNode();
+                while (parentNode) {
+                    if (parentNode->type() <= Head6Node) {
+                        break;
+                    }
+                    parentNode = parentNode->parent();
+                }
+                addNodeToParent(LinkNode, parentNode, m_line);
+            }
 
             // Check for Paragraph - Single line
         } else if (line0Type != NormalLine && line1Type == NormalLine  && line2Type  == EmptyLine) {
