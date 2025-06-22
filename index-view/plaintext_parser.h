@@ -87,7 +87,6 @@ protected:
     void parseDocument() override;
 
     void addNodesToParent(QTreeWidgetItem *parentNode, int pos);
-    QTreeWidgetItem *addNodeToParent(int nodeType, QTreeWidgetItem *parentNode, const QString &text);
 
     QStringList m_sections; // Collect all sub sections, like a path
 };

@@ -233,17 +233,6 @@ void IniFileParser::addNodesToParent(QTreeWidgetItem *parentNode, int pos)
 }
 
 
-QTreeWidgetItem *IniFileParser::addNodeToParent(int nodeType, QTreeWidgetItem *parentNode, const QString &text)
-{
-//     qDebug() << "ADD " << text << "type" << nodeType << "TO" << parentNode->text(0);
-
-    QTreeWidgetItem *node = new QTreeWidgetItem(parentNode, nodeType);
-    setNodeProperties(node, nodeType, text, lineNumber());
-
-    return lastNode();
-}
-
-
 DiffFileParser::DiffFileParser(QObject *view, KTextEditor::Document *doc)
     : DocumentParser(view, doc)
 {
