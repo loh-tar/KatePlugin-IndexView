@@ -54,8 +54,8 @@ enum IconType {
         SubroutineIcon = Green3Icon, // Fortran
     Cyan3Icon,
         NamespaceIcon = Cyan3Icon,
+        Head4Icon = Cyan3Icon,
     Magenta3Icon,
-        Head4Icon = Magenta3Icon,
     Yellow3Icon,
     Gray3Icon,
         ThisPluginIcon = Gray3Icon,
@@ -72,8 +72,8 @@ enum IconType {
         MethodIcon = Green2Icon, // Python, Ruby
     Cyan2Icon,
         FuncDecIcon = Cyan2Icon,
+        Head5Icon = Cyan2Icon,
     Magenta2Icon,
-        Head5Icon = Magenta2Icon,
         TypedefIcon = Magenta2Icon, // C++, Go
     Yellow2Icon,
         InterfaceIcon = Yellow2Icon, // PHP, Go
@@ -90,8 +90,8 @@ enum IconType {
         MacroIcon = Green1Icon,
     Cyan1Icon,
         BeginIcon = Cyan1Icon,
+        Head6Icon = Cyan1Icon,
     Magenta1Icon,
-        Head6Icon = Magenta1Icon,
         LinkIcon = Magenta1Icon, // Markdown
         VariableIcon = Magenta1Icon,
     Yellow1Icon,
