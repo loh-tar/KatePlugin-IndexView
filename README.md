@@ -23,14 +23,21 @@ there is still more to do to make it fit for the future, but some steps have bee
 taken.
 
 
-### Last version is 0.9.4, Jun 2025
+### Last version is 0.9.5, Jul 2025
 
-  - Add a lookup button right from the filter field. This is like "filter on steroids"
-    from our "auto-filter" functionality. There will be performed a search in all
-    cached trees
-  - Add detection of git conflict blocks
-  - Add parser class name to context menu as header
-  - Fix CppParser with some typedef issues
+  - Fix some crashes
+  - Add a welcome-tree, showing some info
+  - Make Cozy-Click behavior less surprising
+  - Limit the text size of a node to 45 char
+  - Use IniFileParser for TOML files
+  - MarkdownParser: Add links and footnotes to the tree
+  - MarkdownParser: Ignore code blocks
+  - CppParser: Add member variables to the tree
+  - CppParser: Collect class member below access specifiers
+  - IconCollection: Tinker the blue icons less dark
+  - DocumentParser: Use file name as root node caption
+  - Add new parser GoParser
+  - Add new parser MakefileParser
   - Many more small fixes and bigger changes,
     see [commit log](https://github.com/loh-tar/KatePlugin-IndexView/commits/master/)
     for detailed list
@@ -54,8 +61,10 @@ Older release notes can you find [below](#release-history).
   - Add PlainText-Parser
   - Add Markdown-Parser
   - Add AsciiDocParser with minimal support, but can be improved if needed
-  - Add support for INI and Diff files
+  - Add IniFileParser
   - Add XmlTypeParser which can support any kind of XML file, but need more love
+  - Add GoParser
+  - Add MakefileParser
 
 
 ## Installation
@@ -128,6 +137,16 @@ and probably many more I didn't have knowledge from. Thanks to all!
 
 
 ## Release History
+
+### 0.9.4, Jun 2025
+
+  - Add a lookup button right from the filter field. This is like "filter on steroids"
+    from our "auto-filter" functionality. There will be performed a search in all
+    cached trees
+  - Add detection of git conflict blocks
+  - Add parser class name to context menu as header
+  - Fix CppParser with some typedef issues
+
 
 ### 0.9.3, May 2025
 
